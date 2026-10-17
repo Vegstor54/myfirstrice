@@ -1,0 +1,4 @@
+singleton Colors Colors.qml
+singleton Settings Settings.qml
+Panel Panel.qml
+DefaultsRow DefaultsRow.qml
