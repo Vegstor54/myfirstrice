@@ -18,6 +18,17 @@ Scope {
             if (!root.shown) root.anchorMonitor = Hyprland.focusedMonitor?.name ?? ""
             root.shown = !root.shown
         }
+
+        // SUPER+Space: открыть панель сразу на вкладке apps (или закрыть, если она уже открыта)
+        function launcher(): void {
+            if (root.shown && root.activeTab === "apps") {
+                root.shown = false
+                return
+            }
+            if (!root.shown) root.anchorMonitor = Hyprland.focusedMonitor?.name ?? ""
+            root.activeTab = "apps"
+            root.shown = true
+        }
     }
 
     Variants {
@@ -37,7 +48,16 @@ Scope {
             WlrLayershell.layer: WlrLayer.Overlay
             WlrLayershell.keyboardFocus: (root.shown && isFocused) ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
 
+            // Когда поиск лаунчера не в фокусе, Esc должен ловить затемнённый фон
+            Connections {
+                target: root
+                function onShownChanged() {
+                    if (root.shown && win.isFocused && root.activeTab !== "apps") dim.forceActiveFocus()
+                }
+            }
+
             Rectangle {
+                id: dim
                 anchors.fill: parent
                 color: "black"
                 opacity: root.shown ? 0.3 : 0
@@ -106,7 +126,10 @@ Scope {
                                 }
                                 MouseArea {
                                     anchors.fill: parent
-                                    onClicked: root.activeTab = parent.modelData
+                                    onClicked: {
+                                        root.activeTab = parent.modelData
+                                        if (parent.modelData !== "apps") dim.forceActiveFocus()
+                                    }
                                 }
                             }
                         }
@@ -164,7 +187,10 @@ Scope {
 
             Component {
                 id: appsTab
-                Text { text: "Apps list — coming soon"; color: Colors.text }
+                AppsTab {
+                    active: root.shown && win.isFocused && root.activeTab === "apps"
+                    onCloseRequested: root.shown = false
+                }
             }
         }
     }
