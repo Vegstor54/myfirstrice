@@ -6,13 +6,19 @@ local p = require("conf.programs")
 
 local mainMod = "SUPER" -- Sets "Windows" key as main modifier
 
--- Nautilus и Dolphin без этого флага не открывают второе окно, а просто
--- выводят на передний план уже открытое. Остальным менеджерам флаг не нужен.
-local newWindowFlag = { nautilus = "--new-window", dolphin = "--new-window" }
-local fileManagerCmd = p.fileManager
-if newWindowFlag[p.fileManager] then
-    fileManagerCmd = p.fileManager .. " " .. newWindowFlag[p.fileManager]
-end
+-- Команды запуска файловых менеджеров, которым нужны особые флаги.
+-- Остальные запускаются просто по имени.
+local fileManagerCmds = {
+    -- Без --new-window Nautilus не открывает второе окно, а лишь выводит на
+    -- передний план уже открытое. Кроме того, после закрытия последнего окна он
+    -- остаётся в фоне и потом игнорирует новые запуски. Поэтому, если окон
+    -- Nautilus нет, а процесс есть, сначала завершаем его.
+    -- (Если закрыть окно во время копирования, фоновое копирование оборвётся.)
+    nautilus = "hyprctl clients | grep -q 'class: org.gnome.Nautilus' "
+            .. "|| { pkill -x nautilus && sleep 0.3; }; nautilus --new-window",
+    dolphin  = "dolphin --new-window",
+}
+local fileManagerCmd = fileManagerCmds[p.fileManager] or p.fileManager
 
 -- Example binds, see https://wiki.hypr.land/Configuring/Basics/Binds/ for more
 hl.bind(mainMod .. " + return", hl.dsp.exec_cmd(p.terminal))
