@@ -9,29 +9,52 @@ import QtQuick.Layouts
 Scope {
     id: root
     property bool shown: false
-    property string activeTab: "style"
+    // "menu" — главный экран с пунктами, иначе id страницы из pages
+    property string activeTab: "menu"
     property string anchorMonitor: ""
-    // Режим лаунчера (SUPER+Space): только список приложений, без кнопок вкладок
-    property bool launcherMode: false
+    property int menuIndex: 0
+
+    readonly property var pages: [
+        { id: "apps",     title: "Apps",     subtitle: "Запуск приложений" },
+        { id: "defaults", title: "Defaults", subtitle: "Приложения по умолчанию" },
+        { id: "style",    title: "Style",    subtitle: "Цвета и оформление" }
+    ]
+
+    function titleOf(id) {
+        for (let i = 0; i < pages.length; i++)
+            if (pages[i].id === id) return pages[i].title
+        return ""
+    }
+
+    function openPage(id) { root.activeTab = id }
+
+    // Назад в главное меню; курсор остаётся на странице, откуда пришли
+    function back() {
+        for (let i = 0; i < pages.length; i++)
+            if (pages[i].id === root.activeTab) root.menuIndex = i
+        root.activeTab = "menu"
+    }
 
     IpcHandler {
         target: "panel"
+
+        // SUPER+S: главное меню панели
         function toggle(): void {
             if (!root.shown) {
                 root.anchorMonitor = Hyprland.focusedMonitor?.name ?? ""
-                root.launcherMode = false
+                root.activeTab = "menu"
+                root.menuIndex = 0
             }
             root.shown = !root.shown
         }
 
-        // SUPER+Space: открыть лаунчер (или закрыть, если он уже открыт)
+        // SUPER+Space: сразу страница Apps (или закрыть, если она уже открыта)
         function launcher(): void {
-            if (root.shown && root.launcherMode) {
+            if (root.shown && root.activeTab === "apps") {
                 root.shown = false
                 return
             }
             if (!root.shown) root.anchorMonitor = Hyprland.focusedMonitor?.name ?? ""
-            root.launcherMode = true
             root.activeTab = "apps"
             root.shown = true
         }
@@ -54,10 +77,13 @@ Scope {
             WlrLayershell.layer: WlrLayer.Overlay
             WlrLayershell.keyboardFocus: (root.shown && isFocused) ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
 
-            // Когда поиск лаунчера не в фокусе, Esc должен ловить затемнённый фон
+            // Вне страницы Apps (там фокус у строки поиска) клавиши ловит затемнённый фон
             Connections {
                 target: root
                 function onShownChanged() {
+                    if (root.shown && win.isFocused && root.activeTab !== "apps") dim.forceActiveFocus()
+                }
+                function onActiveTabChanged() {
                     if (root.shown && win.isFocused && root.activeTab !== "apps") dim.forceActiveFocus()
                 }
             }
@@ -68,7 +94,25 @@ Scope {
                 color: "black"
                 opacity: root.shown ? 0.3 : 0
                 focus: true
+
                 Keys.onEscapePressed: root.shown = false
+                Keys.onPressed: event => {
+                    if (event.key === Qt.Key_Backspace) {
+                        if (root.activeTab !== "menu" && !event.isAutoRepeat) root.back()
+                        event.accepted = true
+                    } else if (root.activeTab === "menu") {
+                        if (event.key === Qt.Key_Down) {
+                            root.menuIndex = (root.menuIndex + 1) % root.pages.length
+                            event.accepted = true
+                        } else if (event.key === Qt.Key_Up) {
+                            root.menuIndex = (root.menuIndex + root.pages.length - 1) % root.pages.length
+                            event.accepted = true
+                        } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+                            root.openPage(root.pages[root.menuIndex].id)
+                            event.accepted = true
+                        }
+                    }
+                }
 
                 Behavior on opacity { NumberAnimation { id: fade; duration: 180; easing.type: Easing.OutCubic } }
 
@@ -101,46 +145,93 @@ Scope {
                     anchors.margins: 16
                     spacing: 16
 
+                    // Шапка страницы: «назад» и название (на главном экране её нет)
+                    Rectangle {
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: 36
+                        visible: root.activeTab !== "menu"
+                        radius: 999
+                        color: backMouse.containsMouse ? Colors.surfaceContainerHighest : Colors.surfaceContainerHigh
+
+                        Text {
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.left: parent.left
+                            anchors.leftMargin: 16
+                            text: "‹   " + root.titleOf(root.activeTab)
+                            color: Colors.text
+                            font.pixelSize: 14
+                            font.bold: true
+                        }
+                        MouseArea {
+                            id: backMouse
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: root.back()
+                        }
+                    }
+
                     Loader {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
-                        sourceComponent: root.activeTab === "defaults" ? defaultsTab
+                        sourceComponent: root.activeTab === "menu" ? menuPage
+                                       : root.activeTab === "defaults" ? defaultsTab
                                        : root.activeTab === "apps" ? appsTab
                                        : styleTab
                     }
+                }
+            }
 
-                    ColumnLayout {
-                        Layout.fillWidth: true
-                        spacing: 8
-                        visible: !root.launcherMode
+            Component {
+                id: menuPage
+                ColumnLayout {
+                    spacing: 8
 
-                        Repeater {
-                            model: ["apps", "defaults", "style"]
+                    Repeater {
+                        model: root.pages
 
-                            Rectangle {
-                                required property string modelData
-                                Layout.fillWidth: true
-                                Layout.preferredHeight: 36
-                                radius: 999
-                                color: root.activeTab === modelData ? Colors.primary : Colors.surfaceContainerHigh
+                        Rectangle {
+                            id: item
+                            required property var modelData
+                            required property int index
+                            readonly property bool selected: root.menuIndex === index
+
+                            Layout.fillWidth: true
+                            Layout.preferredHeight: 56
+                            radius: 16
+                            color: selected ? Colors.primaryContainer : Colors.surfaceContainerHigh
+
+                            ColumnLayout {
+                                anchors.verticalCenter: parent.verticalCenter
+                                anchors.left: parent.left
+                                anchors.leftMargin: 18
+                                spacing: 2
 
                                 Text {
-                                    anchors.centerIn: parent
-                                    text: parent.modelData
-                                    color: root.activeTab === parent.modelData ? Colors.textOnPrimary : Colors.text
-                                    font.pixelSize: 14
-                                    font.capitalization: Font.Capitalize
+                                    text: item.modelData.title
+                                    color: Colors.text
+                                    font.pixelSize: 15
+                                    font.bold: true
                                 }
-                                MouseArea {
-                                    anchors.fill: parent
-                                    onClicked: {
-                                        root.activeTab = parent.modelData
-                                        if (parent.modelData !== "apps") dim.forceActiveFocus()
-                                    }
+                                Text {
+                                    text: item.modelData.subtitle
+                                    color: Colors.text
+                                    opacity: 0.6
+                                    font.pixelSize: 12
                                 }
+                            }
+
+                            MouseArea {
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onPositionChanged: root.menuIndex = item.index
+                                onClicked: root.openPage(item.modelData.id)
                             }
                         }
                     }
+
+                    Item { Layout.fillHeight: true }
                 }
             }
 
@@ -197,6 +288,7 @@ Scope {
                 AppsTab {
                     active: root.shown && win.isFocused && root.activeTab === "apps"
                     onCloseRequested: root.shown = false
+                    onBackRequested: root.back()
                 }
             }
         }

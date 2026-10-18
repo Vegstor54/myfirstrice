@@ -11,6 +11,8 @@ ColumnLayout {
     // true, когда вкладка видна и именно на этом мониторе есть клавиатурный фокус
     property bool active: false
     signal closeRequested()
+    // Backspace в пустой строке поиска — вернуться в главное меню
+    signal backRequested()
 
     spacing: 12
 
@@ -105,6 +107,11 @@ ColumnLayout {
                     event.accepted = true
                 } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
                     tab.launch(tab.results[list.currentIndex])
+                    event.accepted = true
+                } else if (event.key === Qt.Key_Backspace && searchInput.text === ""
+                           && searchInput.preeditText === "" && !event.isAutoRepeat) {
+                    // isAutoRepeat: зажатый Backspace, стёрший весь текст, не должен выкидывать назад
+                    tab.backRequested()
                     event.accepted = true
                 } else if (event.key === Qt.Key_Escape) {
                     tab.closeRequested()
