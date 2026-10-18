@@ -11,21 +11,27 @@ Scope {
     property bool shown: false
     property string activeTab: "style"
     property string anchorMonitor: ""
+    // Режим лаунчера (SUPER+Space): только список приложений, без кнопок вкладок
+    property bool launcherMode: false
 
     IpcHandler {
         target: "panel"
         function toggle(): void {
-            if (!root.shown) root.anchorMonitor = Hyprland.focusedMonitor?.name ?? ""
+            if (!root.shown) {
+                root.anchorMonitor = Hyprland.focusedMonitor?.name ?? ""
+                root.launcherMode = false
+            }
             root.shown = !root.shown
         }
 
-        // SUPER+Space: открыть панель сразу на вкладке apps (или закрыть, если она уже открыта)
+        // SUPER+Space: открыть лаунчер (или закрыть, если он уже открыт)
         function launcher(): void {
-            if (root.shown && root.activeTab === "apps") {
+            if (root.shown && root.launcherMode) {
                 root.shown = false
                 return
             }
             if (!root.shown) root.anchorMonitor = Hyprland.focusedMonitor?.name ?? ""
+            root.launcherMode = true
             root.activeTab = "apps"
             root.shown = true
         }
@@ -106,6 +112,7 @@ Scope {
                     ColumnLayout {
                         Layout.fillWidth: true
                         spacing: 8
+                        visible: !root.launcherMode
 
                         Repeater {
                             model: ["apps", "defaults", "style"]

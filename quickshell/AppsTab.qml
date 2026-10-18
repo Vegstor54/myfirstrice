@@ -1,5 +1,6 @@
 import Quickshell
 import QtQuick
+import QtQuick.Controls
 import QtQuick.Layouts
 
 // Лаунчер приложений: поиск + список из .desktop-файлов.
@@ -53,6 +54,13 @@ ColumnLayout {
         tab.closeRequested()
     }
 
+    // Двигает выбор стрелками и прокручивает список, чтобы выбранная строка была видна
+    function move(delta) {
+        const next = Math.max(0, Math.min(list.count - 1, list.currentIndex + delta))
+        list.currentIndex = next
+        list.positionViewAtIndex(next, ListView.Contain)
+    }
+
     function focusSearch() {
         searchInput.text = ""
         searchInput.forceActiveFocus()
@@ -84,10 +92,16 @@ ColumnLayout {
 
             Keys.onPressed: event => {
                 if (event.key === Qt.Key_Down) {
-                    list.incrementCurrentIndex()
+                    tab.move(1)
                     event.accepted = true
                 } else if (event.key === Qt.Key_Up) {
-                    list.decrementCurrentIndex()
+                    tab.move(-1)
+                    event.accepted = true
+                } else if (event.key === Qt.Key_PageDown) {
+                    tab.move(8)
+                    event.accepted = true
+                } else if (event.key === Qt.Key_PageUp) {
+                    tab.move(-8)
                     event.accepted = true
                 } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
                     tab.launch(tab.results[list.currentIndex])
@@ -121,6 +135,20 @@ ColumnLayout {
         currentIndex: 0
         highlightFollowsCurrentItem: false
         boundsBehavior: Flickable.StopAtBounds
+        // Прокрутка колесом мыши и полоса справа
+        ScrollBar.vertical: ScrollBar {
+            id: bar
+            policy: ScrollBar.AsNeeded
+            implicitWidth: 6
+            background: Item {}
+            contentItem: Rectangle {
+                implicitWidth: 6
+                radius: 3
+                color: Colors.primary
+                opacity: bar.pressed ? 0.9 : bar.active ? 0.6 : 0.3
+                Behavior on opacity { NumberAnimation { duration: 120 } }
+            }
+        }
 
         delegate: Rectangle {
             id: row
@@ -129,7 +157,8 @@ ColumnLayout {
             readonly property bool selected: ListView.isCurrentItem
             readonly property string iconSource: modelData.icon ? Quickshell.iconPath(modelData.icon, true) : ""
 
-            width: ListView.view.width
+            // справа оставляем место под полосу прокрутки
+            width: ListView.view.width - 10
             height: 44
             radius: 12
             color: selected ? Colors.primaryContainer
