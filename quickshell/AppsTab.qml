@@ -90,6 +90,7 @@ ColumnLayout {
             color: Colors.text
             selectionColor: Colors.primary
             selectedTextColor: Colors.textOnPrimary
+            font.family: Settings.uiFontFamily
             font.pixelSize: 14
 
             Keys.onPressed: event => {
@@ -126,6 +127,7 @@ ColumnLayout {
                 text: "Поиск приложений…"
                 color: Colors.text
                 opacity: 0.5
+                font.family: Settings.uiFontFamily
                 font.pixelSize: 14
             }
         }
@@ -204,6 +206,7 @@ ColumnLayout {
                             anchors.centerIn: parent
                             text: (row.modelData.name || "?").charAt(0).toUpperCase()
                             color: Colors.text
+                            font.family: Settings.uiFontFamily
                             font.pixelSize: 14
                             font.bold: true
                         }
@@ -214,6 +217,7 @@ ColumnLayout {
                     Layout.fillWidth: true
                     text: row.modelData.name
                     color: Colors.text
+                    font.family: Settings.uiFontFamily
                     font.pixelSize: 14
                     elide: Text.ElideRight
                 }
@@ -236,6 +240,7 @@ ColumnLayout {
             text: "Ничего не найдено"
             color: Colors.text
             opacity: 0.5
+            font.family: Settings.uiFontFamily
             font.pixelSize: 14
         }
     }

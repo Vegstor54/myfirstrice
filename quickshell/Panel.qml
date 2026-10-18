@@ -14,25 +14,52 @@ Scope {
     property string anchorMonitor: ""
     property int menuIndex: 0
 
+    // Пункты главного меню
     readonly property var pages: [
         { id: "apps",     title: "Apps",     subtitle: "Запуск приложений" },
         { id: "defaults", title: "Defaults", subtitle: "Приложения по умолчанию" },
-        { id: "style",    title: "Style",    subtitle: "Цвета и оформление" }
+        { id: "style",    title: "Style",    subtitle: "Цветовая схема и шрифт" }
     ]
 
+    // Вложенные меню: id страницы-меню -> её пункты.
+    // id подпункта = "<id родителя>/<имя>", по нему находится родитель при возврате.
+    // Новый подпункт: запись здесь + Component и ветка в Loader ниже.
+    readonly property var subpages: ({
+        "style": [
+            { id: "style/colors", title: "Цветовая схема", subtitle: "Цвет бара" },
+            { id: "style/font",   title: "Шрифт",          subtitle: "Шрифт интерфейса и терминала" }
+        ]
+    })
+
+    function isMenu(id) { return id === "menu" || subpages[id] !== undefined }
+
+    // Пункты меню с данным id: главное меню или вложенное
+    function itemsOf(menuId) { return menuId === "menu" ? pages : (subpages[menuId] ?? []) }
+
+    function parentOf(id) {
+        const slash = id.lastIndexOf("/")
+        return slash >= 0 ? id.substring(0, slash) : "menu"
+    }
+
     function titleOf(id) {
-        for (let i = 0; i < pages.length; i++)
-            if (pages[i].id === id) return pages[i].title
+        const all = pages.concat(...Object.values(subpages))
+        for (let i = 0; i < all.length; i++)
+            if (all[i].id === id) return all[i].title
         return ""
     }
 
-    function openPage(id) { root.activeTab = id }
+    function openPage(id) {
+        root.activeTab = id
+        if (isMenu(id)) root.menuIndex = 0
+    }
 
-    // Назад в главное меню; курсор остаётся на странице, откуда пришли
+    // Назад на уровень выше; курсор остаётся на пункте, откуда пришли
     function back() {
-        for (let i = 0; i < pages.length; i++)
-            if (pages[i].id === root.activeTab) root.menuIndex = i
-        root.activeTab = "menu"
+        const parent = parentOf(root.activeTab)
+        const items = itemsOf(parent)
+        for (let i = 0; i < items.length; i++)
+            if (items[i].id === root.activeTab) root.menuIndex = i
+        root.activeTab = parent
     }
 
     IpcHandler {
@@ -100,15 +127,16 @@ Scope {
                     if (event.key === Qt.Key_Backspace) {
                         if (root.activeTab !== "menu" && !event.isAutoRepeat) root.back()
                         event.accepted = true
-                    } else if (root.activeTab === "menu") {
+                    } else if (root.isMenu(root.activeTab)) {
+                        const items = root.itemsOf(root.activeTab)
                         if (event.key === Qt.Key_Down) {
-                            root.menuIndex = (root.menuIndex + 1) % root.pages.length
+                            root.menuIndex = (root.menuIndex + 1) % items.length
                             event.accepted = true
                         } else if (event.key === Qt.Key_Up) {
-                            root.menuIndex = (root.menuIndex + root.pages.length - 1) % root.pages.length
+                            root.menuIndex = (root.menuIndex + items.length - 1) % items.length
                             event.accepted = true
                         } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
-                            root.openPage(root.pages[root.menuIndex].id)
+                            root.openPage(items[root.menuIndex].id)
                             event.accepted = true
                         }
                     }
@@ -159,6 +187,7 @@ Scope {
                             anchors.leftMargin: 16
                             text: "‹   " + root.titleOf(root.activeTab)
                             color: Colors.text
+                            font.family: Settings.uiFontFamily
                             font.pixelSize: 14
                             font.bold: true
                         }
@@ -174,10 +203,11 @@ Scope {
                     Loader {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
-                        sourceComponent: root.activeTab === "menu" ? menuPage
+                        sourceComponent: root.isMenu(root.activeTab) ? menuPage
                                        : root.activeTab === "defaults" ? defaultsTab
                                        : root.activeTab === "apps" ? appsTab
-                                       : styleTab
+                                       : root.activeTab === "style/font" ? fontTab
+                                       : colorsTab
                     }
                 }
             }
@@ -188,7 +218,7 @@ Scope {
                     spacing: 8
 
                     Repeater {
-                        model: root.pages
+                        model: root.itemsOf(root.activeTab)
 
                         Rectangle {
                             id: item
@@ -210,6 +240,7 @@ Scope {
                                 Text {
                                     text: item.modelData.title
                                     color: Colors.text
+                                    font.family: Settings.uiFontFamily
                                     font.pixelSize: 15
                                     font.bold: true
                                 }
@@ -217,6 +248,7 @@ Scope {
                                     text: item.modelData.subtitle
                                     color: Colors.text
                                     opacity: 0.6
+                                    font.family: Settings.uiFontFamily
                                     font.pixelSize: 12
                                 }
                             }
@@ -236,11 +268,16 @@ Scope {
             }
 
             Component {
-                id: styleTab
+                id: fontTab
+                FontTab {}
+            }
+
+            Component {
+                id: colorsTab
                 ColumnLayout {
                     spacing: 16
 
-                    Text { text: "Цвет бара"; color: Colors.text }
+                    Text { text: "Цвет бара"; color: Colors.text; font.family: Settings.uiFontFamily }
                     GridLayout {
                         columns: 6
                         columnSpacing: 8
