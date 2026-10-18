@@ -1,7 +1,7 @@
 #!/bin/bash
 category=$1
 app=$2
-config="$HOME/.config/hypr/hyprland.lua"
+config="$HOME/.config/hypr/conf/programs.lua"
 
 [ -z "$app" ] && exit 1
 
