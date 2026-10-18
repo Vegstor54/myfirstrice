@@ -4,13 +4,17 @@ import QtQuick.Controls
 import QtQuick.Layouts
 
 // Лаунчер приложений: поиск + список из .desktop-файлов.
-// Enter запускает выбранное, стрелки вверх/вниз двигают выбор, Esc закрывает панель.
+// Enter запускает выбранное, стрелки вверх/вниз двигают выбор, Esc закрывает панель,
+// Backspace при пустом поиске возвращает назад (если allowBack).
 ColumnLayout {
     id: tab
 
     // true, когда вкладка видна и именно на этом мониторе есть клавиатурный фокус
     property bool active: false
+    // можно ли уйти назад по Backspace при пустой строке поиска
+    property bool allowBack: false
     signal closeRequested()
+    signal backRequested()
 
     spacing: 12
 
@@ -105,6 +109,10 @@ ColumnLayout {
                     event.accepted = true
                 } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
                     tab.launch(tab.results[list.currentIndex])
+                    event.accepted = true
+                } else if (event.key === Qt.Key_Backspace && searchInput.text === ""
+                           && tab.allowBack && !event.isAutoRepeat) {
+                    tab.backRequested()
                     event.accepted = true
                 } else if (event.key === Qt.Key_Escape) {
                     tab.closeRequested()
