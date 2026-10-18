@@ -25,10 +25,10 @@ hl.bind(mainMod .. " + return", hl.dsp.exec_cmd(p.terminal))
 local closeWindowBind = hl.bind(mainMod .. " + W", hl.dsp.window.close())
 -- closeWindowBind:set_enabled(false)
 hl.bind(mainMod .. " + M", hl.dsp.exec_cmd("command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch 'hl.dsp.exit()'"))
-hl.bind(mainMod .. " + SHIFT + E", hl.dsp.exec_cmd(fileManagerCmd))
+hl.bind(mainMod .. " + SHIFT + F", hl.dsp.exec_cmd(fileManagerCmd))
 hl.bind(mainMod .. " + T", hl.dsp.window.float({ action = "toggle" }))
 hl.bind(mainMod .. " + space", hl.dsp.exec_cmd("quickshell ipc call panel launcher"))
-hl.bind(mainMod .. " + B", hl.dsp.exec_cmd(p.browser))
+hl.bind(mainMod .. " + SHIFT + B", hl.dsp.exec_cmd(p.browser))
 hl.bind(mainMod .. " + SHIFT + Return", hl.dsp.exec_cmd(p.terminal .. " -e " .. p.editor))
 hl.bind(mainMod .. " + P", hl.dsp.window.pseudo())
 hl.bind(mainMod .. " + J", hl.dsp.layout("togglesplit"))    -- dwindle only
@@ -38,7 +38,7 @@ hl.bind(mainMod .. " + left",  hl.dsp.focus({ direction = "left" }))
 hl.bind(mainMod .. " + right", hl.dsp.focus({ direction = "right" }))
 hl.bind(mainMod .. " + up",    hl.dsp.focus({ direction = "up" }))
 hl.bind(mainMod .. " + down",  hl.dsp.focus({ direction = "down" }))
-hl.bind(mainMod .. " + SHIFT + F", hl.dsp.window.fullscreen())
+hl.bind(mainMod .. " + F", hl.dsp.window.fullscreen())
 -- Switch workspaces with mainMod + [0-9]
 -- Move active window to a workspace with mainMod + SHIFT + [0-9]
 for i = 1, 10 do
