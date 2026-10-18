@@ -6,12 +6,20 @@ local p = require("conf.programs")
 
 local mainMod = "SUPER" -- Sets "Windows" key as main modifier
 
+-- Nautilus и Dolphin без этого флага не открывают второе окно, а просто
+-- выводят на передний план уже открытое. Остальным менеджерам флаг не нужен.
+local newWindowFlag = { nautilus = "--new-window", dolphin = "--new-window" }
+local fileManagerCmd = p.fileManager
+if newWindowFlag[p.fileManager] then
+    fileManagerCmd = p.fileManager .. " " .. newWindowFlag[p.fileManager]
+end
+
 -- Example binds, see https://wiki.hypr.land/Configuring/Basics/Binds/ for more
 hl.bind(mainMod .. " + return", hl.dsp.exec_cmd(p.terminal))
 local closeWindowBind = hl.bind(mainMod .. " + W", hl.dsp.window.close())
 -- closeWindowBind:set_enabled(false)
 hl.bind(mainMod .. " + M", hl.dsp.exec_cmd("command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch 'hl.dsp.exit()'"))
-hl.bind(mainMod .. " + SHIFT + E", hl.dsp.exec_cmd(p.fileManager))
+hl.bind(mainMod .. " + SHIFT + E", hl.dsp.exec_cmd(fileManagerCmd))
 hl.bind(mainMod .. " + T", hl.dsp.window.float({ action = "toggle" }))
 hl.bind(mainMod .. " + space", hl.dsp.exec_cmd(p.menu))
 hl.bind(mainMod .. " + B", hl.dsp.exec_cmd(p.browser))
