@@ -3,3 +3,4 @@ singleton Settings Settings.qml
 Panel Panel.qml
 DefaultsRow DefaultsRow.qml
 AppsTab AppsTab.qml
+FontTab FontTab.qml

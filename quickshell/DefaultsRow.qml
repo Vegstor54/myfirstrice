@@ -40,7 +40,7 @@ ColumnLayout {
         onExited: reader.running = true
     }
 
-    Text { text: row.label; color: Colors.text; font.pixelSize: 14; font.bold: true }
+    Text { text: row.label; color: Colors.text; font.family: Settings.uiFontFamily; font.pixelSize: 14; font.bold: true }
 
     Flow {
         Layout.fillWidth: true
@@ -61,6 +61,7 @@ ColumnLayout {
                     anchors.centerIn: parent
                     text: parent.modelData
                     color: parent.modelData === row.current ? Colors.textOnPrimary : Colors.text
+                    font.family: Settings.uiFontFamily
                     font.pixelSize: 12
                 }
                 MouseArea {

@@ -28,6 +28,7 @@ ShellRoot {
                 Text {
                     anchors.centerIn: parent
                     color: Colors.text
+                    font.family: Settings.uiFontFamily
                     text: Qt.formatDateTime(clock.date, "HH:mm")
                 }
             }
