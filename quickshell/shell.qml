@@ -36,25 +36,14 @@ ShellRoot {
                     radius: 12
                     color: buttonMouse.containsMouse ? Qt.rgba(1, 1, 1, 0.18) : "transparent"
 
-                    // Логотип дистрибутива берётся из установленной темы иконок;
-                    // если такой иконки нет, показывается запасной значок
-                    Image {
-                        id: logo
-                        anchors.centerIn: parent
-                        width: 16
-                        height: 16
-                        sourceSize: Qt.size(32, 32)
-                        source: Quickshell.iconPath("distributor-logo-archlinux", "start-here")
-                        fillMode: Image.PreserveAspectFit
-                        visible: status === Image.Ready
-                    }
-
+                    // Значок — глиф Nerd Font (U+F303), тот же, что в терминале.
+                    // Если глифа нет в выбранном шрифте, Qt берёт его из Symbols Nerd Font
+                    // или другого установленного шрифта.
                     Text {
                         anchors.centerIn: parent
-                        visible: logo.status !== Image.Ready
-                        text: "≡"
+                        text: ""
                         color: Colors.text
-                        font.family: Settings.uiFontFamily
+                        font.families: ["Symbols Nerd Font", "Symbols Nerd Font Mono", Settings.uiFontFamily]
                         font.pixelSize: 16
                     }
 
