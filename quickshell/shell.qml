@@ -13,7 +13,7 @@ ShellRoot {
 
             anchors { top: true; left: true; right: true }
             margins { top: 8; left: 16; right: 16 }
-            implicitHeight: 32
+            implicitHeight: 40
             color: "transparent"
 
             Rectangle {
@@ -31,9 +31,9 @@ ShellRoot {
                     anchors.left: parent.left
                     anchors.leftMargin: 4
                     anchors.verticalCenter: parent.verticalCenter
-                    width: 24
-                    height: 24
-                    radius: 12
+                    width: 32
+                    height: 32
+                    radius: 16
                     color: buttonMouse.containsMouse ? Qt.rgba(1, 1, 1, 0.18) : "transparent"
 
                     // Значок — глиф Nerd Font (U+F303), тот же, что в терминале.
@@ -43,7 +43,7 @@ ShellRoot {
                         text: ""
                         color: Colors.text
                         font.family: "Symbols Nerd Font"
-                        font.pixelSize: 16
+                        font.pixelSize: 22
                     }
 
                     MouseArea {
@@ -59,6 +59,7 @@ ShellRoot {
                     anchors.centerIn: parent
                     color: Colors.text
                     font.family: Settings.uiFontFamily
+                    font.pixelSize: 18
                     text: Qt.formatDateTime(clock.date, "HH:mm")
                 }
             }
