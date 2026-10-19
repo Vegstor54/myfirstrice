@@ -1,3 +1,4 @@
+import Quickshell
 import Quickshell.Hyprland
 import QtQuick
 
@@ -6,6 +7,7 @@ import QtQuick
 //  - с окнами: светлая плашка
 //  - пустые (только в режимах 1–5 и 1–10): тёмные, приглушённые
 // Режим берётся из Settings.wsMode: "used" | "5" | "10".
+// Клик по квадрату переключает на этот рабочий стол.
 Row {
     id: root
 
@@ -60,6 +62,14 @@ Row {
                 font.family: Settings.uiFontFamily
                 font.pixelSize: Math.round(Settings.barHeight * 0.45)
                 font.bold: ws.active
+            }
+
+            MouseArea {
+                anchors.fill: parent
+                cursorShape: Qt.PointingHandCursor
+                // Конфиг на Lua: диспетчер вызывается через hl.dsp (как в биндах hyprland.lua)
+                onClicked: Quickshell.execDetached(["hyprctl", "dispatch",
+                    "hl.dsp.focus({ workspace = " + ws.modelData + " })"])
             }
         }
     }
