@@ -65,7 +65,13 @@ ColumnLayout {
         property string path: ""
         command: ["bash", tab.syncScript, path]
         onExited: code => {
-            if (code !== 0) tab.message = "Не удалось поставить обои"
+            if (code !== 0) {
+                tab.message = "Не удалось поставить обои"
+                return
+            }
+            // matugen уже переписал Colors.qml, но Quickshell сам его не перечитывает:
+            // перезагружаем оболочку, чтобы бар и панель взяли новую палитру
+            Quickshell.reload(false)
         }
     }
 
