@@ -1,4 +1,5 @@
 import Quickshell
+import Quickshell.Hyprland
 import QtQuick
 
 ShellRoot {
@@ -8,12 +9,18 @@ ShellRoot {
         model: Quickshell.screens
 
         PanelWindow {
+            id: win
             required property var modelData
             screen: modelData
 
+            // Монитор Hyprland, на котором этот бар: по нему определяется активный воркспейс
+            readonly property var monitor: Hyprland.monitorFor(modelData)
+            readonly property int activeWorkspaceId:
+                monitor?.activeWorkspace?.id ?? Hyprland.focusedWorkspace?.id ?? -1
+
             anchors { top: true; left: true; right: true }
             margins { top: 8; left: 16; right: 16 }
-            implicitHeight: 26
+            implicitHeight: Settings.barHeight
             color: "transparent"
 
             Rectangle {
@@ -31,31 +38,20 @@ ShellRoot {
                     anchors.left: parent.left
                     anchors.leftMargin: 4
                     anchors.verticalCenter: parent.verticalCenter
-                    width: 24
-                    height: 24
-                    radius: 12
+                    visible: Settings.showLogo
+                    width: Settings.barHeight - 8
+                    height: width
+                    radius: width / 2
                     color: buttonMouse.containsMouse ? Qt.rgba(1, 1, 1, 0.18) : "transparent"
 
-                    // Логотип дистрибутива берётся из установленной темы иконок;
-                    // если такой иконки нет, показывается запасной значок
-                    Image {
-                        id: logo
-                        anchors.centerIn: parent
-                        width: 16
-                        height: 16
-                        sourceSize: Qt.size(32, 32)
-                        source: Quickshell.iconPath("distributor-logo-archlinux", "start-here")
-                        fillMode: Image.PreserveAspectFit
-                        visible: status === Image.Ready
-                    }
-
+                    // Значок — глиф Nerd Font (U+F303), тот же, что в терминале.
+                    // Нужен установленный шрифт Symbols Nerd Font; без него Qt ищет глиф в других шрифтах
                     Text {
                         anchors.centerIn: parent
-                        visible: logo.status !== Image.Ready
-                        text: "≡"
+                        text: ""
                         color: Colors.text
-                        font.family: Settings.uiFontFamily
-                        font.pixelSize: 16
+                        font.family: "Symbols Nerd Font"
+                        font.pixelSize: Math.round(Settings.barHeight * 0.55)
                     }
 
                     MouseArea {
@@ -67,10 +63,46 @@ ShellRoot {
                     }
                 }
 
+                // Воркспейсы: квадраты с номерами, активный на этом мониторе выделен цветом.
+                // Показываются существующие воркспейсы (с окнами и активные), без special.
+                Row {
+                    anchors.left: parent.left
+                    anchors.leftMargin: Settings.showLogo ? Settings.barHeight + 2 : 8
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 4
+
+                    Repeater {
+                        model: Hyprland.workspaces.values
+                            .filter(w => w.id > 0)
+                            .sort((a, b) => a.id - b.id)
+
+                        Rectangle {
+                            id: ws
+                            required property var modelData
+                            readonly property bool active: modelData.id === win.activeWorkspaceId
+
+                            width: Settings.barHeight - 8
+                            height: width
+                            radius: 6
+                            color: active ? Colors.primary : Qt.rgba(1, 1, 1, 0.12)
+
+                            Text {
+                                anchors.centerIn: parent
+                                text: ws.modelData.id
+                                color: ws.active ? Colors.textOnPrimary : Colors.text
+                                font.family: Settings.uiFontFamily
+                                font.pixelSize: Math.round(Settings.barHeight * 0.45)
+                                font.bold: ws.active
+                            }
+                        }
+                    }
+                }
+
                 Text {
                     anchors.centerIn: parent
                     color: Colors.text
                     font.family: Settings.uiFontFamily
+                    font.pixelSize: Math.round(Settings.barHeight * 0.5)
                     text: Qt.formatDateTime(clock.date, "HH:mm")
                 }
             }
