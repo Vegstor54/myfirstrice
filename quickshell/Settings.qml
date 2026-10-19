@@ -13,8 +13,9 @@ Singleton {
     FileView {
         path: Quickshell.env("HOME") + "/.config/quickshell/settings.json"
         watchChanges: true
-        onFileChanged: reload()
-        onAdapterUpdated: writeAdapter()
+        onFileChanged: { console.log("FONTDEBUG file changed, reload; mono=", adapter.monoFont); reload() }
+        onLoaded: console.log("FONTDEBUG loaded: ui=", adapter.uiFont, "mono=", adapter.monoFont)
+        onAdapterUpdated: { console.log("FONTDEBUG adapterUpdated, write: ui=", adapter.uiFont, "mono=", adapter.monoFont); writeAdapter() }
 
         JsonAdapter {
             id: adapter
