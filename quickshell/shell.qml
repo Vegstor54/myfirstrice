@@ -81,7 +81,7 @@ ShellRoot {
                             required property var modelData
                             readonly property bool active: modelData.id === win.activeWorkspaceId
 
-                            width: Settings.barHeight - 14
+                            width: Settings.barHeight - 8
                             height: width
                             radius: 6
                             color: active ? Colors.primary : Qt.rgba(1, 1, 1, 0.12)
@@ -91,7 +91,7 @@ ShellRoot {
                                 text: ws.modelData.id
                                 color: ws.active ? Colors.textOnPrimary : Colors.text
                                 font.family: Settings.uiFontFamily
-                                font.pixelSize: Math.round(Settings.barHeight * 0.35)
+                                font.pixelSize: Math.round(Settings.barHeight * 0.45)
                                 font.bold: ws.active
                             }
                         }
@@ -102,7 +102,7 @@ ShellRoot {
                     anchors.centerIn: parent
                     color: Colors.text
                     font.family: Settings.uiFontFamily
-                    font.pixelSize: Math.round(Settings.barHeight * 0.45)
+                    font.pixelSize: Math.round(Settings.barHeight * 0.5)
                     text: Qt.formatDateTime(clock.date, "HH:mm")
                 }
             }

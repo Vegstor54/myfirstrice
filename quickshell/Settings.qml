@@ -10,7 +10,7 @@ Singleton {
     property alias showLogo: adapter.showLogo
 
     // Высота бара по выбранному размеру; остальные элементы бара считаются от неё
-    readonly property int barHeight: barSize === "small" ? 32 : barSize === "large" ? 48 : 40
+    readonly property int barHeight: barSize === "medium" ? 32 : barSize === "large" ? 40 : 26
 
     // Шрифт бара и панели: пока шрифт не выбран, берётся системный sans-serif из fontconfig
     readonly property string uiFontFamily: adapter.uiFont !== "" ? adapter.uiFont : "sans-serif"
@@ -26,7 +26,7 @@ Singleton {
             property string barColor: "primaryContainer"
             property string uiFont: ""
             property string monoFont: "JetBrains Mono"
-            property string barSize: "medium"
+            property string barSize: "small"
             property bool showLogo: true
         }
     }
