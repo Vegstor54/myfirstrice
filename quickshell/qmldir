@@ -7,3 +7,4 @@ FontTab FontTab.qml
 BarTab BarTab.qml
 Workspaces Workspaces.qml
 WallpaperTab WallpaperTab.qml
+BarIndicators BarIndicators.qml

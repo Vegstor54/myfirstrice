@@ -71,6 +71,13 @@ ShellRoot {
                     activeId: win.activeWorkspaceId
                 }
 
+                // Справа: сеть, звук, уведомления (см. BarIndicators.qml)
+                BarIndicators {
+                    anchors.right: parent.right
+                    anchors.rightMargin: 8
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+
                 Text {
                     anchors.centerIn: parent
                     color: Colors.text
