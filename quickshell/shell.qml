@@ -25,6 +25,48 @@ ShellRoot {
 
                 SystemClock { id: clock; precision: SystemClock.Minutes }
 
+                // Кнопка слева: открывает панель, как SUPER+S
+                Rectangle {
+                    id: panelButton
+                    anchors.left: parent.left
+                    anchors.leftMargin: 4
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 24
+                    height: 24
+                    radius: 12
+                    color: buttonMouse.containsMouse ? Qt.rgba(1, 1, 1, 0.18) : "transparent"
+
+                    // Логотип дистрибутива берётся из установленной темы иконок;
+                    // если такой иконки нет, показывается запасной значок
+                    Image {
+                        id: logo
+                        anchors.centerIn: parent
+                        width: 16
+                        height: 16
+                        sourceSize: Qt.size(32, 32)
+                        source: Quickshell.iconPath("distributor-logo-archlinux", "start-here")
+                        fillMode: Image.PreserveAspectFit
+                        visible: status === Image.Ready
+                    }
+
+                    Text {
+                        anchors.centerIn: parent
+                        visible: logo.status !== Image.Ready
+                        text: "≡"
+                        color: Colors.text
+                        font.family: Settings.uiFontFamily
+                        font.pixelSize: 16
+                    }
+
+                    MouseArea {
+                        id: buttonMouse
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: Quickshell.execDetached(["quickshell", "ipc", "call", "panel", "toggle"])
+                    }
+                }
+
                 Text {
                     anchors.centerIn: parent
                     color: Colors.text
