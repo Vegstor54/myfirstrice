@@ -32,6 +32,111 @@ Scope {
         shown = true
     }
 
+    // Блок управления громкостью: заголовок с процентами, слайдер и кнопка выключения.
+    // Слайдер: клик и перетаскивание, колесо меняет на 5%.
+    component AudioControl: ColumnLayout {
+        id: ctl
+        property string title: ""
+        property real value: 0
+        property bool muted: false
+        property string muteLabel: ""
+        property string mutedLabel: ""
+        signal setValue(real v)
+        signal step(real d)
+        signal toggleMute()
+
+        spacing: 8
+
+        RowLayout {
+            Layout.fillWidth: true
+
+            Text {
+                text: ctl.title
+                color: Colors.text
+                font.family: Settings.uiFontFamily
+                font.pixelSize: 14
+                font.bold: true
+            }
+            Item { Layout.fillWidth: true }
+            Text {
+                text: Math.round(ctl.value * 100) + "%"
+                color: Colors.text
+                font.family: Settings.uiFontFamily
+                font.pixelSize: 14
+            }
+        }
+
+        Item {
+            id: slider
+            Layout.fillWidth: true
+            Layout.preferredHeight: 28
+
+            readonly property real knob: 20
+
+            Rectangle {
+                anchors.verticalCenter: parent.verticalCenter
+                width: parent.width
+                height: 8
+                radius: 4
+                color: Colors.surfaceContainerHighest
+
+                Rectangle {
+                    width: ctl.value * (slider.width - slider.knob) + slider.knob / 2
+                    height: parent.height
+                    radius: 4
+                    color: ctl.muted ? Colors.surfaceVariant : Colors.primary
+                }
+            }
+
+            Rectangle {
+                anchors.verticalCenter: parent.verticalCenter
+                x: ctl.value * (slider.width - slider.knob)
+                width: slider.knob
+                height: slider.knob
+                radius: slider.knob / 2
+                color: ctl.muted ? Colors.surfaceVariant : Colors.primary
+            }
+
+            MouseArea {
+                anchors.fill: parent
+                preventStealing: true
+                cursorShape: Qt.PointingHandCursor
+
+                function setFrom(mx) {
+                    ctl.setValue((mx - slider.knob / 2) / (slider.width - slider.knob))
+                }
+
+                onPressed: mouse => setFrom(mouse.x)
+                onPositionChanged: mouse => { if (pressed) setFrom(mouse.x) }
+                onWheel: wheel => ctl.step(wheel.angleDelta.y > 0 ? 0.05 : -0.05)
+            }
+        }
+
+        Rectangle {
+            Layout.fillWidth: true
+            Layout.preferredHeight: 32
+            radius: 999
+            color: ctl.muted ? Colors.primary
+                 : muteMouse.containsMouse ? Colors.surfaceContainerHighest
+                 : Colors.surfaceContainerHigh
+
+            Text {
+                anchors.centerIn: parent
+                text: ctl.muted ? ctl.mutedLabel : ctl.muteLabel
+                color: ctl.muted ? Colors.textOnPrimary : Colors.text
+                font.family: Settings.uiFontFamily
+                font.pixelSize: 13
+            }
+            MouseArea {
+                id: muteMouse
+                anchors.fill: parent
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+                onClicked: ctl.toggleMute()
+            }
+        }
+    }
+
     Variants {
         model: Quickshell.screens
 
@@ -81,7 +186,7 @@ Scope {
                 anchors.right: parent.right
                 anchors.rightMargin: 16
                 width: 360
-                height: 260
+                height: root.tab === "sound" ? 340 : 260
                 radius: 24
                 color: Qt.rgba(Colors.surfaceContainer.r, Colors.surfaceContainer.g, Colors.surfaceContainer.b, 0.95)
                 border.width: 1
@@ -90,6 +195,7 @@ Scope {
 
                 Behavior on opacity { NumberAnimation { id: fade; duration: 180; easing.type: Easing.OutCubic } }
                 Behavior on slide   { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
+                Behavior on height  { NumberAnimation { duration: 150; easing.type: Easing.OutCubic } }
 
                 // Клики по карточке не должны закрывать меню
                 MouseArea { anchors.fill: parent }
@@ -233,102 +339,34 @@ Scope {
                             Item { Layout.fillHeight: true }
                         }
 
-                        // Звук: громкость и выключение звука
+                        // Звук: громкость колонок и микрофон
                         ColumnLayout {
                             anchors.fill: parent
                             visible: root.tab === "sound"
-                            spacing: 16
+                            spacing: 12
 
-                            RowLayout {
+                            AudioControl {
                                 Layout.fillWidth: true
-
-                                Text {
-                                    text: "Громкость"
-                                    color: Colors.text
-                                    font.family: Settings.uiFontFamily
-                                    font.pixelSize: 14
-                                    font.bold: true
-                                }
-                                Item { Layout.fillWidth: true }
-                                Text {
-                                    text: Math.round(SysState.volume * 100) + "%"
-                                    color: Colors.text
-                                    font.family: Settings.uiFontFamily
-                                    font.pixelSize: 14
-                                }
+                                title: "Громкость"
+                                value: SysState.volume
+                                muted: SysState.muted
+                                muteLabel: "Выключить звук"
+                                mutedLabel: "Звук выключен"
+                                onSetValue: v => SysState.setVolume(v)
+                                onStep: d => SysState.changeVolume(d)
+                                onToggleMute: SysState.toggleMute()
                             }
 
-                            // Слайдер: клик и перетаскивание, колесо меняет на 5%
-                            Item {
-                                id: slider
+                            AudioControl {
                                 Layout.fillWidth: true
-                                Layout.preferredHeight: 28
-
-                                readonly property real knob: 20
-                                readonly property real value: SysState.volume
-
-                                Rectangle {
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    width: parent.width
-                                    height: 8
-                                    radius: 4
-                                    color: Colors.surfaceContainerHighest
-
-                                    Rectangle {
-                                        width: slider.value * (slider.width - slider.knob) + slider.knob / 2
-                                        height: parent.height
-                                        radius: 4
-                                        color: SysState.muted ? Colors.surfaceVariant : Colors.primary
-                                    }
-                                }
-
-                                Rectangle {
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    x: slider.value * (slider.width - slider.knob)
-                                    width: slider.knob
-                                    height: slider.knob
-                                    radius: slider.knob / 2
-                                    color: SysState.muted ? Colors.surfaceVariant : Colors.primary
-                                }
-
-                                MouseArea {
-                                    id: sliderMouse
-                                    anchors.fill: parent
-                                    preventStealing: true
-                                    cursorShape: Qt.PointingHandCursor
-
-                                    function setFrom(mx) {
-                                        SysState.setVolume((mx - slider.knob / 2) / (slider.width - slider.knob))
-                                    }
-
-                                    onPressed: mouse => setFrom(mouse.x)
-                                    onPositionChanged: mouse => { if (pressed) setFrom(mouse.x) }
-                                    onWheel: wheel => SysState.changeVolume(wheel.angleDelta.y > 0 ? 0.05 : -0.05)
-                                }
-                            }
-
-                            Rectangle {
-                                Layout.fillWidth: true
-                                Layout.preferredHeight: 36
-                                radius: 999
-                                color: SysState.muted ? Colors.primary
-                                     : muteMouse.containsMouse ? Colors.surfaceContainerHighest
-                                     : Colors.surfaceContainerHigh
-
-                                Text {
-                                    anchors.centerIn: parent
-                                    text: SysState.muted ? "Звук выключен" : "Выключить звук"
-                                    color: SysState.muted ? Colors.textOnPrimary : Colors.text
-                                    font.family: Settings.uiFontFamily
-                                    font.pixelSize: 13
-                                }
-                                MouseArea {
-                                    id: muteMouse
-                                    anchors.fill: parent
-                                    hoverEnabled: true
-                                    cursorShape: Qt.PointingHandCursor
-                                    onClicked: SysState.toggleMute()
-                                }
+                                title: "Микрофон"
+                                value: SysState.micVolume
+                                muted: SysState.micMuted
+                                muteLabel: "Выключить микрофон"
+                                mutedLabel: "Микрофон выключен"
+                                onSetValue: v => SysState.setMicVolume(v)
+                                onStep: d => SysState.changeMicVolume(d)
+                                onToggleMute: SysState.toggleMicMute()
                             }
 
                             Item { Layout.fillHeight: true }

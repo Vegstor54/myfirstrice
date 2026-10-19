@@ -4,7 +4,7 @@ import Quickshell.Io
 import Quickshell.Services.Pipewire
 import QtQuick
 
-// Общее состояние для бара и выезжающего меню: звук (PipeWire) и сеть.
+// Общее состояние для бара и выезжающего меню: звук и микрофон (PipeWire) и сеть.
 // Один экземпляр на всю оболочку, поэтому сеть опрашивается один раз, а не на каждом мониторе.
 Singleton {
     id: root
@@ -13,7 +13,8 @@ Singleton {
 
     // ---- Звук ----
     readonly property var sink: Pipewire.defaultAudioSink
-    PwObjectTracker { objects: [root.sink] }
+    readonly property var source: Pipewire.defaultAudioSource
+    PwObjectTracker { objects: [root.sink, root.source] }
 
     readonly property real volume: sink?.audio?.volume ?? 0
     readonly property bool muted: sink?.audio?.muted ?? false
@@ -26,6 +27,20 @@ Singleton {
 
     function toggleMute() {
         if (sink?.audio) sink.audio.muted = !sink.audio.muted
+    }
+
+    // ---- Микрофон ----
+    readonly property real micVolume: source?.audio?.volume ?? 0
+    readonly property bool micMuted: source?.audio?.muted ?? false
+
+    function setMicVolume(v) {
+        if (source?.audio) source.audio.volume = Math.max(0, Math.min(1, v))
+    }
+
+    function changeMicVolume(delta) { setMicVolume(micVolume + delta) }
+
+    function toggleMicMute() {
+        if (source?.audio) source.audio.muted = !source.audio.muted
     }
 
     // ---- Сеть ----
