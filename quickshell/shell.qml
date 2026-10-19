@@ -37,13 +37,12 @@ ShellRoot {
                     color: buttonMouse.containsMouse ? Qt.rgba(1, 1, 1, 0.18) : "transparent"
 
                     // Значок — глиф Nerd Font (U+F303), тот же, что в терминале.
-                    // Если глифа нет в выбранном шрифте, Qt берёт его из Symbols Nerd Font
-                    // или другого установленного шрифта.
+                    // Нужен установленный шрифт Symbols Nerd Font; без него Qt ищет глиф в других шрифтах
                     Text {
                         anchors.centerIn: parent
                         text: ""
                         color: Colors.text
-                        font.families: ["Symbols Nerd Font", "Symbols Nerd Font Mono", Settings.uiFontFamily]
+                        font.family: "Symbols Nerd Font"
                         font.pixelSize: 16
                     }
 
