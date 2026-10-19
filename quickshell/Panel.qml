@@ -27,7 +27,8 @@ Scope {
     readonly property var subpages: ({
         "style": [
             { id: "style/colors", title: "Цветовая схема", subtitle: "Цвет бара" },
-            { id: "style/font",   title: "Шрифт",          subtitle: "Шрифт интерфейса и терминала" }
+            { id: "style/font",   title: "Шрифт",          subtitle: "Шрифт интерфейса и терминала" },
+            { id: "style/bar",    title: "Бар",            subtitle: "Размер и кнопка с логотипом" }
         ]
     })
 
@@ -207,6 +208,7 @@ Scope {
                                        : root.activeTab === "defaults" ? defaultsTab
                                        : root.activeTab === "apps" ? appsTab
                                        : root.activeTab === "style/font" ? fontTab
+                                       : root.activeTab === "style/bar" ? barTab
                                        : colorsTab
                     }
                 }
@@ -270,6 +272,11 @@ Scope {
             Component {
                 id: fontTab
                 FontTab {}
+            }
+
+            Component {
+                id: barTab
+                BarTab {}
             }
 
             Component {
