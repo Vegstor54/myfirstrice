@@ -1,5 +1,6 @@
 singleton Colors Colors.qml
 singleton Settings Settings.qml
+singleton SysState SysState.qml
 Panel Panel.qml
 DefaultsRow DefaultsRow.qml
 AppsTab AppsTab.qml
@@ -8,3 +9,4 @@ BarTab BarTab.qml
 Workspaces Workspaces.qml
 WallpaperTab WallpaperTab.qml
 BarIndicators BarIndicators.qml
+QuickMenu QuickMenu.qml

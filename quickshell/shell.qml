@@ -5,6 +5,9 @@ import QtQuick
 ShellRoot {
     Panel {}
 
+    // Выезжающее меню под баром: уведомления, интернет, звук (открывается из BarIndicators)
+    QuickMenu { id: quickMenu }
+
     Variants {
         model: Quickshell.screens
 
@@ -71,11 +74,13 @@ ShellRoot {
                     activeId: win.activeWorkspaceId
                 }
 
-                // Справа: сеть, звук, уведомления (см. BarIndicators.qml)
+                // Справа: сеть, звук, уведомления одной группой (см. BarIndicators.qml)
                 BarIndicators {
                     anchors.right: parent.right
-                    anchors.rightMargin: 8
+                    anchors.rightMargin: 4
                     anchors.verticalCenter: parent.verticalCenter
+                    menu: quickMenu
+                    screenName: win.modelData.name
                 }
 
                 Text {
