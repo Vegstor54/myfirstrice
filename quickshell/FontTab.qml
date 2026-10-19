@@ -21,8 +21,10 @@ ColumnLayout {
     readonly property string current: role === "mono" ? Settings.monoFont : Settings.uiFont
 
     function apply(family) {
+        console.log("FONTDEBUG apply:", tab.role, family)
         if (tab.role === "mono") Settings.monoFont = family
         else Settings.uiFont = family
+        console.log("FONTDEBUG after set: uiFont=", Settings.uiFont, "monoFont=", Settings.monoFont, "current=", tab.current)
         Quickshell.execDetached([tab.scripts + "/set-font.sh", tab.role, family])
     }
 
@@ -164,6 +166,7 @@ ColumnLayout {
                 anchors.fill: parent
                 hoverEnabled: true
                 cursorShape: Qt.PointingHandCursor
+                onPressed: console.log("FONTDEBUG pressed:", tab.role, row.modelData)
                 onClicked: tab.apply(row.modelData)
             }
         }
