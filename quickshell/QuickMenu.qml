@@ -22,8 +22,10 @@ Scope {
         { id: "sound",         label: "Звук" }
     ]
 
+    // Клик по «таблетке» в баре: если меню уже открыто на этом мониторе, любой значок закрывает его
+    // (вкладки внутри меню переключаются кликом по самим вкладкам)
     function toggle(tabId, monitorName) {
-        if (shown && tab === tabId && monitor === monitorName) {
+        if (shown && monitor === monitorName) {
             shown = false
             return
         }
