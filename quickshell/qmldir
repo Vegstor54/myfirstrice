@@ -6,3 +6,4 @@ AppsTab AppsTab.qml
 FontTab FontTab.qml
 BarTab BarTab.qml
 Workspaces Workspaces.qml
+WallpaperTab WallpaperTab.qml

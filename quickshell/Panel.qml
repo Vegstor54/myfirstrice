@@ -18,7 +18,7 @@ Scope {
     readonly property var pages: [
         { id: "apps",     title: "Apps",     subtitle: "Запуск приложений" },
         { id: "defaults", title: "Defaults", subtitle: "Приложения по умолчанию" },
-        { id: "style",    title: "Style",    subtitle: "Цветовая схема и шрифт" }
+        { id: "style",    title: "Style",    subtitle: "Цвета, шрифт, бар и обои" }
     ]
 
     // Вложенные меню: id страницы-меню -> её пункты.
@@ -28,7 +28,8 @@ Scope {
         "style": [
             { id: "style/colors", title: "Цветовая схема", subtitle: "Цвет бара" },
             { id: "style/font",   title: "Шрифт",          subtitle: "Шрифт интерфейса и терминала" },
-            { id: "style/bar",    title: "Бар",            subtitle: "Размер, логотип, рабочие столы" }
+            { id: "style/bar",    title: "Бар",            subtitle: "Размер, логотип, рабочие столы" },
+            { id: "style/wallpaper", title: "Обои",         subtitle: "Картинка рабочего стола и палитра" }
         ]
     })
 
@@ -209,6 +210,7 @@ Scope {
                                        : root.activeTab === "apps" ? appsTab
                                        : root.activeTab === "style/font" ? fontTab
                                        : root.activeTab === "style/bar" ? barTab
+                                       : root.activeTab === "style/wallpaper" ? wallpaperTab
                                        : colorsTab
                     }
                 }
@@ -277,6 +279,13 @@ Scope {
             Component {
                 id: barTab
                 BarTab {}
+            }
+
+            Component {
+                id: wallpaperTab
+                WallpaperTab {
+                    onCloseRequested: root.shown = false
+                }
             }
 
             Component {
