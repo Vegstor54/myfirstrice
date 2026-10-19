@@ -8,6 +8,7 @@ Singleton {
     property alias monoFont: adapter.monoFont
     property alias barSize: adapter.barSize
     property alias showLogo: adapter.showLogo
+    property alias wsMode: adapter.wsMode
 
     // Высота бара по выбранному размеру; остальные элементы бара считаются от неё
     readonly property int barHeight: barSize === "medium" ? 32 : barSize === "large" ? 40 : 26
@@ -28,6 +29,8 @@ Singleton {
             property string monoFont: "JetBrains Mono"
             property string barSize: "small"
             property bool showLogo: true
+            // Рабочие столы в баре: "used" — только используемые, "5" — 1–5, "10" — 1–10
+            property string wsMode: "used"
         }
     }
 }
