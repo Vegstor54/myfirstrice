@@ -28,7 +28,7 @@ Scope {
         "style": [
             { id: "style/colors", title: "Цветовая схема", subtitle: "Цвет бара" },
             { id: "style/font",   title: "Шрифт",          subtitle: "Шрифт интерфейса и терминала" },
-            { id: "style/bar",    title: "Бар",            subtitle: "Размер и кнопка с логотипом" }
+            { id: "style/bar",    title: "Бар",            subtitle: "Размер, логотип, рабочие столы" }
         ]
     })
 

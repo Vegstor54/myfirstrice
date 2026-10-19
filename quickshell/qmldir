@@ -5,3 +5,4 @@ DefaultsRow DefaultsRow.qml
 AppsTab AppsTab.qml
 FontTab FontTab.qml
 BarTab BarTab.qml
+Workspaces Workspaces.qml
