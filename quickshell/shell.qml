@@ -13,7 +13,7 @@ ShellRoot {
 
             anchors { top: true; left: true; right: true }
             margins { top: 8; left: 16; right: 16 }
-            implicitHeight: 32
+            implicitHeight: 26
             color: "transparent"
 
             Rectangle {
