@@ -5,8 +5,7 @@ import QtQuick.Layouts
 
 // Меню, которое выезжает из-под бара сверху вниз: уведомления, интернет, звук.
 // Открывается кнопками из BarIndicators через toggle(вкладка, монитор).
-// Закрывается кликом вне меню или Esc. Бар остаётся кликабельным, поэтому
-// вкладки можно переключать и иконками в баре.
+// Закрывается кликом вне меню (в том числе по «таблетке» в баре) или Esc.
 Scope {
     id: root
 
@@ -22,8 +21,8 @@ Scope {
         { id: "sound",         label: "Звук" }
     ]
 
-    // Клик по «таблетке» в баре: если меню уже открыто на этом мониторе, любой значок закрывает его
-    // (вкладки внутри меню переключаются кликом по самим вкладкам)
+    // Открывает меню на нужной вкладке. Пока меню открыто, фон накрывает и бар,
+    // поэтому закрывает его клик куда угодно вне меню; вкладки переключаются кликом по ним.
     function toggle(tabId, monitorName) {
         if (shown && monitor === monitorName) {
             shown = false
@@ -46,8 +45,6 @@ Scope {
 
             visible: isTarget && (root.shown || fade.running)
             anchors { top: true; bottom: true; left: true; right: true }
-            // Начинается сразу под баром (8 — отступ бара от края), бар остаётся доступным
-            margins.top: Settings.barHeight + 8
             color: "transparent"
             exclusionMode: ExclusionMode.Ignore
             WlrLayershell.layer: WlrLayer.Overlay
@@ -60,7 +57,8 @@ Scope {
                 }
             }
 
-            // Прозрачный фон: клик вне меню закрывает его
+            // Прозрачный фон на весь экран, в том числе поверх бара:
+            // клик вне меню (и по «таблетке» в баре) закрывает его
             Item {
                 id: catcher
                 anchors.fill: parent
@@ -79,7 +77,8 @@ Scope {
                 property real slide: root.shown ? 0 : -16
 
                 anchors.top: parent.top
-                anchors.topMargin: 8 + slide
+                // Под баром: 8 — его отступ от края, ещё 8 — зазор до меню
+                anchors.topMargin: Settings.barHeight + 16 + slide
                 anchors.right: parent.right
                 anchors.rightMargin: 16
                 width: 360
