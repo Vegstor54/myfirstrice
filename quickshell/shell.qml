@@ -1,4 +1,5 @@
 import Quickshell
+import Quickshell.Hyprland
 import QtQuick
 
 ShellRoot {
@@ -8,8 +9,14 @@ ShellRoot {
         model: Quickshell.screens
 
         PanelWindow {
+            id: win
             required property var modelData
             screen: modelData
+
+            // Монитор Hyprland, на котором этот бар: по нему определяется активный воркспейс
+            readonly property var monitor: Hyprland.monitorFor(modelData)
+            readonly property int activeWorkspaceId:
+                monitor?.activeWorkspace?.id ?? Hyprland.focusedWorkspace?.id ?? -1
 
             anchors { top: true; left: true; right: true }
             margins { top: 8; left: 16; right: 16 }
@@ -53,6 +60,41 @@ ShellRoot {
                         hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
                         onClicked: Quickshell.execDetached(["quickshell", "ipc", "call", "panel", "toggle"])
+                    }
+                }
+
+                // Воркспейсы: квадраты с номерами, активный на этом мониторе выделен цветом.
+                // Показываются существующие воркспейсы (с окнами и активные), без special.
+                Row {
+                    anchors.left: parent.left
+                    anchors.leftMargin: Settings.showLogo ? Settings.barHeight + 2 : 8
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 4
+
+                    Repeater {
+                        model: Hyprland.workspaces.values
+                            .filter(w => w.id > 0)
+                            .sort((a, b) => a.id - b.id)
+
+                        Rectangle {
+                            id: ws
+                            required property var modelData
+                            readonly property bool active: modelData.id === win.activeWorkspaceId
+
+                            width: Settings.barHeight - 14
+                            height: width
+                            radius: 6
+                            color: active ? Colors.primary : Qt.rgba(1, 1, 1, 0.12)
+
+                            Text {
+                                anchors.centerIn: parent
+                                text: ws.modelData.id
+                                color: ws.active ? Colors.textOnPrimary : Colors.text
+                                font.family: Settings.uiFontFamily
+                                font.pixelSize: Math.round(Settings.barHeight * 0.35)
+                                font.bold: ws.active
+                            }
+                        }
                     }
                 }
 
