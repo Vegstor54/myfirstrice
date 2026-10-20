@@ -18,8 +18,21 @@ Scope {
     readonly property var pages: [
         { id: "apps",     title: "Apps",     subtitle: "Запуск приложений" },
         { id: "defaults", title: "Defaults", subtitle: "Приложения по умолчанию" },
-        { id: "style",    title: "Style",    subtitle: "Цвета, шрифт, бар и обои" }
+        { id: "style",    title: "Style",    subtitle: "Цвета, шрифт, бар и обои" },
+        { id: "system",   title: "System",   subtitle: "Сон, гибернация, выключение" }
     ]
+
+    // Пункт с полем action не открывает страницу, а запускает scripts/power.sh <action>.
+    // confirm: true — нужно нажать второй раз.
+    property string confirming: ""
+    onMenuIndexChanged: confirming = ""
+    onActiveTabChanged: confirming = ""
+
+    Process {
+        id: powerProc
+        property string action: ""
+        command: [Quickshell.env("HOME") + "/.config/quickshell/scripts/power.sh", action]
+    }
 
     // Вложенные меню: id страницы-меню -> её пункты.
     // id подпункта = "<id родителя>/<имя>", по нему находится родитель при возврате.
@@ -30,8 +43,20 @@ Scope {
             { id: "style/font",   title: "Шрифт",          subtitle: "Шрифт интерфейса и терминала" },
             { id: "style/bar",    title: "Бар",            subtitle: "Размер, логотип, рабочие столы" },
             { id: "style/wallpaper", title: "Обои",         subtitle: "Картинка рабочего стола и палитра" }
+        ],
+        "system": [
+            { id: "system/suspend",   title: "Сон",         subtitle: "Спящий режим",                    action: "suspend" },
+            { id: "system/hibernate", title: "Гибернация",  subtitle: "Сохранить сессию на диск и выключить", action: "hibernate" },
+            { id: "system/poweroff",  title: "Выключить",   subtitle: "Выключить компьютер",             action: "poweroff", confirm: true }
         ]
     })
+
+    function itemById(id) {
+        const all = pages.concat(...Object.values(subpages))
+        for (let i = 0; i < all.length; i++)
+            if (all[i].id === id) return all[i]
+        return null
+    }
 
     function isMenu(id) { return id === "menu" || subpages[id] !== undefined }
 
@@ -51,6 +76,17 @@ Scope {
     }
 
     function openPage(id) {
+        const item = itemById(id)
+        if (item && item.action) {
+            if (item.confirm && root.confirming !== id) {
+                root.confirming = id
+                return
+            }
+            root.shown = false
+            powerProc.action = item.action
+            powerProc.running = true
+            return
+        }
         root.activeTab = id
         if (isMenu(id)) root.menuIndex = 0
     }
@@ -249,9 +285,10 @@ Scope {
                                     font.bold: true
                                 }
                                 Text {
-                                    text: item.modelData.subtitle
-                                    color: Colors.text
-                                    opacity: 0.6
+                                    readonly property bool asking: root.confirming === item.modelData.id
+                                    text: asking ? "Нажми ещё раз для подтверждения" : item.modelData.subtitle
+                                    color: asking ? Colors.error : Colors.text
+                                    opacity: asking ? 1 : 0.6
                                     font.family: Settings.uiFontFamily
                                     font.pixelSize: 12
                                 }
