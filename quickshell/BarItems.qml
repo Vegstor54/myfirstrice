@@ -19,12 +19,18 @@ Item {
     readonly property var zones: ["left", "center", "right"]
     // Зона по умолчанию для каждого элемента: сюда попадают новые и потерянные
     readonly property var defaultZone: ({
-        logo: "left", workspaces: "left", clock: "center", indicators: "right"
+        logo: "left", workspaces: "left", clock: "center",
+        network: "right", bluetooth: "right", sound: "right", notifications: "right"
+    })
+    // Старый ключ «indicators» (все значки одним блоком) заменяется на четыре отдельных
+    readonly property var legacyKeys: ({
+        indicators: ["network", "bluetooth", "sound", "notifications"]
     })
 
     // Элементы по ключам: для расчёта позиций
     readonly property var slots: ({
-        logo: logoSlot, workspaces: wsSlot, clock: clockSlot, indicators: indSlot
+        logo: logoSlot, workspaces: wsSlot, clock: clockSlot,
+        network: netSlot, bluetooth: btSlot, sound: sndSlot, notifications: ntfSlot
     })
 
     // ---- Раскладка ----
@@ -37,8 +43,9 @@ Item {
         const seen = {}
         const out = { left: [], center: [], right: [] }
         for (const z of zones)
-            for (const k of l[z])
-                if (defaultZone[k] !== undefined && !seen[k]) { seen[k] = true; out[z].push(k) }
+            for (const k0 of l[z])
+                for (const k of (legacyKeys[k0] ?? [k0]))
+                    if (defaultZone[k] !== undefined && !seen[k]) { seen[k] = true; out[z].push(k) }
         for (const k of Object.keys(defaultZone))
             if (!seen[k]) out[defaultZone[k]].push(k)
         return out
@@ -54,11 +61,37 @@ Item {
     property var preview: null
     readonly property var layout: preview !== null ? preview : stored
 
+    // ---- Группы значков ----
+    readonly property var indOrder: ["network", "bluetooth", "sound", "notifications"]
+    readonly property var groups: parseGroups(Settings.indGroups)
+
+    function parseGroups(s) {
+        const seen = {}
+        const res = []
+        for (const g of s.split("|")) {
+            const m = g.split(",").map(x => x.trim()).filter(k => indOrder.indexOf(k) >= 0 && !seen[k])
+            for (const k of m) seen[k] = true
+            if (m.length > 0) res.push(m)
+        }
+        for (const k of indOrder) if (!seen[k]) res.push([k])
+        return res
+    }
+
+    // Группа хранится в элементе своего первого модуля; у остальных членов группы своего элемента нет
+    function groupOf(leader) { return groups.find(g => g[0] === leader) }
+    function followers(key) { const g = groupOf(key); return g ? g.slice(1) : [] }
+    // Что реально показывать в группе: только включённые модули (Bluetooth ещё и если есть адаптер)
+    function activeMembers(leader) {
+        const g = groupOf(leader)
+        if (!g) return []
+        return g.filter(m => Settings.moduleOn(m) && (m !== "bluetooth" || SysState.hasBluetooth))
+    }
+
     // ---- Позиции ----
     function isVisible(k) { return slots[k].visible }
     function widthOf(k) { return slots[k].width }
     // Крайним круглым элементам нужен небольшой отступ, квадратикам столов побольше
-    function edgeOf(k) { return k === "logo" || k === "indicators" ? 4 : 10 }
+    function edgeOf(k) { return k === "logo" || indOrder.indexOf(k) >= 0 ? 4 : 10 }
 
     function layoutX(key) {
         const L = layout
@@ -112,8 +145,10 @@ Item {
         // Зона по центру перетаскиваемого элемента: треть бара слева, в середине, справа
         const zone = c < width / 3 ? "left" : c > width * 2 / 3 ? "right" : "center"
 
+        // Группа значков переезжает целиком: остальные её члены встают следом за первым
+        const fol = followers(slot.key)
         const next = {}
-        for (const z of zones) next[z] = layout[z].filter(k => k !== slot.key)
+        for (const z of zones) next[z] = layout[z].filter(k => k !== slot.key && fol.indexOf(k) < 0)
 
         // Куда вставить: после последнего видимого соседа, чей центр левее
         let at = 0
@@ -121,7 +156,7 @@ Item {
         for (let j = 0; j < others.length; j++) {
             if (isVisible(others[j]) && layoutX(others[j]) + widthOf(others[j]) / 2 < c) at = j + 1
         }
-        others.splice(at, 0, slot.key)
+        others.splice(at, 0, slot.key, ...fol)
 
         if (JSON.stringify(next) !== JSON.stringify(layout)) preview = next
     }
@@ -178,6 +213,7 @@ Item {
         id: wsSlot
         key: "workspaces"
         host: root
+        visible: Settings.moduleOn("workspaces")
 
         Workspaces {
             anchors.verticalCenter: parent.verticalCenter
@@ -190,6 +226,7 @@ Item {
         id: clockSlot
         key: "clock"
         host: root
+        visible: Settings.moduleOn("clock")
 
         Text {
             anchors.verticalCenter: parent.verticalCenter
@@ -200,16 +237,62 @@ Item {
         }
     }
 
-    // Сеть, звук, уведомления одной группой (см. BarIndicators.qml)
+    // Значки справа: сеть, Bluetooth, звук, уведомления. Каждый можно выключить, а соседние —
+    // объединять в группы (Style -> Бар); группа — одна «таблетка» (см. BarIndicators.qml).
+    // Четыре одинаковых элемента: группа живёт в элементе своего первого модуля.
     BarSlot {
-        id: indSlot
-        key: "indicators"
+        id: netSlot
+        key: "network"
         host: root
+        visible: root.activeMembers("network").length > 0
 
         BarIndicators {
             anchors.verticalCenter: parent.verticalCenter
             menu: root.menu
             screenName: root.screenName
+            modules: root.activeMembers("network")
+        }
+    }
+
+    BarSlot {
+        id: btSlot
+        key: "bluetooth"
+        host: root
+        visible: root.activeMembers("bluetooth").length > 0
+
+        BarIndicators {
+            anchors.verticalCenter: parent.verticalCenter
+            menu: root.menu
+            screenName: root.screenName
+            modules: root.activeMembers("bluetooth")
+        }
+    }
+
+    BarSlot {
+        id: sndSlot
+        key: "sound"
+        host: root
+        visible: root.activeMembers("sound").length > 0
+
+        BarIndicators {
+            anchors.verticalCenter: parent.verticalCenter
+            menu: root.menu
+            screenName: root.screenName
+            modules: root.activeMembers("sound")
+        }
+    }
+
+    BarSlot {
+        id: ntfSlot
+        key: "notifications"
+        host: root
+        visible: root.activeMembers("notifications").length > 0
+
+        BarIndicators {
+            anchors.verticalCenter: parent.verticalCenter
+            menu: root.menu
+            screenName: root.screenName
+            modules: root.activeMembers("notifications")
         }
     }
 }

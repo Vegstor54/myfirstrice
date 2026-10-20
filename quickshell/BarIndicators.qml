@@ -10,6 +10,9 @@ Rectangle {
     // QuickMenu из shell.qml и имя монитора этого бара
     property var menu: null
     property string screenName: ""
+    // Какие значки показывать в этой группе: network, bluetooth, sound, notifications
+    property var modules: ["network", "bluetooth", "sound", "notifications"]
+    function has(m) { return modules.indexOf(m) >= 0 }
 
     // Выбрана ли вкладка меню, открытая на этом мониторе
     function isActive(tabId) {
@@ -35,6 +38,7 @@ Rectangle {
         // Сеть:  — wifi,  — проводное подключение; без сети значок тусклый
         IndicatorButton {
             id: netBtn
+            visible: group.has("network")
             glyph: SysState.net === "ethernet" ? "" : ""
             dim: SysState.net === "none" ? 0.35 : 1
             active: group.isActive("network")
@@ -44,7 +48,7 @@ Rectangle {
         // Bluetooth:  — значок bluetooth (виден, только если установлен bluez и есть адаптер)
         IndicatorButton {
             id: btBtn
-            visible: SysState.hasBluetooth
+            visible: group.has("bluetooth") && SysState.hasBluetooth
             glyph: ""
             active: group.isActive("bluetooth")
             onClicked: group.openMenu("bluetooth", btBtn)
@@ -53,6 +57,7 @@ Rectangle {
         // Звук:  — громко,  — тихо,  — выключено
         IndicatorButton {
             id: sndBtn
+            visible: group.has("sound")
             glyph: SysState.muted || SysState.volume <= 0 ? "" : SysState.volume < 0.5 ? "" : ""
             label: Math.round(SysState.volume * 100) + "%"
             dim: SysState.muted ? 0.4 : 1
@@ -65,6 +70,7 @@ Rectangle {
         // Уведомления:  — колокольчик
         IndicatorButton {
             id: ntfBtn
+            visible: group.has("notifications")
             glyph: ""
             active: group.isActive("notifications")
             onClicked: group.openMenu("notifications", ntfBtn)
