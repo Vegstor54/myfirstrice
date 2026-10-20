@@ -12,3 +12,4 @@ BarIndicators BarIndicators.qml
 QuickMenu QuickMenu.qml
 AudioControl AudioControl.qml
 IndicatorButton IndicatorButton.qml
+BluetoothDeviceRow BluetoothDeviceRow.qml
