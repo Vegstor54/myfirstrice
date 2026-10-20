@@ -241,7 +241,9 @@ Scope {
                         // Quickshell нет модуля Quickshell.Bluetooth, ошибка не ломает всю оболочку
                         Loader {
                             anchors.fill: parent
-                            active: root.shown && root.tab === "bluetooth"
+                            // Только в окне целевого монитора: у меню по окну на каждый монитор,
+                            // и два экземпляра вкладки одновременно запускали бы поиск устройств
+                            active: win.isTarget && root.shown && root.tab === "bluetooth"
                             source: "BluetoothTab.qml"
                         }
 

@@ -23,20 +23,22 @@ ColumnLayout {
             .sort((a, b) => rank(a) - rank(b) || deviceName(a).localeCompare(deviceName(b)))
     }
 
-    Component.onCompleted: {
-        if (adapter && adapter.enabled) adapter.discovering = true
+    // Поиск включаем и выключаем только если состояние отличается: BlueZ отвечает
+    // ошибкой на повторный запуск и на остановку несуществующего поиска
+    function startDiscovery() {
+        if (adapter && adapter.enabled && !adapter.discovering) adapter.discovering = true
     }
 
+    Component.onCompleted: startDiscovery()
+
     Component.onDestruction: {
-        if (adapter) adapter.discovering = false
+        if (adapter && adapter.discovering) adapter.discovering = false
     }
 
     // Включили адаптер: сразу начинаем поиск
     Connections {
         target: tab.adapter
-        function onEnabledChanged() {
-            if (tab.adapter.enabled) tab.adapter.discovering = true
-        }
+        function onEnabledChanged() { tab.startDiscovery() }
     }
 
     // Адаптера нет: нет железа или не запущен сервис bluetooth
@@ -133,6 +135,8 @@ ColumnLayout {
         delegate: Rectangle {
             id: item
             required property var modelData
+            // Идёт сопряжение, нажатое из этого списка
+            property bool pairing: false
 
             width: list.width
             height: 44
@@ -173,14 +177,31 @@ ColumnLayout {
                 }
             }
 
+            // После успешного сопряжения сразу подключаемся
+            Connections {
+                target: item.modelData
+                function onPairedChanged() {
+                    if (item.pairing && item.modelData.paired) {
+                        item.pairing = false
+                        item.modelData.connected = true
+                    }
+                }
+            }
+
             MouseArea {
                 id: itemMouse
                 anchors.fill: parent
                 hoverEnabled: true
                 cursorShape: Qt.PointingHandCursor
                 onClicked: {
-                    if (!item.modelData.paired) item.modelData.pair()
-                    else item.modelData.connected = !item.modelData.connected
+                    if (!item.modelData.paired) {
+                        // Доверенное устройство BlueZ не разрывает сразу после сопряжения
+                        item.pairing = true
+                        item.modelData.trusted = true
+                        item.modelData.pair()
+                    } else {
+                        item.modelData.connected = !item.modelData.connected
+                    }
                 }
             }
         }
