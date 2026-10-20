@@ -16,6 +16,12 @@ Rectangle {
         return menu !== null && menu.shown && menu.tab === tabId && menu.monitor === screenName
     }
 
+    // Открывает меню под значком: передаёт его центр по горизонтали в координатах экрана
+    function openMenu(tabId, button) {
+        const x = button.mapToItem(null, button.width / 2, 0).x + Settings.barSideMargin
+        menu?.toggle(tabId, screenName, x)
+    }
+
     height: Settings.barHeight - 8
     width: row.implicitWidth + 4
     radius: height / 2
@@ -28,36 +34,40 @@ Rectangle {
 
         // Сеть:  — wifi,  — проводное подключение; без сети значок тусклый
         IndicatorButton {
+            id: netBtn
             glyph: SysState.net === "ethernet" ? "" : ""
             dim: SysState.net === "none" ? 0.35 : 1
             active: group.isActive("network")
-            onClicked: group.menu?.toggle("network", group.screenName)
+            onClicked: group.openMenu("network", netBtn)
         }
 
         // Bluetooth:  — значок bluetooth (виден, только если установлен bluez и есть адаптер)
         IndicatorButton {
+            id: btBtn
             visible: SysState.hasBluetooth
             glyph: ""
             active: group.isActive("bluetooth")
-            onClicked: group.menu?.toggle("bluetooth", group.screenName)
+            onClicked: group.openMenu("bluetooth", btBtn)
         }
 
         // Звук:  — громко,  — тихо,  — выключено
         IndicatorButton {
+            id: sndBtn
             glyph: SysState.muted || SysState.volume <= 0 ? "" : SysState.volume < 0.5 ? "" : ""
             label: Math.round(SysState.volume * 100) + "%"
             dim: SysState.muted ? 0.4 : 1
             active: group.isActive("sound")
-            onClicked: group.menu?.toggle("sound", group.screenName)
+            onClicked: group.openMenu("sound", sndBtn)
             onMiddleClicked: SysState.toggleMute()
             onScrolled: delta => SysState.changeVolume(delta > 0 ? 0.05 : -0.05)
         }
 
         // Уведомления:  — колокольчик
         IndicatorButton {
+            id: ntfBtn
             glyph: ""
             active: group.isActive("notifications")
-            onClicked: group.menu?.toggle("notifications", group.screenName)
+            onClicked: group.openMenu("notifications", ntfBtn)
         }
     }
 }

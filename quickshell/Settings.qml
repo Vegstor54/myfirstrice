@@ -13,6 +13,9 @@ Singleton {
     property alias barCenter: adapter.barCenter
     property alias barRight: adapter.barRight
 
+    // Отступ бара от боковых краёв экрана (его используют shell.qml и QuickMenu)
+    readonly property int barSideMargin: 16
+
     // Высота бара по выбранному размеру; остальные элементы бара считаются от неё
     readonly property int barHeight: barSize === "medium" ? 32 : barSize === "large" ? 40 : 26
 
