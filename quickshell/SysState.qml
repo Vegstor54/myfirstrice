@@ -4,7 +4,7 @@ import Quickshell.Io
 import Quickshell.Services.Pipewire
 import QtQuick
 
-// Общее состояние для бара и выезжающего меню: звук и микрофон (PipeWire) и сеть.
+// Общее состояние для бара и выезжающего меню: звук, устройства вывода и микрофон (PipeWire), сеть.
 // Один экземпляр на всю оболочку, поэтому сеть опрашивается один раз, а не на каждом мониторе.
 Singleton {
     id: root
@@ -28,6 +28,18 @@ Singleton {
     function toggleMute() {
         if (sink?.audio) sink.audio.muted = !sink.audio.muted
     }
+
+    // ---- Устройства вывода ----
+    // Отслеживаем все узлы PipeWire, иначе у них не будет данных об аудио
+    PwObjectTracker { objects: Pipewire.nodes.values }
+
+    // Аудио-выходы (колонки, наушники, HDMI), без потоков приложений
+    readonly property var sinks: Pipewire.nodes.values.filter(n => n.isSink && !n.isStream && n.audio)
+
+    function sinkName(node) { return node.description || node.nickname || node.name }
+
+    // Делает устройство выходом по умолчанию
+    function setDefaultSink(node) { Pipewire.preferredDefaultAudioSink = node }
 
     // ---- Микрофон ----
     readonly property real micVolume: source?.audio?.volume ?? 0

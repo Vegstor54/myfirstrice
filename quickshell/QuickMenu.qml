@@ -3,14 +3,14 @@ import Quickshell.Wayland
 import QtQuick
 import QtQuick.Layouts
 
-// Меню, которое выезжает из-под бара сверху вниз: уведомления, интернет, звук.
+// Меню, которое выезжает из-под бара сверху вниз: уведомления, интернет, Bluetooth, звук.
 // Открывается кнопками из BarIndicators через toggle(вкладка, монитор).
 // Закрывается кликом вне меню (в том числе по «таблетке» в баре) или Esc.
 Scope {
     id: root
 
     property bool shown: false
-    // "notifications" | "network" | "sound"
+    // "notifications" | "network" | "bluetooth" | "sound"
     property string tab: "notifications"
     // Имя монитора, на котором открыто меню
     property string monitor: ""
@@ -18,6 +18,7 @@ Scope {
     readonly property var tabs: [
         { id: "notifications", label: "Уведомления" },
         { id: "network",       label: "Интернет" },
+        { id: "bluetooth",     label: "Bluetooth" },
         { id: "sound",         label: "Звук" }
     ]
 
@@ -81,8 +82,8 @@ Scope {
                 anchors.topMargin: Settings.barHeight + 16 + slide
                 anchors.right: parent.right
                 anchors.rightMargin: 16
-                width: 360
-                height: root.tab === "sound" ? 340 : 260
+                width: 400
+                height: root.tab === "sound" ? 440 : root.tab === "bluetooth" ? 340 : 260
                 radius: 24
                 color: Qt.rgba(Colors.surfaceContainer.r, Colors.surfaceContainer.g, Colors.surfaceContainer.b, 0.95)
                 border.width: 1
@@ -126,7 +127,7 @@ Scope {
                                     text: tabChip.modelData.label
                                     color: tabChip.selected ? Colors.textOnPrimary : Colors.text
                                     font.family: Settings.uiFontFamily
-                                    font.pixelSize: 12
+                                    font.pixelSize: 11
                                 }
                                 MouseArea {
                                     id: tabMouse
@@ -235,7 +236,15 @@ Scope {
                             Item { Layout.fillHeight: true }
                         }
 
-                        // Звук: громкость колонок и микрофон
+                        // Bluetooth: грузится только при открытой вкладке. Так, если в этой сборке
+                        // Quickshell нет модуля Quickshell.Bluetooth, ошибка не ломает всю оболочку
+                        Loader {
+                            anchors.fill: parent
+                            active: root.shown && root.tab === "bluetooth"
+                            source: "BluetoothTab.qml"
+                        }
+
+                        // Звук: громкость колонок, устройство вывода и микрофон
                         ColumnLayout {
                             anchors.fill: parent
                             visible: root.tab === "sound"
@@ -251,6 +260,66 @@ Scope {
                                 onSetValue: v => SysState.setVolume(v)
                                 onStep: d => SysState.changeVolume(d)
                                 onToggleMute: SysState.toggleMute()
+                            }
+
+                            // Устройство вывода: куда идёт звук
+                            Text {
+                                text: "Устройство вывода"
+                                color: Colors.text
+                                font.family: Settings.uiFontFamily
+                                font.pixelSize: 14
+                                font.bold: true
+                            }
+
+                            ListView {
+                                id: sinkList
+                                Layout.fillWidth: true
+                                Layout.preferredHeight: Math.min(contentHeight, 96)
+                                clip: true
+                                spacing: 4
+                                model: SysState.sinks
+
+                                delegate: Rectangle {
+                                    id: sinkItem
+                                    required property var modelData
+                                    readonly property bool selected: !!SysState.sink && modelData.id === SysState.sink.id
+
+                                    width: sinkList.width
+                                    height: 30
+                                    radius: 999
+                                    color: selected ? Colors.primary
+                                         : sinkMouse.containsMouse ? Colors.surfaceContainerHighest
+                                         : Colors.surfaceContainerHigh
+
+                                    Text {
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        anchors.left: parent.left
+                                        anchors.right: parent.right
+                                        anchors.leftMargin: 14
+                                        anchors.rightMargin: 14
+                                        text: SysState.sinkName(sinkItem.modelData)
+                                        elide: Text.ElideRight
+                                        color: sinkItem.selected ? Colors.textOnPrimary : Colors.text
+                                        font.family: Settings.uiFontFamily
+                                        font.pixelSize: 12
+                                    }
+                                    MouseArea {
+                                        id: sinkMouse
+                                        anchors.fill: parent
+                                        hoverEnabled: true
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: SysState.setDefaultSink(sinkItem.modelData)
+                                    }
+                                }
+                            }
+
+                            Text {
+                                visible: SysState.sinks.length === 0
+                                text: "Устройства вывода не найдены"
+                                color: Colors.text
+                                opacity: 0.6
+                                font.family: Settings.uiFontFamily
+                                font.pixelSize: 12
                             }
 
                             AudioControl {
