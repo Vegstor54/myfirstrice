@@ -67,13 +67,14 @@ Singleton {
         }
     }
 
-    // ---- Bluetooth: есть ли адаптер ----
-    // Без адаптера значок и вкладка Bluetooth скрыты. Проверка по /sys/class/bluetooth
+    // ---- Bluetooth: можно ли пользоваться ----
+    // Значок и вкладка Bluetooth скрыты, пока не установлен пакет bluez (демон bluetoothd)
+    // или нет адаптера. Проверяет scripts/bt-present.sh
     property bool hasBluetooth: false
 
     Process {
         id: btCheck
-        command: ["sh", "-c", "ls /sys/class/bluetooth 2>/dev/null | grep -q . && echo yes || echo no"]
+        command: [root.scripts + "/bt-present.sh"]
         stdout: StdioCollector {
             onStreamFinished: root.hasBluetooth = text.trim() === "yes"
         }

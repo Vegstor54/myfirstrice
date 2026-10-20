@@ -15,7 +15,7 @@ Scope {
     // Имя монитора, на котором открыто меню
     property string monitor: ""
 
-    // Вкладка Bluetooth показывается, только если в системе есть адаптер
+    // Вкладка Bluetooth показывается, только если установлен bluez и есть адаптер
     readonly property var tabs: [
         { id: "notifications", label: "Уведомления" },
         { id: "network",       label: "Интернет" },
