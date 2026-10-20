@@ -14,6 +14,8 @@ Scope {
     property string tab: "notifications"
     // Имя монитора, на котором открыто меню
     property string monitor: ""
+    // Где на экране центр значка, по которому открыли меню: под ним и выезжает карточка
+    property real anchorX: 100000
 
     // Вкладка Bluetooth показывается, только если установлен bluez и есть адаптер
     readonly property var tabs: [
@@ -25,13 +27,14 @@ Scope {
 
     // Открывает меню на нужной вкладке. Пока меню открыто, фон накрывает и бар,
     // поэтому закрывает его клик куда угодно вне меню; вкладки переключаются кликом по ним.
-    function toggle(tabId, monitorName) {
+    function toggle(tabId, monitorName, centerX) {
         if (shown && monitor === monitorName) {
             shown = false
             return
         }
         tab = tabId
         monitor = monitorName
+        if (centerX !== undefined) anchorX = centerX
         shown = true
     }
 
@@ -81,8 +84,9 @@ Scope {
                 anchors.top: parent.top
                 // Под баром: 8 — его отступ от края, ещё 8 — зазор до меню
                 anchors.topMargin: Settings.barHeight + 16 + slide
-                anchors.right: parent.right
-                anchors.rightMargin: 16
+                // По горизонтали стоит под значком, но не выходит за края экрана
+                x: Math.max(Settings.barSideMargin,
+                            Math.min(parent.width - width - Settings.barSideMargin, root.anchorX - width / 2))
                 width: 400
                 height: root.tab === "sound" ? 440 : root.tab === "bluetooth" ? 400 : 260
                 radius: 24

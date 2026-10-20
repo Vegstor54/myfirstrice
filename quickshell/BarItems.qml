@@ -157,7 +157,7 @@ Item {
             // Нужен установленный шрифт Symbols Nerd Font; без него Qt ищет глиф в других шрифтах
             Text {
                 anchors.centerIn: parent
-                text: ""
+                text: ""
                 color: Colors.text
                 font.family: "Symbols Nerd Font"
                 font.pixelSize: Math.round(Settings.barHeight * 0.55)
