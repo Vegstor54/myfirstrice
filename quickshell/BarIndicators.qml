@@ -22,7 +22,8 @@ Rectangle {
     // Открывает меню под значком: передаёт его центр по горизонтали в координатах экрана
     function openMenu(tabId, button) {
         const x = button.mapToItem(null, button.width / 2, 0).x + Settings.barSideMargin
-        menu?.toggle(tabId, screenName, x)
+        // Меню покажет вкладки только этой группы значков
+        menu?.toggle(tabId, screenName, x, modules)
     }
 
     height: Settings.barHeight - 8
