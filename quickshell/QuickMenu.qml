@@ -84,7 +84,7 @@ Scope {
                 anchors.right: parent.right
                 anchors.rightMargin: 16
                 width: 400
-                height: root.tab === "sound" ? 440 : root.tab === "bluetooth" ? 340 : 260
+                height: root.tab === "sound" ? 440 : root.tab === "bluetooth" ? 400 : 260
                 radius: 24
                 color: Qt.rgba(Colors.surfaceContainer.r, Colors.surfaceContainer.g, Colors.surfaceContainer.b, 0.95)
                 border.width: 1
