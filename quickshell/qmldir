@@ -6,6 +6,7 @@ DefaultsRow DefaultsRow.qml
 AppsTab AppsTab.qml
 FontTab FontTab.qml
 BarTab BarTab.qml
+ModulesTab ModulesTab.qml
 Workspaces Workspaces.qml
 BarItems BarItems.qml
 BarSlot BarSlot.qml
