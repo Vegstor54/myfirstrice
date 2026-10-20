@@ -15,12 +15,13 @@ Scope {
     // Имя монитора, на котором открыто меню
     property string monitor: ""
 
+    // Вкладка Bluetooth показывается, только если в системе есть адаптер
     readonly property var tabs: [
         { id: "notifications", label: "Уведомления" },
         { id: "network",       label: "Интернет" },
         { id: "bluetooth",     label: "Bluetooth" },
         { id: "sound",         label: "Звук" }
-    ]
+    ].filter(t => t.id !== "bluetooth" || SysState.hasBluetooth)
 
     // Открывает меню на нужной вкладке. Пока меню открыто, фон накрывает и бар,
     // поэтому закрывает его клик куда угодно вне меню; вкладки переключаются кликом по ним.

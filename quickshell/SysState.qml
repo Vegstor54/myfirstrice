@@ -67,12 +67,27 @@ Singleton {
         }
     }
 
+    // ---- Bluetooth: есть ли адаптер ----
+    // Без адаптера значок и вкладка Bluetooth скрыты. Проверка по /sys/class/bluetooth
+    property bool hasBluetooth: false
+
+    Process {
+        id: btCheck
+        command: ["sh", "-c", "ls /sys/class/bluetooth 2>/dev/null | grep -q . && echo yes || echo no"]
+        stdout: StdioCollector {
+            onStreamFinished: root.hasBluetooth = text.trim() === "yes"
+        }
+    }
+
     Timer {
         interval: 5000
         running: true
         repeat: true
         triggeredOnStart: true
-        onTriggered: if (!netStatus.running) netStatus.running = true
+        onTriggered: {
+            if (!netStatus.running) netStatus.running = true
+            if (!btCheck.running) btCheck.running = true
+        }
     }
 
     Process {
