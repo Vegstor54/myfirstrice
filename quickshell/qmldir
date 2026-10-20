@@ -9,6 +9,7 @@ BarTab BarTab.qml
 Workspaces Workspaces.qml
 BarItems BarItems.qml
 BarSlot BarSlot.qml
+BarChip BarChip.qml
 WallpaperTab WallpaperTab.qml
 BarIndicators BarIndicators.qml
 QuickMenu QuickMenu.qml

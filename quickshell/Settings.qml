@@ -12,9 +12,19 @@ Singleton {
     property alias barLeft: adapter.barLeft
     property alias barCenter: adapter.barCenter
     property alias barRight: adapter.barRight
+    property alias barOff: adapter.barOff
+    property alias indGroups: adapter.indGroups
 
     // Отступ бара от боковых краёв экрана (его используют shell.qml и QuickMenu)
     readonly property int barSideMargin: 16
+
+    // Включён ли модуль бара (выключенные перечислены в barOff)
+    function moduleOn(key) { return barOff.split(",").indexOf(key) < 0 }
+    function setModule(key, on) {
+        const list = barOff.split(",").filter(x => x !== "" && x !== key)
+        if (!on) list.push(key)
+        barOff = list.join(",")
+    }
 
     // Высота бара по выбранному размеру; остальные элементы бара считаются от неё
     readonly property int barHeight: barSize === "medium" ? 32 : barSize === "large" ? 40 : 26
@@ -37,10 +47,15 @@ Singleton {
             property bool showLogo: true
             // Рабочие столы в баре: "used" — только используемые, "5" — 1–5, "10" — 1–10
             property string wsMode: "used"
-            // Раскладка бара: ключи элементов через запятую по зонам (logo, workspaces, clock, indicators)
+            // Раскладка бара: ключи элементов через запятую по зонам (logo, workspaces, clock, network, bluetooth, sound, notifications)
             property string barLeft: "logo,workspaces"
             property string barCenter: "clock"
-            property string barRight: "indicators"
+            property string barRight: "network,bluetooth,sound,notifications"
+            // Выключенные модули бара через запятую (workspaces, clock, network, bluetooth, sound, notifications)
+            property string barOff: ""
+            // Группы значков справа: группы через "|", модули в группе через ",".
+            // Модули идут в порядке network, bluetooth, sound, notifications; группа — одна «таблетка»
+            property string indGroups: "network,bluetooth,sound,notifications"
         }
     }
 }
