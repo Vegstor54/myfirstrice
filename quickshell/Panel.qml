@@ -42,6 +42,7 @@ Scope {
             { id: "style/colors", title: "Цветовая схема", subtitle: "Цвет бара" },
             { id: "style/font",   title: "Шрифт",          subtitle: "Шрифт интерфейса и терминала" },
             { id: "style/bar",    title: "Бар",            subtitle: "Размер, логотип, рабочие столы" },
+            { id: "style/modules", title: "Модули бара", subtitle: "Что показывать и как группировать значки" },
             { id: "style/wallpaper", title: "Обои",         subtitle: "Картинка рабочего стола и палитра" }
         ],
         "system": [
@@ -246,6 +247,7 @@ Scope {
                                        : root.activeTab === "apps" ? appsTab
                                        : root.activeTab === "style/font" ? fontTab
                                        : root.activeTab === "style/bar" ? barTab
+                                       : root.activeTab === "style/modules" ? modulesTab
                                        : root.activeTab === "style/wallpaper" ? wallpaperTab
                                        : colorsTab
                     }
@@ -316,6 +318,11 @@ Scope {
             Component {
                 id: barTab
                 BarTab {}
+            }
+
+            Component {
+                id: modulesTab
+                ModulesTab {}
             }
 
             Component {
