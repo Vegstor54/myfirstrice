@@ -153,5 +153,49 @@ ColumnLayout {
         }
     }
 
+    Text {
+        text: "Расположение элементов"
+        color: Colors.text
+        font.family: Settings.uiFontFamily
+        font.pixelSize: 14
+        font.bold: true
+    }
+
+    Text {
+        Layout.fillWidth: true
+        text: "Перетаскивайте элементы прямо в баре: влево, в центр или вправо, и меняйте их порядок."
+        wrapMode: Text.WordWrap
+        color: Colors.text
+        opacity: 0.7
+        font.family: Settings.uiFontFamily
+        font.pixelSize: 13
+    }
+
+    Rectangle {
+        Layout.fillWidth: true
+        Layout.preferredHeight: 36
+        radius: 999
+        color: resetMouse.containsMouse ? Colors.surfaceContainerHighest : Colors.surfaceContainerHigh
+
+        Text {
+            anchors.centerIn: parent
+            text: "Сбросить расположение"
+            color: Colors.text
+            font.family: Settings.uiFontFamily
+            font.pixelSize: 13
+        }
+        MouseArea {
+            id: resetMouse
+            anchors.fill: parent
+            hoverEnabled: true
+            cursorShape: Qt.PointingHandCursor
+            onClicked: {
+                Settings.barLeft = "logo,workspaces"
+                Settings.barCenter = "clock"
+                Settings.barRight = "indicators"
+            }
+        }
+    }
+
     Item { Layout.fillHeight: true }
 }

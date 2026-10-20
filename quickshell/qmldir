@@ -7,6 +7,8 @@ AppsTab AppsTab.qml
 FontTab FontTab.qml
 BarTab BarTab.qml
 Workspaces Workspaces.qml
+BarItems BarItems.qml
+BarSlot BarSlot.qml
 WallpaperTab WallpaperTab.qml
 BarIndicators BarIndicators.qml
 QuickMenu QuickMenu.qml
