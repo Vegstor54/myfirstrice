@@ -34,8 +34,9 @@ Rectangle {
             onClicked: group.menu?.toggle("network", group.screenName)
         }
 
-        // Bluetooth:  — значок bluetooth
+        // Bluetooth:  — значок bluetooth (виден, только если установлен bluez и есть адаптер)
         IndicatorButton {
+            visible: SysState.hasBluetooth
             glyph: ""
             active: group.isActive("bluetooth")
             onClicked: group.menu?.toggle("bluetooth", group.screenName)

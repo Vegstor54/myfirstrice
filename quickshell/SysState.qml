@@ -67,12 +67,28 @@ Singleton {
         }
     }
 
+    // ---- Bluetooth: можно ли пользоваться ----
+    // Значок и вкладка Bluetooth скрыты, пока не установлен пакет bluez (демон bluetoothd)
+    // или нет адаптера. Проверяет scripts/bt-present.sh
+    property bool hasBluetooth: false
+
+    Process {
+        id: btCheck
+        command: [root.scripts + "/bt-present.sh"]
+        stdout: StdioCollector {
+            onStreamFinished: root.hasBluetooth = text.trim() === "yes"
+        }
+    }
+
     Timer {
         interval: 5000
         running: true
         repeat: true
         triggeredOnStart: true
-        onTriggered: if (!netStatus.running) netStatus.running = true
+        onTriggered: {
+            if (!netStatus.running) netStatus.running = true
+            if (!btCheck.running) btCheck.running = true
+        }
     }
 
     Process {
