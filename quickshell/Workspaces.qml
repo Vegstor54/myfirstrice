@@ -6,6 +6,7 @@ import QtQuick
 //  - активный на этом мониторе: цвет primary
 //  - с окнами: светлая плашка
 //  - пустые (только в режимах 1–5 и 1–10): тёмные, приглушённые
+//  - в режимах 1–5 и 1–10 столы сверх диапазона появляются, только когда заняты окнами
 // Режим берётся из Settings.wsMode: "used" | "5" | "10".
 // Клик по квадрату переключает на этот рабочий стол.
 Row {
@@ -23,9 +24,14 @@ Row {
             const n = parseInt(mode)
             const list = []
             for (let i = 1; i <= n; i++) list.push(i)
-            // Активный стол за пределами диапазона всё равно показываем
-            if (activeId > n) list.push(activeId)
-            return list
+            // За пределами диапазона показываем только занятые окнами столы
+            // и активный; пустые номера больше n не появляются
+            const extra = Hyprland.workspaces.values
+                .filter(w => w.id > n && (w.id === activeId || w.toplevels.values.length > 0))
+                .map(w => w.id)
+            if (activeId > n && extra.indexOf(activeId) === -1) extra.push(activeId)
+            extra.sort((a, b) => a - b)
+            return list.concat(extra)
         }
         // "used": существующие рабочие столы (с окнами и активные), без special
         return Hyprland.workspaces.values
