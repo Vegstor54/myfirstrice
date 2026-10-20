@@ -29,6 +29,27 @@ ColumnLayout {
         if (adapter && adapter.enabled && !adapter.discovering) adapter.discovering = true
     }
 
+    // Сразу после запуска BlueZ может ответить «Resource Not Ready». Пробуем ещё несколько раз
+    // с паузой, пока поиск не стартует; счётчик сбрасывается, когда поиск пошёл
+    property int attempts: 0
+
+    Timer {
+        interval: 1500
+        repeat: true
+        running: !!tab.adapter && tab.adapter.enabled && !tab.adapter.discovering && tab.attempts < 5
+        onTriggered: {
+            tab.attempts++
+            tab.startDiscovery()
+        }
+    }
+
+    Connections {
+        target: tab.adapter
+        function onDiscoveringChanged() {
+            if (tab.adapter.discovering) tab.attempts = 0
+        }
+    }
+
     Component.onCompleted: startDiscovery()
 
     Component.onDestruction: {
