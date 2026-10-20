@@ -17,17 +17,21 @@ Scope {
     // Где на экране центр значка, по которому открыли меню: под ним и выезжает карточка
     property real anchorX: 100000
 
+    // Вкладки группы значков, по которой открыли меню; пусто — показывать все
+    property var groupTabs: []
+
     // Вкладка Bluetooth показывается, только если установлен bluez и есть адаптер
     readonly property var tabs: [
         { id: "notifications", label: "Уведомления" },
         { id: "network",       label: "Интернет" },
         { id: "bluetooth",     label: "Bluetooth" },
         { id: "sound",         label: "Звук" }
-    ].filter(t => t.id !== "bluetooth" || SysState.hasBluetooth)
+    ].filter(t => (t.id !== "bluetooth" || SysState.hasBluetooth)
+               && (groupTabs.length === 0 || groupTabs.indexOf(t.id) >= 0))
 
     // Открывает меню на нужной вкладке. Пока меню открыто, фон накрывает и бар,
     // поэтому закрывает его клик куда угодно вне меню; вкладки переключаются кликом по ним.
-    function toggle(tabId, monitorName, centerX) {
+    function toggle(tabId, monitorName, centerX, tabIds) {
         if (shown && monitor === monitorName) {
             shown = false
             return
@@ -35,6 +39,7 @@ Scope {
         tab = tabId
         monitor = monitorName
         if (centerX !== undefined) anchorX = centerX
+        groupTabs = tabIds ?? []
         shown = true
     }
 
@@ -88,7 +93,8 @@ Scope {
                 x: Math.max(Settings.barSideMargin,
                             Math.min(parent.width - width - Settings.barSideMargin, root.anchorX - width / 2))
                 width: 400
-                height: root.tab === "sound" ? 440 : root.tab === "bluetooth" ? 400 : 260
+                height: (root.tab === "sound" ? 440 : root.tab === "bluetooth" ? 400 : 260)
+                        - (root.tabs.length > 1 ? 0 : 52)
                 radius: 24
                 color: Qt.rgba(Colors.surfaceContainer.r, Colors.surfaceContainer.g, Colors.surfaceContainer.b, 0.95)
                 border.width: 1
@@ -107,8 +113,9 @@ Scope {
                     anchors.margins: 16
                     spacing: 16
 
-                    // Вкладки
+                    // Вкладки: у группы из одного значка вкладка одна, ряд не нужен
                     RowLayout {
+                        visible: root.tabs.length > 1
                         Layout.fillWidth: true
                         spacing: 8
 
