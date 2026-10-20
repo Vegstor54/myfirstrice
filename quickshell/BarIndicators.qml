@@ -1,6 +1,6 @@
 import QtQuick
 
-// Правая часть бара: сеть, звук, уведомления в одной группе.
+// Правая часть бара: сеть, Bluetooth, звук, уведомления в одной группе.
 // Клик по значку открывает выезжающее меню (QuickMenu.qml) на нужной вкладке.
 // Колесо мыши на значке звука меняет громкость, средняя кнопка включает и выключает звук.
 // Значки — глифы Nerd Font (Symbols Nerd Font), как у кнопки с логотипом.
@@ -32,6 +32,13 @@ Rectangle {
             dim: SysState.net === "none" ? 0.35 : 1
             active: group.isActive("network")
             onClicked: group.menu?.toggle("network", group.screenName)
+        }
+
+        // Bluetooth:  — значок bluetooth
+        IndicatorButton {
+            glyph: ""
+            active: group.isActive("bluetooth")
+            onClicked: group.menu?.toggle("bluetooth", group.screenName)
         }
 
         // Звук:  — громко,  — тихо,  — выключено
