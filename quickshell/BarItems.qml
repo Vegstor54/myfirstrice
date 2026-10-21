@@ -363,7 +363,6 @@ Item {
                 anchors.fill: parent
                 hoverEnabled: true
                 cursorShape: Qt.PointingHandCursor
-                onPressed: console.log("clock: нажатие, меню часов =", root.clockMenu)
                 onClicked: root.clockMenu?.toggle(root.screenName,
                     clockButton.mapToItem(null, clockButton.width / 2, 0).x + Settings.barSideMargin)
             }
