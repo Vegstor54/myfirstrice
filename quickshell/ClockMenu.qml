@@ -75,7 +75,8 @@ Scope {
 
             readonly property bool isTarget: root.monitor === modelData.name
 
-            visible: isTarget && (root.shown || fade.running)
+            // Окно есть на каждом мониторе: клик вне меню на любом из них закрывает его
+            visible: root.shown || fade.running
             anchors { top: true; bottom: true; left: true; right: true }
             color: "transparent"
             exclusionMode: ExclusionMode.Ignore
@@ -107,6 +108,8 @@ Scope {
 
             Rectangle {
                 id: card
+                // Сама карточка рисуется только на целевом мониторе
+                visible: win.isTarget
                 property real slide: root.shown ? 0 : -16
 
                 anchors.top: parent.top
