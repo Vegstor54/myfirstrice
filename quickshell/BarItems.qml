@@ -13,6 +13,7 @@ Item {
     // id активного рабочего стола на этом мониторе, QuickMenu и имя монитора (передаёт shell.qml)
     property int activeId: -1
     property var menu: null
+    property var clockMenu: null
     property string screenName: ""
 
     readonly property int gap: 6
@@ -337,12 +338,34 @@ Item {
         host: root
         visible: Settings.moduleOn("clock")
 
-        Text {
+        // Клик открывает меню часов (ClockMenu.qml)
+        Rectangle {
+            id: clockButton
             anchors.verticalCenter: parent.verticalCenter
-            color: Colors.text
-            font.family: Settings.uiFontFamily
-            font.pixelSize: Math.round(Settings.barHeight * 0.5)
-            text: Qt.formatDateTime(clock.date, "HH:mm")
+            width: clockText.implicitWidth + 20
+            height: Settings.barHeight - 8
+            radius: height / 2
+            color: clockMouse.containsMouse
+                   || (root.clockMenu !== null && root.clockMenu.shown && root.clockMenu.monitor === root.screenName)
+                   ? Qt.rgba(1, 1, 1, 0.18) : "transparent"
+
+            Text {
+                id: clockText
+                anchors.centerIn: parent
+                color: Colors.text
+                font.family: Settings.uiFontFamily
+                font.pixelSize: Math.round(Settings.barHeight * 0.5)
+                text: Qt.formatDateTime(clock.date, "HH:mm")
+            }
+
+            MouseArea {
+                id: clockMouse
+                anchors.fill: parent
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+                onClicked: root.clockMenu?.toggle(root.screenName,
+                    clockButton.mapToItem(null, clockButton.width / 2, 0).x + Settings.barSideMargin)
+            }
         }
     }
 

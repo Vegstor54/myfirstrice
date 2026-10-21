@@ -8,6 +8,9 @@ ShellRoot {
     // Выезжающее меню под баром: уведомления, интернет, звук (открывается из BarIndicators)
     QuickMenu { id: quickMenu }
 
+    // Меню часов: громкость, плеер, время и календарь (открывается кликом на часы в баре)
+    ClockMenu { id: clockMenu }
+
     Variants {
         model: Quickshell.screens
 
@@ -38,6 +41,7 @@ ShellRoot {
                     anchors.fill: parent
                     activeId: win.activeWorkspaceId
                     menu: quickMenu
+                    clockMenu: clockMenu
                     screenName: win.modelData.name
                 }
             }
