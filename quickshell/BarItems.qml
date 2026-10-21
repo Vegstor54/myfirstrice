@@ -62,14 +62,22 @@ Item {
     readonly property var layout: preview !== null ? preview : stored
 
     // ---- Группы значков ----
+    // Значки справа можно собирать в «папки»: бросить один на другой, и они объединятся в одну
+    // «таблетку»; потянуть значок из группы вниз, и он выйдет из неё. Группы хранятся в
+    // Settings.indGroups: группы через "|", значки в группе через ",".
     readonly property var indOrder: ["network", "bluetooth", "sound", "notifications"]
-    readonly property var groups: parseGroups(Settings.indGroups)
+
+    // Во время перетаскивания группы могут меняться (значок вытащили из группы)
+    property var groupsDraft: null
+    readonly property var groups: groupsDraft !== null ? groupsDraft : parseGroups(Settings.indGroups)
+
+    function isInd(k) { return indOrder.indexOf(k) >= 0 }
 
     function parseGroups(s) {
         const seen = {}
         const res = []
         for (const g of s.split("|")) {
-            const m = g.split(",").map(x => x.trim()).filter(k => indOrder.indexOf(k) >= 0 && !seen[k])
+            const m = g.split(",").map(x => x.trim()).filter(k => isInd(k) && !seen[k])
             for (const k of m) seen[k] = true
             if (m.length > 0) res.push(m)
         }
@@ -77,7 +85,9 @@ Item {
         return res
     }
 
-    // Группа хранится в элементе своего первого модуля; у остальных членов группы своего элемента нет
+    function serializeGroups(gs) { return gs.map(g => g.join(",")).join("|") }
+
+    // Группа хранится в элементе своего первого значка; у остальных членов группы своего элемента нет
     function groupOf(leader) { return groups.find(g => g[0] === leader) }
     function followers(key) { const g = groupOf(key); return g ? g.slice(1) : [] }
     // Что реально показывать в группе: только включённые модули (Bluetooth ещё и если есть адаптер)
@@ -128,27 +138,85 @@ Item {
     // ---- Перетаскивание ----
     property string dragKey: ""
     property real dragX: 0
-    property real dragStartX: 0
+    // Где в баре стояла мышь при нажатии и на каком расстоянии от левого края элемента
+    // (grab < 0 — держать за середину)
+    property real pointerX0: 0
+    property real grab: 0
+    // Значок внутри группы, за который взялись (его можно вытащить из группы)
+    property string pressedModule: ""
+    // Над каким значком завис перетаскиваемый (mergeCand) и готов ли он к слиянию (mergeTarget)
+    property string mergeCand: ""
+    property string mergeTarget: ""
 
-    function beginDrag(slot) {
-        dragStartX = layoutX(slot.key)
-        dragX = dragStartX
+    function beginDrag(slot, pressX) {
+        pointerX0 = layoutX(slot.key) + pressX
+        grab = pressX
+        pressedModule = slot.moduleAt(pressX)
+        dragX = layoutX(slot.key)
+        mergeCand = ""
+        mergeTarget = ""
         dragKey = slot.key
         preview = layout
     }
 
-    function dragMoved(slot, tx) {
-        if (dragKey !== slot.key) return
-        dragX = Math.max(0, Math.min(width - slot.width, dragStartX + tx))
-        const c = dragX + slot.width / 2
+    // Вытаскивает значок из группы: он становится отдельной «таблеткой», и перетаскивание
+    // продолжается уже с ним
+    function detach(module) {
+        const next = []
+        for (const g of groups) {
+            if (g[0] === dragKey) {
+                next.push(g.filter(m => m !== module))
+                next.push([module])
+            } else next.push(g)
+        }
+        groupsDraft = next
+        dragKey = module
+        pressedModule = ""
+        grab = -1
+    }
+
+    function dragMoved(tx, ty) {
+        if (dragKey === "") return
+
+        // Потянули значок из группы вниз или вверх: вынимаем его
+        const own = groupOf(dragKey)
+        if (own && own.length > 1 && pressedModule !== "" && Math.abs(ty) > Settings.barHeight * 0.6)
+            detach(pressedModule)
+
+        const w = widthOf(dragKey)
+        dragX = Math.max(0, Math.min(width - w, pointerX0 + tx - (grab < 0 ? w / 2 : grab)))
+        const c = dragX + w / 2
+
+        // Завис над другим значком: пока он там, порядок не меняем, а через паузу готовим слияние
+        let cand = ""
+        if (isInd(dragKey)) {
+            for (const k of indOrder) {
+                if (k === dragKey || !groupOf(k) || !isVisible(k)) continue
+                const half = Math.max(8, widthOf(k) * 0.35)
+                if (Math.abs(c - (layoutX(k) + widthOf(k) / 2)) < half) cand = k
+            }
+        }
+        if (cand !== "") {
+            if (cand !== mergeCand) {
+                mergeCand = cand
+                mergeTarget = ""
+                mergeTimer.restart()
+            }
+            return
+        }
+        if (mergeCand !== "") {
+            mergeCand = ""
+            mergeTarget = ""
+            mergeTimer.stop()
+        }
 
         // Зона по центру перетаскиваемого элемента: треть бара слева, в середине, справа
         const zone = c < width / 3 ? "left" : c > width * 2 / 3 ? "right" : "center"
 
         // Группа значков переезжает целиком: остальные её члены встают следом за первым
-        const fol = followers(slot.key)
+        const fol = followers(dragKey)
         const next = {}
-        for (const z of zones) next[z] = layout[z].filter(k => k !== slot.key && fol.indexOf(k) < 0)
+        for (const z of zones) next[z] = layout[z].filter(k => k !== dragKey && fol.indexOf(k) < 0)
 
         // Куда вставить: после последнего видимого соседа, чей центр левее
         let at = 0
@@ -156,20 +224,61 @@ Item {
         for (let j = 0; j < others.length; j++) {
             if (isVisible(others[j]) && layoutX(others[j]) + widthOf(others[j]) / 2 < c) at = j + 1
         }
-        others.splice(at, 0, slot.key, ...fol)
+        others.splice(at, 0, dragKey, ...fol)
 
         if (JSON.stringify(next) !== JSON.stringify(layout)) preview = next
     }
 
+    function writeLayout(L) {
+        Settings.barLeft = L.left.join(",")
+        Settings.barCenter = L.center.join(",")
+        Settings.barRight = L.right.join(",")
+    }
+
+    // Бросили на значок: группа key вливается в группу target и встаёт сразу после неё
+    function merge(key, target, draft) {
+        const gs = draft !== null ? draft : parseGroups(Settings.indGroups)
+        const ga = gs.find(g => g[0] === key)
+        const gt = gs.find(g => g[0] === target)
+        if (!ga || !gt) return
+        const next = gs.filter(g => g !== ga).map(g => g === gt ? g.concat(ga) : g)
+
+        const L = {}
+        for (const z of zones) L[z] = stored[z].filter(k => ga.indexOf(k) < 0)
+        const tz = zones.find(z => L[z].indexOf(target) >= 0)
+        if (tz !== undefined) L[tz].splice(L[tz].indexOf(target) + 1, 0, ...ga)
+
+        Settings.indGroups = serializeGroups(next)
+        writeLayout(L)
+    }
+
     function endDrag() {
         if (dragKey === "") return
+        const key = dragKey
+        const target = mergeTarget
         const p = preview
+        const draft = groupsDraft
+        mergeTimer.stop()
         dragKey = ""
+        mergeCand = ""
+        mergeTarget = ""
         preview = null
-        if (p === null || JSON.stringify(p) === JSON.stringify(stored)) return
-        Settings.barLeft = p.left.join(",")
-        Settings.barCenter = p.center.join(",")
-        Settings.barRight = p.right.join(",")
+        groupsDraft = null
+
+        if (target !== "") {
+            merge(key, target, draft)
+            return
+        }
+        if (draft !== null && serializeGroups(draft) !== serializeGroups(parseGroups(Settings.indGroups)))
+            Settings.indGroups = serializeGroups(draft)
+        if (p !== null && JSON.stringify(p) !== JSON.stringify(stored)) writeLayout(p)
+    }
+
+    // Пауза над значком: после неё он «раскрывается» для слияния
+    Timer {
+        id: mergeTimer
+        interval: 400
+        onTriggered: if (root.mergeCand !== "") root.mergeTarget = root.mergeCand
     }
 
     SystemClock { id: clock; precision: SystemClock.Minutes }
