@@ -14,6 +14,19 @@ Rectangle {
     property var modules: ["network", "bluetooth", "sound", "notifications"]
     function has(m) { return modules.indexOf(m) >= 0 }
 
+    // Какой значок ближе всего к x (в координатах группы); нужно, чтобы вытащить его из группы
+    function moduleAt(x) {
+        const btns = [[netBtn, "network"], [btBtn, "bluetooth"], [sndBtn, "sound"], [ntfBtn, "notifications"]]
+        let best = ""
+        let bestDist = 1e9
+        for (const [btn, m] of btns) {
+            if (!btn.visible) continue
+            const d = Math.abs(btn.mapToItem(group, btn.width / 2, 0).x - x)
+            if (d < bestDist) { bestDist = d; best = m }
+        }
+        return best
+    }
+
     // Выбрана ли вкладка меню, открытая на этом мониторе
     function isActive(tabId) {
         return menu !== null && menu.shown && menu.tab === tabId && menu.monitor === screenName

@@ -18,6 +18,16 @@ Item {
     z: dragging ? 10 : 0
     opacity: dragging ? 0.85 : 1
 
+    // Над этим элементом завис другой значок: он «раскрывается» и готов принять его в группу
+    scale: host.mergeTarget === key ? 1.15 : dragging && host.mergeTarget !== "" ? 0.85 : 1
+    Behavior on scale { NumberAnimation { duration: 120; easing.type: Easing.OutCubic } }
+
+    // Какой значок группы стоит под x (в координатах элемента); для вытаскивания из группы
+    function moduleAt(x) {
+        const c = holder.children[0]
+        return c && c.moduleAt ? c.moduleAt(x) : ""
+    }
+
     // Остальные элементы плавно сдвигаются; сам перетаскиваемый идёт строго за мышью
     x: dragging ? host.dragX : host.layoutX(key)
     Behavior on x {
@@ -34,13 +44,13 @@ Item {
     DragHandler {
         target: null
         xAxis.enabled: true
-        yAxis.enabled: false
+        yAxis.enabled: true
         onActiveChanged: {
-            if (active) slot.host.beginDrag(slot)
+            if (active) slot.host.beginDrag(slot, centroid.pressPosition.x)
             else slot.host.endDrag()
         }
         onTranslationChanged: {
-            if (active) slot.host.dragMoved(slot, translation.x)
+            if (active) slot.host.dragMoved(translation.x, translation.y)
         }
     }
 }

@@ -1,8 +1,8 @@
 import QtQuick
 import QtQuick.Layouts
 
-// Модули бара: что показывать и как группировать значки справа (сеть, Bluetooth, звук, уведомления).
-// Сохраняется в Settings (barOff, indGroups), бар меняется сразу.
+// Модули бара: что показывать. Группировка значков делается перетаскиванием прямо в баре.
+// Сохраняется в Settings (barOff), бар меняется сразу.
 Flickable {
     id: tab
     clip: true
@@ -50,38 +50,8 @@ Flickable {
         }
 
         Text {
-            text: "Группировка значков"
-            color: Colors.text
-            font.family: Settings.uiFontFamily
-            font.pixelSize: 14
-            font.bold: true
-        }
-
-        RowLayout {
             Layout.fillWidth: true
-            spacing: 8
-
-            Repeater {
-                model: [
-                    { label: "Отдельно", value: "network|bluetooth|sound|notifications" },
-                    { label: "Попарно",  value: "network,bluetooth|sound,notifications" },
-                    { label: "Вместе",   value: "network,bluetooth,sound,notifications" }
-                ]
-
-                BarChip {
-                    required property var modelData
-                    Layout.fillWidth: true
-                    Layout.preferredWidth: 1
-                    label: modelData.label
-                    selected: Settings.indGroups === modelData.value
-                    onClicked: Settings.indGroups = modelData.value
-                }
-            }
-        }
-
-        Text {
-            Layout.fillWidth: true
-            text: "Попарно: сеть с Bluetooth и звук с уведомлениями. Каждую группу можно перетащить отдельно."
+            text: "Группы значков собираются прямо в баре: бросьте один значок на другой и чуть подержите, и они объединятся. Чтобы вынуть значок из группы, потяните его вниз."
             wrapMode: Text.WordWrap
             color: Colors.text
             opacity: 0.7
