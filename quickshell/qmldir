@@ -14,6 +14,9 @@ BarChip BarChip.qml
 WallpaperTab WallpaperTab.qml
 BarIndicators BarIndicators.qml
 QuickMenu QuickMenu.qml
+ClockMenu ClockMenu.qml
+VolumeSlider VolumeSlider.qml
+CalendarView CalendarView.qml
 AudioControl AudioControl.qml
 IndicatorButton IndicatorButton.qml
 BluetoothDeviceRow BluetoothDeviceRow.qml
