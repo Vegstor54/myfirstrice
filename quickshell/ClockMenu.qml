@@ -1,4 +1,5 @@
 import Quickshell
+import Quickshell.Hyprland
 import Quickshell.Io
 import Quickshell.Wayland
 import QtQuick
@@ -31,6 +32,14 @@ Scope {
         monitor = monitorName
         if (centerX !== undefined) anchorX = centerX
         shown = true
+    }
+
+    // Для проверки и бинда: quickshell ipc call clock toggle (открывает на сфокусированном мониторе)
+    IpcHandler {
+        target: "clock"
+        function toggle(): void {
+            root.toggle(Hyprland.focusedMonitor?.name ?? Quickshell.screens[0]?.name ?? "")
+        }
     }
 
     function two(n) { return String(n).padStart(2, "0") }
