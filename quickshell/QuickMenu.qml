@@ -1,4 +1,5 @@
 import Quickshell
+import Quickshell.Hyprland
 import Quickshell.Wayland
 import QtQuick
 import QtQuick.Layouts
@@ -41,6 +42,16 @@ Scope {
         if (centerX !== undefined) anchorX = centerX
         groupTabs = tabIds ?? []
         shown = true
+    }
+
+    // Курсор ушёл на другой монитор (Hyprland сменил сфокусированный): закрываем меню.
+    // Работает для любого числа мониторов и не зависит от того, дошёл ли клик до перехватчика
+    Connections {
+        target: Hyprland
+        function onFocusedMonitorChanged() {
+            if (root.shown && Hyprland.focusedMonitor && Hyprland.focusedMonitor.name !== root.monitor)
+                root.shown = false
+        }
     }
 
     Variants {
