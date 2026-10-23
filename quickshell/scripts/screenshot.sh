@@ -40,7 +40,7 @@ case $mode in
         # slurp возвращает ошибку, если выбор отменили: тогда молча выходим
         freeze_pid=""
         if command -v wayfreeze >/dev/null 2>&1; then
-            wayfreeze &
+            wayfreeze 9>&- &
             freeze_pid=$!
             sleep 0.15
         fi
@@ -79,5 +79,5 @@ if [ ! -s "$file" ]; then
     exit 1
 fi
 
-wl-copy --type image/png < "$file"
+wl-copy --type image/png 9>&- < "$file"
 notify -i "$file" "Скриншот сохранён" "$(basename "$file")"
