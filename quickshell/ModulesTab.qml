@@ -32,6 +32,8 @@ Flickable {
                 model: [
                     { id: "workspaces",    label: "Столы" },
                     { id: "clock",         label: "Часы" },
+                    { id: "media",         label: "Трек" },
+                    { id: "tray",          label: "Трей" },
                     { id: "network",       label: "Сеть" },
                     { id: "bluetooth",     label: "Bluetooth" },
                     { id: "sound",         label: "Звук" },
