@@ -17,6 +17,9 @@ Rectangle {
     readonly property int count: SystemTray.items.values.length
     readonly property int iconSize: Math.round(Settings.barHeight * 0.55)
 
+    // Элемент трея, меню которого сейчас открыто (null — никакое): открытым бывает только одно меню
+    property var openItem: null
+
     height: Settings.barHeight - 8
     width: row.implicitWidth + 12
     radius: height / 2
@@ -43,12 +46,12 @@ Rectangle {
 
                 // Показывает меню под значком (координаты — в окне бара)
                 function openMenu() {
-                    if (popup.visible) { popup.visible = false; return }
+                    if (pill.openItem === area.modelData) { pill.openItem = null; return }
                     popup.stack = []
                     const p = area.mapToItem(null, area.width / 2, area.height)
                     popup.anchor.rect.x = p.x
                     popup.anchor.rect.y = p.y + 6
-                    popup.visible = true
+                    pill.openItem = area.modelData
                 }
 
                 onClicked: ev => {
@@ -73,7 +76,7 @@ Rectangle {
                 HyprlandFocusGrab {
                     windows: [popup]
                     active: popup.visible
-                    onCleared: popup.visible = false
+                    onCleared: if (pill.openItem === area.modelData) pill.openItem = null
                 }
 
                 QsMenuOpener {
@@ -89,7 +92,7 @@ Rectangle {
                     readonly property var current:
                         stack.length > 0 ? stack[stack.length - 1] : area.modelData.menu
 
-                    visible: false
+                    visible: pill.openItem === area.modelData
                     color: "transparent"
                     anchor.window: area.QsWindow.window
                     anchor.rect.width: 1
@@ -233,7 +236,7 @@ Rectangle {
                                                 popup.stack = popup.stack.concat([entry.modelData])
                                             } else {
                                                 entry.modelData.triggered()
-                                                popup.visible = false
+                                                pill.openItem = null
                                             }
                                         }
                                     }
