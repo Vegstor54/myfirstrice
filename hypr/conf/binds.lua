@@ -66,7 +66,11 @@ hl.bind("Print",            hl.dsp.exec_cmd(screenshot .. " region"))  -- выб
 hl.bind("SHIFT + Print",    hl.dsp.exec_cmd(screenshot .. " screen"))  -- монитор с фокусом
 hl.bind("CTRL + Print",     hl.dsp.exec_cmd(screenshot .. " all"))     -- все мониторы
 hl.bind("ALT + Print",      hl.dsp.exec_cmd(screenshot .. " window"))  -- активное окно
-hl.bind(mainMod .. " + SHIFT + S", hl.dsp.exec_cmd(screenshot .. " region"))
+-- Для клавиатур без Print: Super + S с модификаторами
+hl.bind(mainMod .. " + SHIFT + S",        hl.dsp.exec_cmd(screenshot .. " region"))  -- выбранная область
+hl.bind(mainMod .. " + CTRL + S",         hl.dsp.exec_cmd(screenshot .. " screen"))  -- монитор с фокусом
+hl.bind(mainMod .. " + ALT + S",          hl.dsp.exec_cmd(screenshot .. " window"))  -- активное окно
+hl.bind(mainMod .. " + CTRL + SHIFT + S", hl.dsp.exec_cmd(screenshot .. " all"))     -- все мониторы
 
 -- Laptop multimedia keys for volume and LCD brightness
 hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+"), { locked = true, repeating = true })
