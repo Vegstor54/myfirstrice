@@ -14,6 +14,9 @@ ShellRoot {
     // Меню часов: громкость, плеер, время и календарь (открывается кликом на часы в баре)
     ClockMenu { id: clockMenuScope }
 
+    // История буфера обмена (Super+V, quickshell ipc call clipboard toggle): cliphist
+    ClipboardMenu {}
+
     Variants {
         model: Quickshell.screens
 
