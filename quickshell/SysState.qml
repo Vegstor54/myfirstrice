@@ -42,8 +42,14 @@ Singleton {
     function setDefaultSink(node) { Pipewire.preferredDefaultAudioSink = node }
 
     // ---- Микшер: громкость любого узла и приложения ----
-    // Играющие приложения: потоки воспроизведения (сами выдают звук, поэтому не isSink)
-    readonly property var streams: Pipewire.nodes.values.filter(n => n.isStream && !n.isSink && n.audio)
+    // Играющие приложения: потоки воспроизведения (media.class Stream/Output/Audio).
+    // Запись (Stream/Input/Audio) сюда не входит. Если свойств узла нет, берём isSink:
+    // поток воспроизведения для PipeWire — «приёмник» (как sink-input в pactl)
+    function isPlayback(n) {
+        const c = n.properties?.["media.class"]
+        return c ? c === "Stream/Output/Audio" : n.isSink
+    }
+    readonly property var streams: Pipewire.nodes.values.filter(n => n.isStream && n.audio && isPlayback(n))
 
     function appName(node) {
         return node.properties?.["application.name"] || node.description || node.nickname || node.name
