@@ -41,6 +41,44 @@ Singleton {
     // Делает устройство выходом по умолчанию
     function setDefaultSink(node) { Pipewire.preferredDefaultAudioSink = node }
 
+    // ---- Микшер: громкость любого узла и приложения ----
+    // Играющие приложения: потоки воспроизведения (сами выдают звук, поэтому не isSink)
+    readonly property var streams: Pipewire.nodes.values.filter(n => n.isStream && !n.isSink && n.audio)
+
+    function appName(node) {
+        return node.properties?.["application.name"] || node.description || node.nickname || node.name
+    }
+
+    function setNodeVolume(node, v) {
+        if (node?.audio) node.audio.volume = Math.max(0, Math.min(1, v))
+    }
+
+    function toggleNodeMute(node) {
+        if (node?.audio) node.audio.muted = !node.audio.muted
+    }
+
+    // Переносит звук приложения на другое устройство вывода (scripts/move-stream.sh через pactl)
+    Process {
+        id: mover
+        property string nodeId: ""
+        property string serial: ""
+        property string sinkName: ""
+        command: [root.scripts + "/move-stream.sh", nodeId, serial, sinkName]
+        onExited: code => {
+            if (code === 2) console.log("mixer: не найден pactl (пакет libpulse), перенос звука невозможен")
+            else if (code === 3) console.log("mixer: поток приложения не найден в pactl list sink-inputs")
+            else if (code !== 0) console.log("mixer: перенос звука завершился с кодом", code)
+        }
+    }
+
+    function moveStream(stream, sink) {
+        if (mover.running || !stream || !sink) return
+        mover.nodeId = String(stream.id)
+        mover.serial = stream.properties?.["object.serial"] ?? ""
+        mover.sinkName = sink.name
+        mover.running = true
+    }
+
     // ---- Микрофон ----
     readonly property real micVolume: source?.audio?.volume ?? 0
     readonly property bool micMuted: source?.audio?.muted ?? false
