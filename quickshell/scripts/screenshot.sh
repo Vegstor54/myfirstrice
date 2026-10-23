@@ -7,7 +7,12 @@
 #   window — активное окно
 # Снимок сохраняется в ~/Pictures/Screenshots, копируется в буфер обмена, приходит уведомление.
 # Пакеты: grim, slurp (только для region), wl-clipboard.
+# Необязательно: wayfreeze (AUR) замораживает экран на время выбора области.
 mode=${1:-region}
+
+# Только один экземпляр: пока идёт выбор области, повторный запуск (скриншот в скриншоте) игнорируется
+exec 9>"${XDG_RUNTIME_DIR:-/tmp}/screenshot.lock"
+flock -n 9 || exit 0
 
 notify() {
     command -v notify-send >/dev/null 2>&1 && notify-send -a "Скриншот" "$@"
@@ -33,8 +38,17 @@ file="$dir/screenshot_$(date +%Y-%m-%d_%H-%M-%S).png"
 case $mode in
     region)
         # slurp возвращает ошибку, если выбор отменили: тогда молча выходим
-        geom=$(slurp -w 2 -b '#00000066') || exit 0
-        grim -g "$geom" "$file"
+        freeze_pid=""
+        if command -v wayfreeze >/dev/null 2>&1; then
+            wayfreeze &
+            freeze_pid=$!
+            sleep 0.15
+        fi
+        geom=$(slurp -w 2 -b '#00000066')
+        rc=$?
+        if [ $rc -eq 0 ]; then grim -g "$geom" "$file"; fi
+        [ -n "$freeze_pid" ] && kill "$freeze_pid" 2>/dev/null
+        [ $rc -eq 0 ] || exit 0
         ;;
     screen)
         out=$(hyprctl monitors | awk '/^Monitor /{n=$2} /focused: yes/{print n; exit}')
