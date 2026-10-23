@@ -28,6 +28,7 @@ hl.bind(mainMod .. " + M", hl.dsp.exec_cmd("command -v hyprshutdown >/dev/null 2
 hl.bind(mainMod .. " + SHIFT + F", hl.dsp.exec_cmd(fileManagerCmd))
 hl.bind(mainMod .. " + T", hl.dsp.window.float({ action = "toggle" }))
 hl.bind(mainMod .. " + space", hl.dsp.exec_cmd("quickshell ipc call panel launcher"))
+hl.bind(mainMod .. " + V", hl.dsp.exec_cmd("quickshell ipc call clipboard toggle"))  -- история буфера обмена
 hl.bind(mainMod .. " + SHIFT + B", hl.dsp.exec_cmd(p.browser))
 hl.bind(mainMod .. " + SHIFT + Return", hl.dsp.exec_cmd(p.terminal .. " -e " .. p.editor))
 hl.bind(mainMod .. " + P", hl.dsp.window.pseudo())
