@@ -107,7 +107,8 @@ Scope {
                 x: Math.max(Settings.barSideMargin,
                             Math.min(parent.width - width - Settings.barSideMargin, root.anchorX - width / 2))
                 width: 400
-                height: (root.tab === "sound" ? 440 : root.tab === "bluetooth" ? 400 : 260)
+                height: (root.tab === "sound" || root.tab === "notifications" ? 440
+                        : root.tab === "bluetooth" ? 400 : 260)
                         - (root.tabs.length > 1 ? 0 : 52)
                 radius: 24
                 color: Qt.rgba(Colors.surfaceContainer.r, Colors.surfaceContainer.g, Colors.surfaceContainer.b, 0.95)
@@ -171,28 +172,10 @@ Scope {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
 
-                        // Уведомления: панели пока нет, поэтому заглушка
-                        ColumnLayout {
-                            anchors.centerIn: parent
+                        // Уведомления: «не беспокоить», очистка и история
+                        NotificationsTab {
+                            anchors.fill: parent
                             visible: root.tab === "notifications"
-                            spacing: 4
-
-                            Text {
-                                Layout.alignment: Qt.AlignHCenter
-                                text: "Уведомлений нет"
-                                color: Colors.text
-                                font.family: Settings.uiFontFamily
-                                font.pixelSize: 15
-                                font.bold: true
-                            }
-                            Text {
-                                Layout.alignment: Qt.AlignHCenter
-                                text: "Здесь появятся уведомления"
-                                color: Colors.text
-                                opacity: 0.6
-                                font.family: Settings.uiFontFamily
-                                font.pixelSize: 12
-                            }
                         }
 
                         // Интернет: статус и кнопка настроек

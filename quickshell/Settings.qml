@@ -14,6 +14,7 @@ Singleton {
     property alias barRight: adapter.barRight
     property alias barOff: adapter.barOff
     property alias indGroups: adapter.indGroups
+    property alias dnd: adapter.dnd
 
     // Отступ бара от боковых краёв экрана (его используют shell.qml и QuickMenu)
     readonly property int barSideMargin: 16
@@ -56,6 +57,8 @@ Singleton {
             // Группы значков справа: группы через "|", модули в группе через ",".
             // Модули идут в порядке network, bluetooth, sound, notifications; группа — одна «таблетка»
             property string indGroups: "network,bluetooth,sound,notifications"
+            // Режим «не беспокоить»: всплывающие уведомления не показываются (срочные показываются)
+            property bool dnd: false
         }
     }
 }
