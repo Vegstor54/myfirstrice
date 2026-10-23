@@ -24,3 +24,6 @@ BluetoothDeviceRow BluetoothDeviceRow.qml
 NotificationCard NotificationCard.qml
 NotificationPopups NotificationPopups.qml
 NotificationsTab NotificationsTab.qml
+MixerRow MixerRow.qml
+StreamRow StreamRow.qml
+SoundTab SoundTab.qml

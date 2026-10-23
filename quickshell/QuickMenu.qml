@@ -107,7 +107,8 @@ Scope {
                 x: Math.max(Settings.barSideMargin,
                             Math.min(parent.width - width - Settings.barSideMargin, root.anchorX - width / 2))
                 width: 400
-                height: (root.tab === "sound" || root.tab === "notifications" ? 440
+                height: (root.tab === "sound" ? 520
+                        : root.tab === "notifications" ? 440
                         : root.tab === "bluetooth" ? 400 : 260)
                         - (root.tabs.length > 1 ? 0 : 52)
                 radius: 24
@@ -255,97 +256,10 @@ Scope {
                             source: "BluetoothTab.qml"
                         }
 
-                        // Звук: громкость колонок, устройство вывода и микрофон
-                        ColumnLayout {
+                        // Звук: микшер (устройства вывода, приложения, микрофон)
+                        SoundTab {
                             anchors.fill: parent
                             visible: root.tab === "sound"
-                            spacing: 12
-
-                            AudioControl {
-                                Layout.fillWidth: true
-                                title: "Громкость"
-                                value: SysState.volume
-                                muted: SysState.muted
-                                muteLabel: "Выключить звук"
-                                mutedLabel: "Звук выключен"
-                                onSetValue: v => SysState.setVolume(v)
-                                onStep: d => SysState.changeVolume(d)
-                                onToggleMute: SysState.toggleMute()
-                            }
-
-                            // Устройство вывода: куда идёт звук
-                            Text {
-                                text: "Устройство вывода"
-                                color: Colors.text
-                                font.family: Settings.uiFontFamily
-                                font.pixelSize: 14
-                                font.bold: true
-                            }
-
-                            ListView {
-                                id: sinkList
-                                Layout.fillWidth: true
-                                Layout.preferredHeight: Math.min(contentHeight, 96)
-                                clip: true
-                                spacing: 4
-                                model: SysState.sinks
-
-                                delegate: Rectangle {
-                                    id: sinkItem
-                                    required property var modelData
-                                    readonly property bool selected: !!SysState.sink && modelData.id === SysState.sink.id
-
-                                    width: sinkList.width
-                                    height: 30
-                                    radius: 999
-                                    color: selected ? Colors.primary
-                                         : sinkMouse.containsMouse ? Colors.surfaceContainerHighest
-                                         : Colors.surfaceContainerHigh
-
-                                    Text {
-                                        anchors.verticalCenter: parent.verticalCenter
-                                        anchors.left: parent.left
-                                        anchors.right: parent.right
-                                        anchors.leftMargin: 14
-                                        anchors.rightMargin: 14
-                                        text: SysState.sinkName(sinkItem.modelData)
-                                        elide: Text.ElideRight
-                                        color: sinkItem.selected ? Colors.textOnPrimary : Colors.text
-                                        font.family: Settings.uiFontFamily
-                                        font.pixelSize: 12
-                                    }
-                                    MouseArea {
-                                        id: sinkMouse
-                                        anchors.fill: parent
-                                        hoverEnabled: true
-                                        cursorShape: Qt.PointingHandCursor
-                                        onClicked: SysState.setDefaultSink(sinkItem.modelData)
-                                    }
-                                }
-                            }
-
-                            Text {
-                                visible: SysState.sinks.length === 0
-                                text: "Устройства вывода не найдены"
-                                color: Colors.text
-                                opacity: 0.6
-                                font.family: Settings.uiFontFamily
-                                font.pixelSize: 12
-                            }
-
-                            AudioControl {
-                                Layout.fillWidth: true
-                                title: "Микрофон"
-                                value: SysState.micVolume
-                                muted: SysState.micMuted
-                                muteLabel: "Выключить микрофон"
-                                mutedLabel: "Микрофон выключен"
-                                onSetValue: v => SysState.setMicVolume(v)
-                                onStep: d => SysState.changeMicVolume(d)
-                                onToggleMute: SysState.toggleMicMute()
-                            }
-
-                            Item { Layout.fillHeight: true }
                         }
                     }
                 }
