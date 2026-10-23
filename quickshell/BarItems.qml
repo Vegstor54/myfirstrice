@@ -20,7 +20,8 @@ Item {
     readonly property var zones: ["left", "center", "right"]
     // Зона по умолчанию для каждого элемента: сюда попадают новые и потерянные
     readonly property var defaultZone: ({
-        logo: "left", workspaces: "left", clock: "center",
+        logo: "left", workspaces: "left", clock: "center", media: "center",
+        tray: "right",
         network: "right", bluetooth: "right", sound: "right", notifications: "right"
     })
     // Старый ключ «indicators» (все значки одним блоком) заменяется на четыре отдельных
@@ -30,7 +31,7 @@ Item {
 
     // Элементы по ключам: для расчёта позиций
     readonly property var slots: ({
-        logo: logoSlot, workspaces: wsSlot, clock: clockSlot,
+        logo: logoSlot, workspaces: wsSlot, clock: clockSlot, media: mediaSlot, tray: traySlot,
         network: netSlot, bluetooth: btSlot, sound: sndSlot, notifications: ntfSlot
     })
 
@@ -366,6 +367,34 @@ Item {
                 onClicked: root.clockMenu?.toggle(root.screenName,
                     clockButton.mapToItem(null, clockButton.width / 2, 0).x + Settings.barSideMargin)
             }
+        }
+    }
+
+    // Название играющего трека (BarMedia.qml): виден, только когда что-то играет или стоит на паузе
+    BarSlot {
+        id: mediaSlot
+        key: "media"
+        host: root
+        visible: Settings.moduleOn("media") && mediaLoader.item !== null && mediaLoader.item.shown
+
+        Loader {
+            id: mediaLoader
+            anchors.verticalCenter: parent.verticalCenter
+            source: "BarMedia.qml"
+        }
+    }
+
+    // Трей: значки приложений (BarTray.qml), виден, только если в трее что-то есть
+    BarSlot {
+        id: traySlot
+        key: "tray"
+        host: root
+        visible: Settings.moduleOn("tray") && trayLoader.item !== null && trayLoader.item.count > 0
+
+        Loader {
+            id: trayLoader
+            anchors.verticalCenter: parent.verticalCenter
+            source: "BarTray.qml"
         }
     }
 
