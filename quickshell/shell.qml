@@ -8,6 +8,9 @@ ShellRoot {
     // Выезжающее меню под баром: уведомления, интернет, звук (открывается из BarIndicators)
     QuickMenu { id: quickMenu }
 
+    // Всплывающие карточки уведомлений (сам сервер уведомлений: NotificationState.qml)
+    NotificationPopups {}
+
     // Меню часов: громкость, плеер, время и календарь (открывается кликом на часы в баре)
     ClockMenu { id: clockMenuScope }
 

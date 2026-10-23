@@ -1,6 +1,7 @@
 singleton Colors Colors.qml
 singleton Settings Settings.qml
 singleton SysState SysState.qml
+singleton NotificationState NotificationState.qml
 Panel Panel.qml
 DefaultsRow DefaultsRow.qml
 AppsTab AppsTab.qml
@@ -20,3 +21,6 @@ CalendarView CalendarView.qml
 AudioControl AudioControl.qml
 IndicatorButton IndicatorButton.qml
 BluetoothDeviceRow BluetoothDeviceRow.qml
+NotificationCard NotificationCard.qml
+NotificationPopups NotificationPopups.qml
+NotificationsTab NotificationsTab.qml

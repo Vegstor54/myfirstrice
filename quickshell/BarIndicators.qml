@@ -85,7 +85,8 @@ Rectangle {
         IndicatorButton {
             id: ntfBtn
             visible: group.has("notifications")
-            glyph: ""
+            glyph: NotificationState.dnd ? "\uf1f6" : "\uf0f3"
+            label: NotificationState.count > 0 ? String(NotificationState.count) : ""
             active: group.isActive("notifications")
             onClicked: group.openMenu("notifications", ntfBtn)
         }
