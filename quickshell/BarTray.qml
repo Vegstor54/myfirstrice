@@ -38,15 +38,12 @@ Rectangle {
                 acceptedButtons: Qt.LeftButton | Qt.MiddleButton | Qt.RightButton
 
                 function openMenu() {
-                    console.log("tray openMenu:", modelData.id, "window:", area.QsWindow.window)
                     // Меню рисует само приложение через Quickshell; координаты — в окне бара
                     const p = area.mapToItem(null, 0, area.height)
                     area.modelData.display(area.QsWindow.window, p.x, p.y)
                 }
 
                 onClicked: ev => {
-                    console.log("tray click: button", ev.button, "item", modelData.id,
-                                "hasMenu", modelData.hasMenu, "onlyMenu", modelData.onlyMenu)
                     if (ev.button === Qt.RightButton) {
                         if (modelData.hasMenu) openMenu()
                     } else if (ev.button === Qt.MiddleButton) {
