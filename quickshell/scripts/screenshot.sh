@@ -40,7 +40,7 @@ case $mode in
         # slurp возвращает ошибку, если выбор отменили: тогда молча выходим
         freeze_pid=""
         if command -v wayfreeze >/dev/null 2>&1; then
-            wayfreeze 9>&- &
+            wayfreeze --hide-cursor 9>&- &
             freeze_pid=$!
             sleep 0.15
         fi
