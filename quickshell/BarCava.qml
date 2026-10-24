@@ -2,7 +2,7 @@ import Quickshell
 import Quickshell.Io
 import QtQuick
 
-// Модуль бара «Cava»: столбики-эквалайзер от звука, который сейчас играет.
+// Модуль бара «Cava»: столбики-эквалайзер от звука, который сейчас играет; столбики растут снизу вверх.
 // cava запускается с cava.conf (вывод цифрами в stdout, 12 столбиков, 30 кадров в секунду),
 // каждая строка вывода — один кадр вида «12;45;80;...».
 // Показывается, только если cava установлена (`pacman -S cava`); пока модуль выключен, процесс не работает.
@@ -13,7 +13,7 @@ Rectangle {
     // Число столбиков должно совпадать с bars в cava.conf
     readonly property int barCount: 12
     readonly property int barWidth: Math.max(2, Math.round(Settings.barHeight * 0.1))
-    readonly property int maxBarHeight: Settings.barHeight - 14
+    readonly property int maxBarHeight: pill.height - 6
 
     property bool available: false
     property var values: []
@@ -47,24 +47,31 @@ Rectangle {
         onRunningChanged: if (!running) pill.values = []
     }
 
+    // Ряд фиксированной высоты: столбики стоят на общем нижнем крае и тянутся вверх
     Row {
         id: row
         anchors.centerIn: parent
+        height: pill.maxBarHeight
         spacing: Math.max(1, Math.round(pill.barWidth / 2))
 
         Repeater {
             model: pill.barCount
 
-            Rectangle {
+            Item {
                 required property int index
                 readonly property real level: Math.min(1, Math.max(0, (pill.values[index] ?? 0) / 100))
 
                 width: pill.barWidth
-                height: Math.max(2, Math.round(level * pill.maxBarHeight))
-                radius: width / 2
-                anchors.verticalCenter: parent.verticalCenter
-                color: Colors.text
-                opacity: 0.45 + 0.55 * level
+                height: row.height
+
+                Rectangle {
+                    anchors.bottom: parent.bottom
+                    width: parent.width
+                    height: Math.max(2, Math.round(parent.level * pill.maxBarHeight))
+                    radius: width / 2
+                    color: Colors.text
+                    opacity: 0.45 + 0.55 * parent.level
+                }
             }
         }
     }
