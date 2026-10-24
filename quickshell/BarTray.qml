@@ -17,9 +17,6 @@ Rectangle {
     readonly property int count: SystemTray.items.values.length
     readonly property int iconSize: Math.round(Settings.barHeight * 0.55)
 
-    // Элемент трея, меню которого сейчас открыто (null — никакое): открытым бывает только одно меню
-    property var openItem: null
-
     height: Settings.barHeight - 8
     width: row.implicitWidth + 12
     radius: height / 2
@@ -44,12 +41,25 @@ Rectangle {
                 cursorShape: Qt.PointingHandCursor
                 acceptedButtons: Qt.LeftButton | Qt.MiddleButton | Qt.RightButton
 
+                // Экран этого бара и состояние меню: на несколько мониторов бар свой, меню одно (TrayState)
+                readonly property string screenName: area.QsWindow.window?.screen?.name ?? ""
+                // Центр значка по горизонтали в координатах экрана
+                property real anchorX: 0
+                // Открытые подменю (самое глубокое последним); пусто — корневое меню приложения
+                property var stack: []
+                readonly property var current:
+                    stack.length > 0 ? stack[stack.length - 1] : area.modelData.menu
+
                 // Показывает меню под значком: запоминает центр значка по горизонтали (в координатах экрана)
                 function openMenu() {
-                    if (pill.openItem === area.modelData) { pill.openItem = null; return }
-                    popup.stack = []
-                    popup.anchorX = area.mapToItem(null, area.width / 2, 0).x + Settings.barSideMargin
-                    pill.openItem = area.modelData
+                    if (TrayState.openItem === area.modelData && TrayState.screenName === area.screenName) {
+                        TrayState.openItem = null
+                        return
+                    }
+                    area.stack = []
+                    area.anchorX = area.mapToItem(null, area.width / 2, 0).x + Settings.barSideMargin
+                    TrayState.screenName = area.screenName
+                    TrayState.openItem = area.modelData
                 }
 
                 onClicked: ev => {
@@ -72,25 +82,23 @@ Rectangle {
 
                 QsMenuOpener {
                     id: opener
-                    menu: popup.current
+                    menu: area.current
                 }
 
-                // Окно меню: прозрачный слой на весь экран ниже бара, как у QuickMenu. Любой клик
-                // вне карточки (по окнам, обоям) закрывает меню; сам бар остаётся кликабельным,
-                // поэтому клик по другому значку трея сразу переключает меню.
+                // Окна меню: на каждом экране прозрачный слой ниже бара, как у QuickMenu. Любой клик
+                // вне карточки (по окнам, обоям, на любом мониторе) закрывает меню; бары остаются
+                // кликабельными, поэтому клик по другому значку трея сразу переключает меню.
+                // Карточка рисуется только на экране, где меню открыли.
+                Variants {
+                    model: Quickshell.screens
+
                 PanelWindow {
                     id: popup
+                    required property var modelData
+                    readonly property bool origin: modelData.name === area.screenName
 
-                    // Центр значка по горизонтали в координатах экрана
-                    property real anchorX: 0
-
-                    // Открытые подменю (самое глубокое последним); пусто — корневое меню приложения
-                    property var stack: []
-                    readonly property var current:
-                        stack.length > 0 ? stack[stack.length - 1] : area.modelData.menu
-
-                    visible: pill.openItem === area.modelData
-                    screen: area.QsWindow.window ? area.QsWindow.window.screen : null
+                    visible: TrayState.openItem === area.modelData && TrayState.screenName === area.screenName
+                    screen: modelData
                     anchors { top: true; bottom: true; left: true; right: true }
                     // Бар сверху остаётся свободным: 8 — отступ бара от края экрана
                     margins.top: 8 + Settings.barHeight
@@ -102,15 +110,16 @@ Rectangle {
                     MouseArea {
                         anchors.fill: parent
                         acceptedButtons: Qt.LeftButton | Qt.MiddleButton | Qt.RightButton
-                        onPressed: pill.openItem = null
+                        onPressed: TrayState.openItem = null
                     }
 
                     Rectangle {
                         id: card
+                        visible: popup.origin
                         width: implicitWidth
                         height: implicitHeight
                         y: 6
-                        x: Math.max(8, Math.min(popup.width - width - 8, popup.anchorX - width / 2))
+                        x: Math.max(8, Math.min(popup.width - width - 8, area.anchorX - width / 2))
                         implicitWidth: Math.max(180, Math.min(340, col.implicitWidth + 12))
                         implicitHeight: col.implicitHeight + 12
                         radius: 12
@@ -131,7 +140,7 @@ Rectangle {
 
                             // Назад из подменю
                             Rectangle {
-                                visible: popup.stack.length > 0
+                                visible: area.stack.length > 0
                                 Layout.fillWidth: true
                                 implicitHeight: 28
                                 radius: 8
@@ -161,7 +170,7 @@ Rectangle {
                                     anchors.fill: parent
                                     hoverEnabled: true
                                     cursorShape: Qt.PointingHandCursor
-                                    onClicked: popup.stack = popup.stack.slice(0, -1)
+                                    onClicked: area.stack = area.stack.slice(0, -1)
                                 }
                             }
 
@@ -242,10 +251,10 @@ Rectangle {
                                         cursorShape: Qt.PointingHandCursor
                                         onClicked: {
                                             if (entry.modelData.hasChildren) {
-                                                popup.stack = popup.stack.concat([entry.modelData])
+                                                area.stack = area.stack.concat([entry.modelData])
                                             } else {
                                                 entry.modelData.triggered()
-                                                pill.openItem = null
+                                                TrayState.openItem = null
                                             }
                                         }
                                     }
@@ -253,6 +262,7 @@ Rectangle {
                             }
                         }
                     }
+                }
                 }
             }
         }
