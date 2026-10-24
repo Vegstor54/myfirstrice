@@ -13,7 +13,7 @@ Rectangle {
 
     height: Settings.barHeight - 12
     width: Math.max(height, content.implicitWidth + 12)
-    radius: height / 2
+    radius: Settings.barRounded ? height / 2 : 0
     color: active ? Qt.rgba(1, 1, 1, 0.24)
          : area.containsMouse ? Qt.rgba(1, 1, 1, 0.16)
          : "transparent"

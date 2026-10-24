@@ -53,7 +53,7 @@ Row {
 
             width: Settings.barHeight - 8
             height: width
-            radius: 6
+            radius: Settings.barRounded ? 6 : 0
             color: active ? Colors.primary
                  : occupied ? Qt.rgba(1, 1, 1, 0.14)
                  : Qt.rgba(0, 0, 0, 0.18)

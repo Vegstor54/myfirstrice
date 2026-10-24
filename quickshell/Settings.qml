@@ -8,6 +8,7 @@ Singleton {
     property alias monoFont: adapter.monoFont
     property alias barSize: adapter.barSize
     property alias showLogo: adapter.showLogo
+    property alias barRounded: adapter.barRounded
     property alias wsMode: adapter.wsMode
     property alias barLeft: adapter.barLeft
     property alias barCenter: adapter.barCenter
@@ -46,6 +47,8 @@ Singleton {
             property string monoFont: "JetBrains Mono"
             property string barSize: "small"
             property bool showLogo: true
+            // Скругление бара и его элементов: false — прямые углы
+            property bool barRounded: true
             // Рабочие столы в баре: "used" — только используемые, "5" — 1–5, "10" — 1–10
             property string wsMode: "used"
             // Раскладка бара: ключи элементов через запятую по зонам (logo, workspaces, clock, media, cava, tray, network, bluetooth, sound, notifications)

@@ -22,7 +22,7 @@ Rectangle {
 
     height: Settings.barHeight - 8
     width: row.implicitWidth + 20
-    radius: height / 2
+    radius: Settings.barRounded ? height / 2 : 0
     color: Qt.rgba(1, 1, 1, 0.10)
 
     // Есть ли cava в системе
@@ -68,7 +68,7 @@ Rectangle {
                     anchors.bottom: parent.bottom
                     width: parent.width
                     height: Math.max(2, Math.round(parent.level * pill.maxBarHeight))
-                    radius: width / 2
+                    radius: Settings.barRounded ? width / 2 : 0
                     color: Colors.text
                     opacity: 0.45 + 0.55 * parent.level
                 }
