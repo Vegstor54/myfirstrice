@@ -31,7 +31,7 @@ ShellRoot {
                 monitor?.activeWorkspace?.id ?? Hyprland.focusedWorkspace?.id ?? -1
 
             anchors { top: true; left: true; right: true }
-            margins { top: 8; left: Settings.barSideMargin; right: Settings.barSideMargin }
+            margins { top: Settings.barTop; left: Settings.barEdge; right: Settings.barEdge }
             implicitHeight: Settings.barHeight
             color: "transparent"
 

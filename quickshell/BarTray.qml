@@ -57,7 +57,7 @@ Rectangle {
                         return
                     }
                     area.stack = []
-                    area.anchorX = area.mapToItem(null, area.width / 2, 0).x + Settings.barSideMargin
+                    area.anchorX = area.mapToItem(null, area.width / 2, 0).x + Settings.barEdge
                     TrayState.screenName = area.screenName
                     TrayState.openItem = area.modelData
                 }
@@ -101,7 +101,7 @@ Rectangle {
                     screen: modelData
                     anchors { top: true; bottom: true; left: true; right: true }
                     // Бар сверху остаётся свободным: 8 — отступ бара от края экрана
-                    margins.top: 8 + Settings.barHeight
+                    margins.top: Settings.barTop + Settings.barHeight
                     color: "transparent"
                     exclusionMode: ExclusionMode.Ignore
                     WlrLayershell.layer: WlrLayer.Overlay
