@@ -37,7 +37,7 @@ ShellRoot {
 
             Rectangle {
                 anchors.fill: parent
-                radius: 999
+                radius: Settings.barRounded ? 999 : 0
                 color: Colors[Settings.barColor] ?? Colors.primaryContainer
                 border.width: 1
                 border.color: Qt.lighter(color, 1.3)
