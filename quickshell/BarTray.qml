@@ -1,5 +1,5 @@
 import Quickshell
-import Quickshell.Hyprland
+import Quickshell.Wayland
 import Quickshell.Services.SystemTray
 import Quickshell.Widgets
 import QtQuick
@@ -44,13 +44,11 @@ Rectangle {
                 cursorShape: Qt.PointingHandCursor
                 acceptedButtons: Qt.LeftButton | Qt.MiddleButton | Qt.RightButton
 
-                // Показывает меню под значком (координаты — в окне бара)
+                // Показывает меню под значком: запоминает центр значка по горизонтали (в координатах экрана)
                 function openMenu() {
                     if (pill.openItem === area.modelData) { pill.openItem = null; return }
                     popup.stack = []
-                    const p = area.mapToItem(null, area.width / 2, area.height)
-                    popup.anchor.rect.x = p.x
-                    popup.anchor.rect.y = p.y + 6
+                    popup.anchorX = area.mapToItem(null, area.width / 2, 0).x + Settings.barSideMargin
                     pill.openItem = area.modelData
                 }
 
@@ -72,20 +70,19 @@ Rectangle {
                     opacity: area.containsMouse ? 1 : 0.85
                 }
 
-                // Клик вне меню закрывает его
-                HyprlandFocusGrab {
-                    windows: [popup]
-                    active: popup.visible
-                    onCleared: if (pill.openItem === area.modelData) pill.openItem = null
-                }
-
                 QsMenuOpener {
                     id: opener
                     menu: popup.current
                 }
 
-                PopupWindow {
+                // Окно меню: прозрачный слой на весь экран ниже бара, как у QuickMenu. Любой клик
+                // вне карточки (по окнам, обоям) закрывает меню; сам бар остаётся кликабельным,
+                // поэтому клик по другому значку трея сразу переключает меню.
+                PanelWindow {
                     id: popup
+
+                    // Центр значка по горизонтали в координатах экрана
+                    property real anchorX: 0
 
                     // Открытые подменю (самое глубокое последним); пусто — корневое меню приложения
                     property var stack: []
@@ -93,18 +90,27 @@ Rectangle {
                         stack.length > 0 ? stack[stack.length - 1] : area.modelData.menu
 
                     visible: pill.openItem === area.modelData
+                    screen: area.QsWindow.window ? area.QsWindow.window.screen : null
+                    anchors { top: true; bottom: true; left: true; right: true }
+                    // Бар сверху остаётся свободным: 8 — отступ бара от края экрана
+                    margins.top: 8 + Settings.barHeight
                     color: "transparent"
-                    anchor.window: area.QsWindow.window
-                    anchor.rect.width: 1
-                    anchor.rect.height: 1
-                    anchor.edges: Edges.Bottom
-                    anchor.gravity: Edges.Bottom
-                    anchor.adjustment: PopupAdjustment.Slide
-                    implicitWidth: card.implicitWidth
-                    implicitHeight: card.implicitHeight
+                    exclusionMode: ExclusionMode.Ignore
+                    WlrLayershell.layer: WlrLayer.Overlay
+                    WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
+
+                    MouseArea {
+                        anchors.fill: parent
+                        acceptedButtons: Qt.LeftButton | Qt.MiddleButton | Qt.RightButton
+                        onPressed: pill.openItem = null
+                    }
 
                     Rectangle {
                         id: card
+                        width: implicitWidth
+                        height: implicitHeight
+                        y: 6
+                        x: Math.max(8, Math.min(popup.width - width - 8, popup.anchorX - width / 2))
                         implicitWidth: Math.max(180, Math.min(340, col.implicitWidth + 12))
                         implicitHeight: col.implicitHeight + 12
                         radius: 12
@@ -112,6 +118,9 @@ Rectangle {
                                        Colors.surfaceContainer.b, 0.97)
                         border.width: 1
                         border.color: Qt.rgba(Colors.primary.r, Colors.primary.g, Colors.primary.b, 0.35)
+
+                        // Клик по самой карточке (поля, разделители) меню не закрывает
+                        MouseArea { anchors.fill: parent }
 
                         ColumnLayout {
                             id: col
