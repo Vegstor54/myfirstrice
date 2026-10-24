@@ -20,7 +20,7 @@ Item {
     readonly property var zones: ["left", "center", "right"]
     // Зона по умолчанию для каждого элемента: сюда попадают новые и потерянные
     readonly property var defaultZone: ({
-        logo: "left", workspaces: "left", clock: "center", media: "center",
+        logo: "left", workspaces: "left", clock: "center", media: "center", cava: "center",
         tray: "right",
         network: "right", bluetooth: "right", sound: "right", notifications: "right"
     })
@@ -31,7 +31,7 @@ Item {
 
     // Элементы по ключам: для расчёта позиций
     readonly property var slots: ({
-        logo: logoSlot, workspaces: wsSlot, clock: clockSlot, media: mediaSlot, tray: traySlot,
+        logo: logoSlot, workspaces: wsSlot, clock: clockSlot, media: mediaSlot, cava: cavaSlot, tray: traySlot,
         network: netSlot, bluetooth: btSlot, sound: sndSlot, notifications: ntfSlot
     })
 
@@ -381,6 +381,20 @@ Item {
             id: mediaLoader
             anchors.verticalCenter: parent.verticalCenter
             source: "BarMedia.qml"
+        }
+    }
+
+    // Cava: столбики-эквалайзер (BarCava.qml), виден, только если cava установлена
+    BarSlot {
+        id: cavaSlot
+        key: "cava"
+        host: root
+        visible: Settings.moduleOn("cava") && cavaLoader.item !== null && cavaLoader.item.shown
+
+        Loader {
+            id: cavaLoader
+            anchors.verticalCenter: parent.verticalCenter
+            source: "BarCava.qml"
         }
     }
 
