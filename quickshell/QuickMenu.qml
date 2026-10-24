@@ -102,7 +102,7 @@ Scope {
 
                 anchors.top: parent.top
                 // Под баром: 8 — его отступ от края, ещё 8 — зазор до меню
-                anchors.topMargin: Settings.barHeight + 16 + slide
+                anchors.topMargin: Settings.barHeight + Settings.barTop + 8 + slide
                 // По горизонтали стоит под значком, но не выходит за края экрана
                 x: Math.max(Settings.barSideMargin,
                             Math.min(parent.width - width - Settings.barSideMargin, root.anchorX - width / 2))

@@ -79,7 +79,7 @@ Flickable {
             Repeater {
                 model: [
                     { value: true,  label: "Скруглённый" },
-                    { value: false, label: "Без скругления" }
+                    { value: false, label: "Прямой, во всю ширину" }
                 ]
 
                 Rectangle {

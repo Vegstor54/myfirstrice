@@ -25,7 +25,7 @@ Scope {
 
             visible: NotificationState.popups.count > 0
             anchors { top: true; right: true }
-            margins { top: Settings.barHeight + 16; right: Settings.barSideMargin }
+            margins { top: Settings.barHeight + Settings.barTop + 8; right: Settings.barSideMargin }
             implicitWidth: 360
             implicitHeight: column.implicitHeight
             color: "transparent"

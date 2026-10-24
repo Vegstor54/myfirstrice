@@ -19,6 +19,9 @@ Singleton {
 
     // Отступ бара от боковых краёв экрана (его используют shell.qml и QuickMenu)
     readonly property int barSideMargin: 16
+    // Положение самого бара: скруглённый «плавает» с отступами, прямой занимает всю верхнюю кромку экрана
+    readonly property int barEdge: barRounded ? barSideMargin : 0
+    readonly property int barTop: barRounded ? 8 : 0
 
     // Включён ли модуль бара (выключенные перечислены в barOff)
     function moduleOn(key) { return barOff.split(",").indexOf(key) < 0 }
@@ -47,7 +50,7 @@ Singleton {
             property string monoFont: "JetBrains Mono"
             property string barSize: "small"
             property bool showLogo: true
-            // Скругление бара и его элементов: false — прямые углы
+            // Форма бара: true — скруглённый «таблеткой» с отступами, false — прямой и во всю ширину экрана
             property bool barRounded: true
             // Рабочие столы в баре: "used" — только используемые, "5" — 1–5, "10" — 1–10
             property string wsMode: "used"
