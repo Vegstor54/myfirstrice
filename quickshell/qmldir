@@ -28,3 +28,4 @@ MixerRow MixerRow.qml
 StreamRow StreamRow.qml
 SoundTab SoundTab.qml
 ClipboardMenu ClipboardMenu.qml
+singleton TrayState TrayState.qml
