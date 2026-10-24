@@ -48,11 +48,11 @@ Singleton {
             property bool showLogo: true
             // Рабочие столы в баре: "used" — только используемые, "5" — 1–5, "10" — 1–10
             property string wsMode: "used"
-            // Раскладка бара: ключи элементов через запятую по зонам (logo, workspaces, clock, media, tray, network, bluetooth, sound, notifications)
+            // Раскладка бара: ключи элементов через запятую по зонам (logo, workspaces, clock, media, cava, tray, network, bluetooth, sound, notifications)
             property string barLeft: "logo,workspaces"
             property string barCenter: "clock"
             property string barRight: "network,bluetooth,sound,notifications"
-            // Выключенные модули бара через запятую (workspaces, clock, media, tray, network, bluetooth, sound, notifications)
+            // Выключенные модули бара через запятую (workspaces, clock, media, cava, tray, network, bluetooth, sound, notifications)
             property string barOff: ""
             // Группы значков справа: группы через "|", модули в группе через ",".
             // Модули идут в порядке network, bluetooth, sound, notifications; группа — одна «таблетка»

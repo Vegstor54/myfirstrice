@@ -33,6 +33,7 @@ Flickable {
                     { id: "workspaces",    label: "Столы" },
                     { id: "clock",         label: "Часы" },
                     { id: "media",         label: "Трек" },
+                    { id: "cava",          label: "Cava" },
                     { id: "tray",          label: "Трей" },
                     { id: "network",       label: "Сеть" },
                     { id: "bluetooth",     label: "Bluetooth" },
