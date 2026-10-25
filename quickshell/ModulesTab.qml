@@ -38,7 +38,7 @@ Flickable {
 
             Repeater {
                 model: [
-                    { id: "workspaces",    label: "Столы",       icon: "", settings: false },
+                    { id: "workspaces",    label: "Столы",       icon: "", settings: true },
                     { id: "clock",         label: "Часы",        icon: "", settings: true },
                     { id: "media",         label: "Трек",        icon: "", settings: false },
                     { id: "cava",          label: "Cava",        icon: "", settings: false },

@@ -9,6 +9,7 @@ FontTab FontTab.qml
 BarTab BarTab.qml
 ModulesTab ModulesTab.qml
 ClockSettingsTab ClockSettingsTab.qml
+WorkspacesSettingsTab WorkspacesSettingsTab.qml
 Workspaces Workspaces.qml
 BarItems BarItems.qml
 BarSlot BarSlot.qml

@@ -41,7 +41,7 @@ Scope {
         "style": [
             { id: "style/colors", title: "Цветовая схема", subtitle: "Цвет бара" },
             { id: "style/font",   title: "Шрифт",          subtitle: "Шрифт интерфейса и терминала" },
-            { id: "style/bar",    title: "Бар",            subtitle: "Размер, логотип, рабочие столы" },
+            { id: "style/bar",    title: "Бар",            subtitle: "Размер, форма, логотип" },
             { id: "style/modules", title: "Модули бара", subtitle: "Что показывать в баре" },
             { id: "style/wallpaper", title: "Обои",         subtitle: "Картинка рабочего стола и палитра" }
         ],
@@ -55,6 +55,7 @@ Scope {
     // Страницы настроек отдельных модулей (шестерёнка на плитке в «Модули бара»): id -> заголовок.
     // Родитель по правилу id — style/modules. Новый модуль: запись здесь + Component и ветка в Loader.
     readonly property var modulePages: ({
+        "style/modules/workspaces": "Столы",
         "style/modules/clock": "Часы"
     })
 
@@ -254,6 +255,7 @@ Scope {
                                        : root.activeTab === "style/font" ? fontTab
                                        : root.activeTab === "style/bar" ? barTab
                                        : root.activeTab === "style/modules" ? modulesTab
+                                       : root.activeTab === "style/modules/workspaces" ? workspacesSettingsTab
                                        : root.activeTab === "style/modules/clock" ? clockSettingsTab
                                        : root.activeTab === "style/wallpaper" ? wallpaperTab
                                        : colorsTab
@@ -332,6 +334,11 @@ Scope {
                 ModulesTab {
                     onOpenRequested: moduleId => root.openPage("style/modules/" + moduleId)
                 }
+            }
+
+            Component {
+                id: workspacesSettingsTab
+                WorkspacesSettingsTab {}
             }
 
             Component {
