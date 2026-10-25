@@ -52,6 +52,12 @@ Scope {
         ]
     })
 
+    // Страницы настроек отдельных модулей (шестерёнка на плитке в «Модули бара»): id -> заголовок.
+    // Родитель по правилу id — style/modules. Новый модуль: запись здесь + Component и ветка в Loader.
+    readonly property var modulePages: ({
+        "style/modules/clock": "Часы"
+    })
+
     function itemById(id) {
         const all = pages.concat(...Object.values(subpages))
         for (let i = 0; i < all.length; i++)
@@ -73,7 +79,7 @@ Scope {
         const all = pages.concat(...Object.values(subpages))
         for (let i = 0; i < all.length; i++)
             if (all[i].id === id) return all[i].title
-        return ""
+        return modulePages[id] ?? ""
     }
 
     function openPage(id) {
@@ -248,6 +254,7 @@ Scope {
                                        : root.activeTab === "style/font" ? fontTab
                                        : root.activeTab === "style/bar" ? barTab
                                        : root.activeTab === "style/modules" ? modulesTab
+                                       : root.activeTab === "style/modules/clock" ? clockSettingsTab
                                        : root.activeTab === "style/wallpaper" ? wallpaperTab
                                        : colorsTab
                     }
@@ -322,7 +329,14 @@ Scope {
 
             Component {
                 id: modulesTab
-                ModulesTab {}
+                ModulesTab {
+                    onOpenRequested: moduleId => root.openPage("style/modules/" + moduleId)
+                }
+            }
+
+            Component {
+                id: clockSettingsTab
+                ClockSettingsTab {}
             }
 
             Component {
