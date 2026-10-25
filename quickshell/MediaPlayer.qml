@@ -43,7 +43,7 @@ ColumnLayout {
 
         Rectangle {
             anchors.fill: parent
-            radius: 16
+            radius: Settings.r(16)
             color: Colors.surfaceContainerHigh
         }
 
@@ -60,7 +60,7 @@ ColumnLayout {
         Rectangle {
             id: artMask
             anchors.fill: parent
-            radius: 16
+            radius: Settings.r(16)
             visible: false
             layer.enabled: true
         }
@@ -122,13 +122,13 @@ ColumnLayout {
                 anchors.verticalCenter: parent.verticalCenter
                 width: parent.width
                 height: 6
-                radius: 3
+                radius: Settings.r(3)
                 color: Colors.surfaceContainerHighest
 
                 Rectangle {
                     width: root.length > 0 ? parent.width * Math.min(1, root.position / root.length) : 0
                     height: parent.height
-                    radius: 3
+                    radius: Settings.r(3)
                     color: Colors.primary
                 }
             }
@@ -184,7 +184,7 @@ ColumnLayout {
 
                 Layout.preferredWidth: main ? 44 : 36
                 Layout.preferredHeight: Layout.preferredWidth
-                radius: width / 2
+                radius: Settings.r(width / 2)
                 opacity: usable ? 1 : 0.35
                 color: main ? Colors.primary
                      : btnMouse.containsMouse && usable ? Colors.surfaceContainerHighest

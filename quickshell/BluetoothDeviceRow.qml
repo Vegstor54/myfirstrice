@@ -16,7 +16,7 @@ Rectangle {
     signal actionClicked()
 
     height: 44
-    radius: 14
+    radius: Settings.r(14)
     color: highlighted ? Colors.primaryContainer
          : rowMouse.containsMouse ? Colors.surfaceContainerHighest
          : Colors.surfaceContainerHigh
@@ -66,7 +66,7 @@ Rectangle {
         anchors.verticalCenter: parent.verticalCenter
         width: 72
         height: 28
-        radius: 999
+        radius: Settings.r(999)
         color: actionMouse.containsMouse ? Colors.errorContainer : Colors.surfaceContainer
 
         Text {

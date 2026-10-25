@@ -45,7 +45,7 @@ ColumnLayout {
     Rectangle {
         Layout.fillWidth: true
         Layout.preferredHeight: 36
-        radius: 999
+        radius: Settings.r(999)
         color: netMouse.containsMouse ? Colors.surfaceContainerHighest : Colors.surfaceContainerHigh
 
         Text {

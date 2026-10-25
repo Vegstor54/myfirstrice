@@ -49,7 +49,7 @@ ColumnLayout {
 
                 width: Math.min(chipText.implicitWidth + 20, 180)
                 height: 24
-                radius: 12
+                radius: Settings.r(12)
                 color: selected ? Colors.primary
                      : chipMouse.containsMouse ? Colors.surfaceContainerHighest
                      : Colors.surfaceContainerHigh

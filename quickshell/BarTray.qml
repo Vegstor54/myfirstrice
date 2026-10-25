@@ -122,7 +122,7 @@ Rectangle {
                         x: Math.max(8, Math.min(popup.width - width - 8, area.anchorX - width / 2))
                         implicitWidth: Math.max(180, Math.min(340, col.implicitWidth + 12))
                         implicitHeight: col.implicitHeight + 12
-                        radius: 12
+                        radius: Settings.r(12)
                         color: Qt.rgba(Colors.surfaceContainer.r, Colors.surfaceContainer.g,
                                        Colors.surfaceContainer.b, 0.97)
                         border.width: 1
@@ -143,7 +143,7 @@ Rectangle {
                                 visible: area.stack.length > 0
                                 Layout.fillWidth: true
                                 implicitHeight: 28
-                                radius: 8
+                                radius: Settings.r(8)
                                 color: backMouse.containsMouse ? Colors.surfaceContainerHighest : "transparent"
 
                                 RowLayout {
@@ -185,7 +185,7 @@ Rectangle {
                                     Layout.fillWidth: true
                                     implicitWidth: sep ? 0 : entryRow.implicitWidth + 20
                                     implicitHeight: sep ? 9 : 28
-                                    radius: 8
+                                    radius: Settings.r(8)
                                     color: !sep && modelData.enabled && entryMouse.containsMouse
                                            ? Colors.surfaceContainerHighest : "transparent"
 

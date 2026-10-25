@@ -37,7 +37,7 @@ ColumnLayout {
         Rectangle {
             Layout.preferredWidth: 28
             Layout.preferredHeight: 28
-            radius: 14
+            radius: Settings.r(14)
             color: prevMouse.containsMouse ? Colors.surfaceContainerHighest : "transparent"
             Text {
                 anchors.centerIn: parent
@@ -74,7 +74,7 @@ ColumnLayout {
         Rectangle {
             Layout.preferredWidth: 28
             Layout.preferredHeight: 28
-            radius: 14
+            radius: Settings.r(14)
             color: nextMouse.containsMouse ? Colors.surfaceContainerHighest : "transparent"
             Text {
                 anchors.centerIn: parent
@@ -130,7 +130,7 @@ ColumnLayout {
                 Layout.fillWidth: true
                 Layout.preferredWidth: 1
                 Layout.preferredHeight: 26
-                radius: 13
+                radius: Settings.r(13)
                 color: isToday ? Colors.primary : "transparent"
 
                 Text {

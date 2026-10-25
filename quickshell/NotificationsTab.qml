@@ -14,7 +14,7 @@ ColumnLayout {
         Rectangle {
             Layout.fillWidth: true
             Layout.preferredHeight: 32
-            radius: 999
+            radius: Settings.r(999)
             color: NotificationState.dnd ? Colors.primary
                  : dndMouse.containsMouse ? Colors.surfaceContainerHighest
                  : Colors.surfaceContainerHigh
@@ -51,7 +51,7 @@ ColumnLayout {
         Rectangle {
             Layout.preferredWidth: 96
             Layout.preferredHeight: 32
-            radius: 999
+            radius: Settings.r(999)
             opacity: NotificationState.count > 0 ? 1 : 0.4
             color: clearMouse.containsMouse && NotificationState.count > 0
                    ? Colors.surfaceContainerHighest : Colors.surfaceContainerHigh

@@ -75,7 +75,7 @@ ColumnLayout {
     Rectangle {
         Layout.fillWidth: true
         Layout.preferredHeight: 40
-        radius: 999
+        radius: Settings.r(999)
         color: Colors.surfaceContainerHigh
         border.width: searchInput.activeFocus ? 1 : 0
         border.color: Colors.primary
@@ -152,7 +152,7 @@ ColumnLayout {
             background: Item {}
             contentItem: Rectangle {
                 implicitWidth: 6
-                radius: 3
+                radius: Settings.r(3)
                 color: Colors.primary
                 opacity: bar.pressed ? 0.9 : bar.active ? 0.6 : 0.3
                 Behavior on opacity { NumberAnimation { duration: 120 } }
@@ -169,7 +169,7 @@ ColumnLayout {
             // справа оставляем место под полосу прокрутки
             width: ListView.view.width - 10
             height: 44
-            radius: 12
+            radius: Settings.r(12)
             color: selected ? Colors.primaryContainer
                  : mouse.containsMouse ? Colors.surfaceContainerHighest
                  : "transparent"
@@ -198,7 +198,7 @@ ColumnLayout {
                     // Заглушка, если иконка не нашлась
                     Rectangle {
                         anchors.fill: parent
-                        radius: 8
+                        radius: Settings.r(8)
                         visible: !icon.visible
                         color: Colors.secondaryContainer
 

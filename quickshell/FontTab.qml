@@ -74,7 +74,7 @@ ColumnLayout {
 
                 Layout.fillWidth: true
                 Layout.preferredHeight: 36
-                radius: 999
+                radius: Settings.r(999)
                 color: selected ? Colors.primary
                      : chipMouse.containsMouse ? Colors.surfaceContainerHighest
                      : Colors.surfaceContainerHigh
@@ -125,7 +125,7 @@ ColumnLayout {
             background: Item {}
             contentItem: Rectangle {
                 implicitWidth: 6
-                radius: 3
+                radius: Settings.r(3)
                 color: Colors.primary
                 opacity: bar.pressed ? 0.9 : bar.active ? 0.6 : 0.3
                 Behavior on opacity { NumberAnimation { duration: 120 } }
@@ -140,7 +140,7 @@ ColumnLayout {
             // справа оставляем место под полосу прокрутки
             width: ListView.view.width - 10
             height: 40
-            radius: 12
+            radius: Settings.r(12)
             color: selected ? Colors.primary
                  : mouse.containsMouse ? Colors.surfaceContainerHighest
                  : "transparent"

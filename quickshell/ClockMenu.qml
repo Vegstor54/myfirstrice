@@ -130,7 +130,7 @@ Scope {
                             Math.min(parent.width - width - Settings.barSideMargin, root.anchorX - width / 2))
                 width: 700
                 height: 400
-                radius: 24
+                radius: Settings.r(24)
                 color: Qt.rgba(Colors.surfaceContainer.r, Colors.surfaceContainer.g, Colors.surfaceContainer.b, 0.95)
                 border.width: 1
                 border.color: Qt.rgba(Colors.primary.r, Colors.primary.g, Colors.primary.b, 0.35)

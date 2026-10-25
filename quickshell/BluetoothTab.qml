@@ -170,7 +170,7 @@ ColumnLayout {
         Rectangle {
             Layout.preferredWidth: 104
             Layout.preferredHeight: 32
-            radius: 999
+            radius: Settings.r(999)
             color: tab.adapter && tab.adapter.enabled ? Colors.primary
                  : powerMouse.containsMouse ? Colors.surfaceContainerHighest
                  : Colors.surfaceContainerHigh
@@ -211,7 +211,7 @@ ColumnLayout {
 
                 Layout.fillWidth: true
                 Layout.preferredHeight: 32
-                radius: 999
+                radius: Settings.r(999)
                 color: selected ? Colors.primary
                      : viewMouse.containsMouse ? Colors.surfaceContainerHighest
                      : Colors.surfaceContainerHigh

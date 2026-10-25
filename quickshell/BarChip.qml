@@ -8,7 +8,7 @@ Rectangle {
     signal clicked()
 
     implicitHeight: 36
-    radius: 999
+    radius: Settings.r(999)
     color: selected ? Colors.primary
          : area.containsMouse ? Colors.surfaceContainerHighest
          : Colors.surfaceContainerHigh

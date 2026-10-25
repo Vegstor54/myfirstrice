@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 
-// Настройки бара: размер, форма (скруглённый или прямой), кнопка с логотипом переехала в «Модули бара» (плитка «Лого»).
+// Настройки бара: размер, форма всего интерфейса (скруглённый или прямой), кнопка с логотипом переехала в «Модули бара» (плитка «Лого»).
 // Рабочие столы настраиваются на странице модуля «Столы» (Модули бара, шестерёнка).
 // Всё сохраняется в Settings (settings.json), бар меняется сразу.
 Flickable {
@@ -42,7 +42,7 @@ Flickable {
 
                     Layout.fillWidth: true
                     Layout.preferredHeight: 36
-                    radius: 999
+                    radius: Settings.r(999)
                     color: selected ? Colors.primary
                          : sizeMouse.containsMouse ? Colors.surfaceContainerHighest
                          : Colors.surfaceContainerHigh
@@ -66,7 +66,7 @@ Flickable {
         }
 
         Text {
-            text: "Форма бара"
+            text: "Форма интерфейса"
             color: Colors.text
             font.family: Settings.uiFontFamily
             font.pixelSize: 14
@@ -80,7 +80,7 @@ Flickable {
             Repeater {
                 model: [
                     { value: true,  label: "Скруглённый" },
-                    { value: false, label: "Прямой, во всю ширину" }
+                    { value: false, label: "Прямой (бар во всю ширину)" }
                 ]
 
                 Rectangle {
@@ -90,7 +90,7 @@ Flickable {
 
                     Layout.fillWidth: true
                     Layout.preferredHeight: 36
-                    radius: 999
+                    radius: Settings.r(999)
                     color: selected ? Colors.primary
                          : shapeMouse.containsMouse ? Colors.surfaceContainerHighest
                          : Colors.surfaceContainerHigh
@@ -134,7 +134,7 @@ Flickable {
         Rectangle {
             Layout.fillWidth: true
             Layout.preferredHeight: 36
-            radius: 999
+            radius: Settings.r(999)
             color: resetMouse.containsMouse ? Colors.surfaceContainerHighest : Colors.surfaceContainerHigh
 
             Text {

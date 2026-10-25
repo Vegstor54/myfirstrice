@@ -63,7 +63,7 @@ ColumnLayout {
         Rectangle {
             Layout.preferredWidth: 26
             Layout.preferredHeight: 26
-            radius: 13
+            radius: Settings.r(13)
             color: row.muted ? Colors.primary
                  : muteMouse.containsMouse ? Colors.surfaceContainerHighest
                  : Colors.surfaceContainerHigh
@@ -96,13 +96,13 @@ ColumnLayout {
             anchors.verticalCenter: parent.verticalCenter
             width: parent.width
             height: 6
-            radius: 3
+            radius: Settings.r(3)
             color: Colors.surfaceContainerHighest
 
             Rectangle {
                 width: row.value * (slider.width - slider.knob) + slider.knob / 2
                 height: parent.height
-                radius: 3
+                radius: Settings.r(3)
                 color: row.muted ? Colors.surfaceVariant : Colors.primary
             }
         }
@@ -112,7 +112,7 @@ ColumnLayout {
             x: row.value * (slider.width - slider.knob)
             width: slider.knob
             height: slider.knob
-            radius: slider.knob / 2
+            radius: Settings.r(slider.knob / 2)
             color: row.muted ? Colors.surfaceVariant : Colors.primary
         }
 
