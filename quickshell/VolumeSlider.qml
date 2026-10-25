@@ -27,7 +27,7 @@ ColumnLayout {
             anchors.horizontalCenter: parent.horizontalCenter
             width: 12
             height: parent.height
-            radius: 6
+            radius: Settings.r(6)
             color: Colors.surfaceContainerHighest
 
             // Заливка растёт снизу вверх
@@ -35,7 +35,7 @@ ColumnLayout {
                 anchors.bottom: parent.bottom
                 width: parent.width
                 height: SysState.volume * (track.height - track.knob) + track.knob / 2
-                radius: 6
+                radius: Settings.r(6)
                 color: SysState.muted ? Colors.surfaceVariant : Colors.primary
             }
         }
@@ -45,7 +45,7 @@ ColumnLayout {
             y: (1 - SysState.volume) * (track.height - track.knob)
             width: track.knob
             height: track.knob
-            radius: track.knob / 2
+            radius: Settings.r(track.knob / 2)
             color: SysState.muted ? Colors.surfaceVariant : Colors.primary
         }
 
@@ -68,7 +68,7 @@ ColumnLayout {
         Layout.alignment: Qt.AlignHCenter
         Layout.preferredWidth: 36
         Layout.preferredHeight: 36
-        radius: 18
+        radius: Settings.r(18)
         color: SysState.muted ? Colors.primary
              : muteMouse.containsMouse ? Colors.surfaceContainerHighest
              : Colors.surfaceContainerHigh

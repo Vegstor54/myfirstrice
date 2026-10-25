@@ -27,7 +27,7 @@ Rectangle {
     }
 
     implicitHeight: content.implicitHeight + 24
-    radius: 20
+    radius: Settings.r(20)
     color: Qt.rgba(Colors.surfaceContainerHigh.r, Colors.surfaceContainerHigh.g, Colors.surfaceContainerHigh.b, popup ? 0.97 : 1)
     border.width: 1
     border.color: critical ? Colors.error : Qt.rgba(Colors.primary.r, Colors.primary.g, Colors.primary.b, 0.35)
@@ -75,7 +75,7 @@ Rectangle {
                 Rectangle {
                     anchors.fill: parent
                     visible: iconImg.status !== Image.Ready
-                    radius: 18
+                    radius: Settings.r(18)
                     color: Colors.primaryContainer
 
                     Text {
@@ -136,7 +136,7 @@ Rectangle {
                 Layout.alignment: Qt.AlignTop
                 Layout.preferredWidth: 24
                 Layout.preferredHeight: 24
-                radius: 12
+                radius: Settings.r(12)
                 color: closeMouse.containsMouse ? Colors.surfaceContainerHighest : "transparent"
 
                 Text {
@@ -175,7 +175,7 @@ Rectangle {
                     visible: modelData.identifier !== "default"
                     width: visible ? Math.max(72, actionText.implicitWidth + 24) : 0
                     height: visible ? 28 : 0
-                    radius: 999
+                    radius: Settings.r(999)
                     color: actionMouse.containsMouse ? Colors.primary : Colors.surfaceContainerHighest
 
                     Text {

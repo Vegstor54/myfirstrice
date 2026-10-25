@@ -58,7 +58,7 @@ Flickable {
 
                     Layout.preferredWidth: tab.cell
                     Layout.preferredHeight: tab.cell
-                    radius: 18
+                    radius: Settings.r(18)
                     color: on ? Colors.primary
                          : tileMouse.containsMouse ? Colors.surfaceContainerHighest
                          : Colors.surfaceContainerHigh
@@ -104,7 +104,7 @@ Flickable {
                         anchors.margins: 6
                         width: 26
                         height: 26
-                        radius: 13
+                        radius: Settings.r(13)
                         color: gearMouse.containsMouse
                                ? Qt.rgba(0, 0, 0, tile.on ? 0.18 : 0.3)
                                : Qt.rgba(0, 0, 0, tile.on ? 0.08 : 0.16)

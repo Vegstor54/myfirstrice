@@ -149,7 +149,7 @@ Scope {
                 anchors.centerIn: parent
                 width: 480
                 height: 520
-                radius: 24
+                radius: Settings.r(24)
                 color: Qt.rgba(Colors.surfaceContainer.r, Colors.surfaceContainer.g, Colors.surfaceContainer.b, 0.95)
                 border.width: 1
                 border.color: Qt.rgba(Colors.primary.r, Colors.primary.g, Colors.primary.b, 0.35)
@@ -180,7 +180,7 @@ Scope {
                         }
 
                         Rectangle {
-                            width: 92; height: 28; radius: 999
+                            width: 92; height: 28; radius: Settings.r(999)
                             color: clearMouse.containsMouse ? Colors.errorContainer : Colors.surfaceContainerHigh
                             visible: root.items.length > 0
 
@@ -205,7 +205,7 @@ Scope {
                     Rectangle {
                         Layout.fillWidth: true
                         Layout.preferredHeight: 40
-                        radius: 999
+                        radius: Settings.r(999)
                         color: Colors.surfaceContainerHigh
 
                         TextField {
@@ -259,7 +259,7 @@ Scope {
                             required property int index
                             width: list.width
                             height: 40
-                            radius: 12
+                            radius: Settings.r(12)
                             color: index === root.current ? Colors.primaryContainer
                                  : rowMouse.containsMouse ? Colors.surfaceContainerHighest
                                  : Colors.surfaceContainerHigh
@@ -292,7 +292,7 @@ Scope {
                                 anchors.right: parent.right
                                 anchors.verticalCenter: parent.verticalCenter
                                 anchors.rightMargin: 8
-                                width: 24; height: 24; radius: 12
+                                width: 24; height: 24; radius: Settings.r(12)
                                 color: delMouse.containsMouse ? Colors.errorContainer : "transparent"
                                 visible: rowMouse.containsMouse || row.index === root.current
 

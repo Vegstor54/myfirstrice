@@ -52,7 +52,7 @@ ColumnLayout {
 
             Rectangle {
                 required property string modelData
-                width: 110; height: 32; radius: 999
+                width: 110; height: 32; radius: Settings.r(999)
                 color: modelData === row.current ? Colors.primary
                      : mouse.containsMouse ? Colors.surfaceContainerHighest
                      : Colors.surfaceContainerHigh

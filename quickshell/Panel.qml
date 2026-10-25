@@ -49,7 +49,7 @@ Scope {
         "style": [
             { id: "style/colors", title: "Цветовая схема", subtitle: "Цвет бара" },
             { id: "style/font",   title: "Шрифт",          subtitle: "Шрифт интерфейса и терминала" },
-            { id: "style/bar",    title: "Бар",            subtitle: "Размер и форма бара" },
+            { id: "style/bar",    title: "Бар",            subtitle: "Размер бара и форма интерфейса" },
             { id: "style/modules", title: "Модули бара", subtitle: "Что показывать в баре" },
             { id: "style/wallpaper", title: "Обои",         subtitle: "Картинка рабочего стола и палитра" }
         ],
@@ -210,7 +210,7 @@ Scope {
                 anchors.centerIn: parent
                 width: 384
                 height: 544
-                radius: 24
+                radius: Settings.r(24)
                 color: Qt.rgba(Colors.surfaceContainer.r, Colors.surfaceContainer.g, Colors.surfaceContainer.b, 0.92)
                 border.width: 1
                 border.color: Qt.rgba(Colors.primary.r, Colors.primary.g, Colors.primary.b, 0.35)
@@ -232,7 +232,7 @@ Scope {
                         Layout.fillWidth: true
                         Layout.preferredHeight: 36
                         visible: root.activeTab !== "menu"
-                        radius: 999
+                        radius: Settings.r(999)
                         color: backMouse.containsMouse ? Colors.surfaceContainerHighest : Colors.surfaceContainerHigh
 
                         Text {
@@ -291,7 +291,7 @@ Scope {
 
                             Layout.fillWidth: true
                             Layout.preferredHeight: 56
-                            radius: 16
+                            radius: Settings.r(16)
                             color: selected ? Colors.primaryContainer : Colors.surfaceContainerHigh
 
                             ColumnLayout {
@@ -411,7 +411,7 @@ Scope {
 
                             Rectangle {
                                 required property string modelData
-                                width: 36; height: 36; radius: 18
+                                width: 36; height: 36; radius: Settings.r(18)
                                 color: Colors[modelData]
                                 border.width: Settings.barColor === modelData ? 3 : 1
                                 border.color: Settings.barColor === modelData ? Colors.text : Qt.darker(color, 1.3)

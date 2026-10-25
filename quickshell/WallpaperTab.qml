@@ -92,7 +92,7 @@ ColumnLayout {
         Rectangle {
             id: frame
             anchors.fill: parent
-            radius: 16
+            radius: Settings.r(16)
             color: Colors.surfaceContainerHigh
         }
 
@@ -111,7 +111,7 @@ ColumnLayout {
         Rectangle {
             id: mask
             anchors.fill: parent
-            radius: 16
+            radius: Settings.r(16)
             visible: false
             layer.enabled: true
         }
@@ -142,7 +142,7 @@ ColumnLayout {
             anchors.right: parent.right
             anchors.bottom: parent.bottom
             height: 32
-            radius: 16
+            radius: Settings.r(16)
             color: Qt.rgba(0, 0, 0, 0.5)
 
             Text {
@@ -157,7 +157,7 @@ ColumnLayout {
         // Рамка при наведении и при перетаскивании
         Rectangle {
             anchors.fill: parent
-            radius: 16
+            radius: Settings.r(16)
             color: "transparent"
             border.width: drop.containsDrag ? 3 : previewMouse.containsMouse ? 2 : 0
             border.color: Colors.primary

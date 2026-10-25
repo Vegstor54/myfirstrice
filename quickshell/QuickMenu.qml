@@ -111,7 +111,7 @@ Scope {
                         : root.tab === "notifications" ? 440
                         : root.tab === "bluetooth" ? 400 : 260)
                         - (root.tabs.length > 1 ? 0 : 52)
-                radius: 24
+                radius: Settings.r(24)
                 color: Qt.rgba(Colors.surfaceContainer.r, Colors.surfaceContainer.g, Colors.surfaceContainer.b, 0.95)
                 border.width: 1
                 border.color: Qt.rgba(Colors.primary.r, Colors.primary.g, Colors.primary.b, 0.35)
@@ -145,7 +145,7 @@ Scope {
 
                                 Layout.fillWidth: true
                                 Layout.preferredHeight: 36
-                                radius: 999
+                                radius: Settings.r(999)
                                 color: selected ? Colors.primary
                                      : tabMouse.containsMouse ? Colors.surfaceContainerHighest
                                      : Colors.surfaceContainerHigh

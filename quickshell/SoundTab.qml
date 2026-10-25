@@ -20,7 +20,7 @@ Flickable {
         background: Item {}
         contentItem: Rectangle {
             implicitWidth: 6
-            radius: 3
+            radius: Settings.r(3)
             color: Colors.primary
             opacity: bar.pressed ? 0.9 : bar.active ? 0.6 : 0.3
             Behavior on opacity { NumberAnimation { duration: 120 } }

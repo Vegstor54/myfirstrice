@@ -38,6 +38,10 @@ Singleton {
     readonly property int barEdge: barRounded ? barSideMargin : 0
     readonly property int barTop: barRounded ? 8 : 0
 
+    // Общая форма интерфейса: скруглённая (barRounded) или прямая. Радиус любого элемента — Settings.r(радиус),
+    // в прямом режиме он 0. Бар, панель, меню, уведомления и кнопки меняются вместе.
+    function r(radius) { return barRounded ? radius : 0 }
+
     // Включён ли модуль бара (выключенные перечислены в barOff)
     function moduleOn(key) { return barOff.split(",").indexOf(key) < 0 }
     function setModule(key, on) {

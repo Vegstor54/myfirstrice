@@ -22,7 +22,7 @@ Flickable {
         Rectangle {
             Layout.fillWidth: true
             Layout.preferredHeight: 56
-            radius: 16
+            radius: Settings.r(16)
             color: Colors.surfaceContainerHigh
 
             Text {
@@ -110,7 +110,7 @@ Flickable {
         Rectangle {
             Layout.fillWidth: true
             Layout.preferredHeight: 40
-            radius: 999
+            radius: Settings.r(999)
             color: Colors.surfaceContainerHigh
             border.width: customInput.activeFocus ? 1 : 0
             border.color: Colors.primary
