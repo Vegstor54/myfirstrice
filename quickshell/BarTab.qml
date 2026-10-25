@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 
-// Настройки бара: размер, форма всего интерфейса (скруглённый или прямой), кнопка с логотипом переехала в «Модули бара» (плитка «Лого»).
+// Настройки бара: размер. Форма бара и интерфейса — на странице «Форма», кнопка с логотипом — в «Модули бара» (плитка «Лого»).
 // Рабочие столы настраиваются на странице модуля «Столы» (Модули бара, шестерёнка).
 // Всё сохраняется в Settings (settings.json), бар меняется сразу.
 Flickable {
@@ -60,54 +60,6 @@ Flickable {
                         hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
                         onClicked: Settings.barSize = sizeChip.modelData.id
-                    }
-                }
-            }
-        }
-
-        Text {
-            text: "Форма интерфейса"
-            color: Colors.text
-            font.family: Settings.uiFontFamily
-            font.pixelSize: 14
-            font.bold: true
-        }
-
-        RowLayout {
-            Layout.fillWidth: true
-            spacing: 8
-
-            Repeater {
-                model: [
-                    { value: true,  label: "Скруглённый" },
-                    { value: false, label: "Прямой (бар во всю ширину)" }
-                ]
-
-                Rectangle {
-                    id: shapeChip
-                    required property var modelData
-                    readonly property bool selected: Settings.barRounded === modelData.value
-
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: 36
-                    radius: Settings.r(999)
-                    color: selected ? Colors.primary
-                         : shapeMouse.containsMouse ? Colors.surfaceContainerHighest
-                         : Colors.surfaceContainerHigh
-
-                    Text {
-                        anchors.centerIn: parent
-                        text: shapeChip.modelData.label
-                        color: shapeChip.selected ? Colors.textOnPrimary : Colors.text
-                        font.family: Settings.uiFontFamily
-                        font.pixelSize: 13
-                    }
-                    MouseArea {
-                        id: shapeMouse
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: Settings.barRounded = shapeChip.modelData.value
                     }
                 }
             }

@@ -10,6 +10,7 @@ BarTab BarTab.qml
 ModulesTab ModulesTab.qml
 ClockSettingsTab ClockSettingsTab.qml
 NetworkTab NetworkTab.qml
+ShapeTab ShapeTab.qml
 WorkspacesSettingsTab WorkspacesSettingsTab.qml
 Workspaces Workspaces.qml
 BarItems BarItems.qml

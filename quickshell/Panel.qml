@@ -49,7 +49,8 @@ Scope {
         "style": [
             { id: "style/colors", title: "Цветовая схема", subtitle: "Цвет бара" },
             { id: "style/font",   title: "Шрифт",          subtitle: "Шрифт интерфейса и терминала" },
-            { id: "style/bar",    title: "Бар",            subtitle: "Размер бара и форма интерфейса" },
+            { id: "style/bar",    title: "Бар",            subtitle: "Размер бара" },
+            { id: "style/shape",  title: "Форма",          subtitle: "Скругление бара и интерфейса" },
             { id: "style/modules", title: "Модули бара", subtitle: "Что показывать в баре" },
             { id: "style/wallpaper", title: "Обои",         subtitle: "Картинка рабочего стола и палитра" }
         ],
@@ -266,6 +267,7 @@ Scope {
                                        : root.activeTab === "control/notifications" ? notificationsTab
                                        : root.activeTab === "style/font" ? fontTab
                                        : root.activeTab === "style/bar" ? barTab
+                                       : root.activeTab === "style/shape" ? shapeTab
                                        : root.activeTab === "style/modules" ? modulesTab
                                        : root.activeTab === "style/modules/workspaces" ? workspacesSettingsTab
                                        : root.activeTab === "style/modules/clock" ? clockSettingsTab
@@ -366,6 +368,11 @@ Scope {
             Component {
                 id: barTab
                 BarTab {}
+            }
+
+            Component {
+                id: shapeTab
+                ShapeTab {}
             }
 
             Component {
