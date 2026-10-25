@@ -17,6 +17,7 @@ Scope {
     // Пункты главного меню
     readonly property var pages: [
         { id: "apps",     title: "Apps",     subtitle: "Запуск приложений" },
+        { id: "control",  title: "Control Center", subtitle: "Сеть, Bluetooth, звук, уведомления" },
         { id: "defaults", title: "Defaults", subtitle: "Приложения по умолчанию" },
         { id: "style",    title: "Style",    subtitle: "Цвета, шрифт, бар и обои" },
         { id: "system",   title: "System",   subtitle: "Сон, гибернация, выключение" }
@@ -38,6 +39,13 @@ Scope {
     // id подпункта = "<id родителя>/<имя>", по нему находится родитель при возврате.
     // Новый подпункт: запись здесь + Component и ветка в Loader ниже.
     readonly property var subpages: ({
+        // Control Center: те же вкладки, что открывают значки в баре, но доступные и при выключенных модулях
+        "control": [
+            { id: "control/network",       title: "Интернет",    subtitle: "Статус сети и настройки" },
+            { id: "control/bluetooth",     title: "Bluetooth",   subtitle: "Устройства и сопряжение" },
+            { id: "control/sound",         title: "Звук",        subtitle: "Громкость, устройства, микрофон" },
+            { id: "control/notifications", title: "Уведомления", subtitle: "История и «не беспокоить»" }
+        ].filter(i => i.id !== "control/bluetooth" || SysState.hasBluetooth),
         "style": [
             { id: "style/colors", title: "Цветовая схема", subtitle: "Цвет бара" },
             { id: "style/font",   title: "Шрифт",          subtitle: "Шрифт интерфейса и терминала" },
@@ -252,6 +260,10 @@ Scope {
                         sourceComponent: root.isMenu(root.activeTab) ? menuPage
                                        : root.activeTab === "defaults" ? defaultsTab
                                        : root.activeTab === "apps" ? appsTab
+                                       : root.activeTab === "control/network" ? networkTab
+                                       : root.activeTab === "control/bluetooth" ? bluetoothPage
+                                       : root.activeTab === "control/sound" ? soundTab
+                                       : root.activeTab === "control/notifications" ? notificationsTab
                                        : root.activeTab === "style/font" ? fontTab
                                        : root.activeTab === "style/bar" ? barTab
                                        : root.activeTab === "style/modules" ? modulesTab
@@ -317,6 +329,33 @@ Scope {
 
                     Item { Layout.fillHeight: true }
                 }
+            }
+
+            Component {
+                id: networkTab
+                NetworkTab {
+                    onCloseRequested: root.shown = false
+                }
+            }
+
+            // Bluetooth грузится по строке и только в окне сфокусированного монитора:
+            // окон панели по одному на монитор, два экземпляра вкладки запускали бы поиск дважды
+            Component {
+                id: bluetoothPage
+                Loader {
+                    active: win.isFocused && root.shown
+                    source: "BluetoothTab.qml"
+                }
+            }
+
+            Component {
+                id: soundTab
+                SoundTab {}
+            }
+
+            Component {
+                id: notificationsTab
+                NotificationsTab {}
             }
 
             Component {
