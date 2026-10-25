@@ -16,6 +16,21 @@ Singleton {
     property alias barOff: adapter.barOff
     property alias indGroups: adapter.indGroups
     property alias dnd: adapter.dnd
+    property alias clockSeconds: adapter.clockSeconds
+    property alias clock24: adapter.clock24
+    property alias clockDate: adapter.clockDate
+    property alias clockCustom: adapter.clockCustom
+
+    // Формат часов в баре (Qt.formatDateTime): свой, если задан, иначе из настроек часов
+    readonly property string clockFormat: {
+        if (clockCustom !== "") return clockCustom
+        const time = clock24 ? (clockSeconds ? "HH:mm:ss" : "HH:mm")
+                             : (clockSeconds ? "h:mm:ss AP" : "h:mm AP")
+        const date = clockDate === "short" ? "d MMM" : clockDate === "weekday" ? "ddd, d MMM" : ""
+        return date !== "" ? date + "  " + time : time
+    }
+    // Нужно ли часам тикать каждую секунду
+    readonly property bool clockTicksSeconds: clockCustom !== "" ? clockCustom.indexOf("s") >= 0 : clockSeconds
 
     // Отступ бара от боковых краёв экрана (его используют shell.qml и QuickMenu)
     readonly property int barSideMargin: 16
@@ -65,6 +80,11 @@ Singleton {
             property string indGroups: "network,bluetooth,sound,notifications"
             // Режим «не беспокоить»: всплывающие уведомления не показываются (срочные показываются)
             property bool dnd: false
+            // Часы в баре: секунды, 24-часовой формат, дата ("none", "short", "weekday"), свой формат (пусто — не используется)
+            property bool clockSeconds: false
+            property bool clock24: true
+            property string clockDate: "none"
+            property string clockCustom: ""
         }
     }
 }

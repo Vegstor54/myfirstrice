@@ -283,7 +283,7 @@ Item {
         onTriggered: if (root.mergeCand !== "") root.mergeTarget = root.mergeCand
     }
 
-    SystemClock { id: clock; precision: SystemClock.Minutes }
+    SystemClock { id: clock; precision: Settings.clockTicksSeconds ? SystemClock.Seconds : SystemClock.Minutes }
 
     // Кнопка с логотипом: открывает панель, как SUPER+S
     BarSlot {
@@ -356,7 +356,7 @@ Item {
                 color: Colors.text
                 font.family: Settings.uiFontFamily
                 font.pixelSize: Math.round(Settings.barHeight * 0.5)
-                text: Qt.formatDateTime(clock.date, "HH:mm")
+                text: Qt.formatDateTime(clock.date, Settings.clockFormat)
             }
 
             MouseArea {
