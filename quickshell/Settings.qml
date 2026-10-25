@@ -9,6 +9,7 @@ Singleton {
     property alias barSize: adapter.barSize
     property alias showLogo: adapter.showLogo
     property alias barRounded: adapter.barRounded
+    property alias uiRounded: adapter.uiRounded
     property alias wsMode: adapter.wsMode
     property alias barLeft: adapter.barLeft
     property alias barCenter: adapter.barCenter
@@ -38,9 +39,9 @@ Singleton {
     readonly property int barEdge: barRounded ? barSideMargin : 0
     readonly property int barTop: barRounded ? 8 : 0
 
-    // Общая форма интерфейса: скруглённая (barRounded) или прямая. Радиус любого элемента — Settings.r(радиус),
-    // в прямом режиме он 0. Бар, панель, меню, уведомления и кнопки меняются вместе.
-    function r(radius) { return barRounded ? radius : 0 }
+    // Форма интерфейса (панель, меню, уведомления, плитки, кнопки, ползунки) не зависит от формы бара.
+    // Радиус любого такого элемента — Settings.r(радиус), в прямом режиме он 0. Форму самого бара задаёт barRounded.
+    function r(radius) { return uiRounded ? radius : 0 }
 
     // Включён ли модуль бара (выключенные перечислены в barOff)
     function moduleOn(key) { return barOff.split(",").indexOf(key) < 0 }
@@ -71,6 +72,8 @@ Singleton {
             property bool showLogo: true
             // Форма бара: true — скруглённый «таблеткой» с отступами, false — прямой и во всю ширину экрана
             property bool barRounded: true
+            // Форма остального интерфейса: true — скруглённый, false — прямой (не зависит от формы бара)
+            property bool uiRounded: true
             // Рабочие столы в баре: "used" — только используемые, "5" — 1–5, "10" — 1–10
             property string wsMode: "used"
             // Раскладка бара: ключи элементов через запятую по зонам (logo, workspaces, clock, media, cava, tray, network, bluetooth, sound, notifications)
