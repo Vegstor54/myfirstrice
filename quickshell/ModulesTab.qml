@@ -38,6 +38,7 @@ Flickable {
 
             Repeater {
                 model: [
+                    { id: "logo",          label: "Лого",        icon: "", settings: false },
                     { id: "workspaces",    label: "Столы",       icon: "", settings: true },
                     { id: "clock",         label: "Часы",        icon: "", settings: true },
                     { id: "media",         label: "Трек",        icon: "", settings: false },
@@ -52,7 +53,8 @@ Flickable {
                 Rectangle {
                     id: tile
                     required property var modelData
-                    readonly property bool on: Settings.moduleOn(modelData.id)
+                    // Лого включается своим параметром showLogo, остальные модули — через barOff
+                    readonly property bool on: modelData.id === "logo" ? Settings.showLogo : Settings.moduleOn(modelData.id)
 
                     Layout.preferredWidth: tab.cell
                     Layout.preferredHeight: tab.cell
@@ -66,7 +68,10 @@ Flickable {
                         anchors.fill: parent
                         hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
-                        onClicked: Settings.setModule(tile.modelData.id, !tile.on)
+                        onClicked: {
+                            if (tile.modelData.id === "logo") Settings.showLogo = !tile.on
+                            else Settings.setModule(tile.modelData.id, !tile.on)
+                        }
                     }
 
                     ColumnLayout {
@@ -125,7 +130,7 @@ Flickable {
 
         Text {
             Layout.fillWidth: true
-            text: "Клик по плитке включает или выключает модуль, шестерёнка открывает его настройки. Группы значков собираются прямо в баре: бросьте один значок на другой и чуть подержите, и они объединятся. Чтобы вынуть значок из группы, потяните его вниз."
+            text: "Клик по плитке включает или выключает модуль, шестерёнка открывает его настройки. «Лого» — кнопка слева, открывающая панель. Группы значков собираются прямо в баре: бросьте один значок на другой и чуть подержите, и они объединятся. Чтобы вынуть значок из группы, потяните его вниз."
             wrapMode: Text.WordWrap
             color: Colors.text
             opacity: 0.7

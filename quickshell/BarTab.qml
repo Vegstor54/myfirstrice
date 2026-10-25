@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 
-// Настройки бара: размер, форма (скруглённый или прямой), кнопка с логотипом (открывает панель).
+// Настройки бара: размер, форма (скруглённый или прямой), кнопка с логотипом переехала в «Модули бара» (плитка «Лого»).
 // Рабочие столы настраиваются на странице модуля «Столы» (Модули бара, шестерёнка).
 // Всё сохраняется в Settings (settings.json), бар меняется сразу.
 Flickable {
@@ -108,54 +108,6 @@ Flickable {
                         hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
                         onClicked: Settings.barRounded = shapeChip.modelData.value
-                    }
-                }
-            }
-        }
-
-        Text {
-            text: "Кнопка с логотипом"
-            color: Colors.text
-            font.family: Settings.uiFontFamily
-            font.pixelSize: 14
-            font.bold: true
-        }
-
-        RowLayout {
-            Layout.fillWidth: true
-            spacing: 8
-
-            Repeater {
-                model: [
-                    { value: true,  label: "Показывать" },
-                    { value: false, label: "Скрыть" }
-                ]
-
-                Rectangle {
-                    id: logoChip
-                    required property var modelData
-                    readonly property bool selected: Settings.showLogo === modelData.value
-
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: 36
-                    radius: 999
-                    color: selected ? Colors.primary
-                         : logoMouse.containsMouse ? Colors.surfaceContainerHighest
-                         : Colors.surfaceContainerHigh
-
-                    Text {
-                        anchors.centerIn: parent
-                        text: logoChip.modelData.label
-                        color: logoChip.selected ? Colors.textOnPrimary : Colors.text
-                        font.family: Settings.uiFontFamily
-                        font.pixelSize: 13
-                    }
-                    MouseArea {
-                        id: logoMouse
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: Settings.showLogo = logoChip.modelData.value
                     }
                 }
             }
