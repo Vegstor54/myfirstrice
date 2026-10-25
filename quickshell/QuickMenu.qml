@@ -180,70 +180,10 @@ Scope {
                         }
 
                         // Интернет: статус и кнопка настроек
-                        ColumnLayout {
+                        NetworkTab {
                             anchors.fill: parent
                             visible: root.tab === "network"
-                            spacing: 16
-
-                            RowLayout {
-                                Layout.fillWidth: true
-                                spacing: 12
-
-                                //  — wifi,  — проводное подключение
-                                Text {
-                                    text: SysState.net === "ethernet" ? "" : ""
-                                    color: Colors.text
-                                    opacity: SysState.net === "none" ? 0.35 : 1
-                                    font.family: "Symbols Nerd Font"
-                                    font.pixelSize: 28
-                                }
-                                ColumnLayout {
-                                    spacing: 2
-                                    Text {
-                                        text: SysState.net === "ethernet" ? "Проводное подключение"
-                                            : SysState.net === "wifi" ? "Wi-Fi"
-                                            : "Нет подключения"
-                                        color: Colors.text
-                                        font.family: Settings.uiFontFamily
-                                        font.pixelSize: 15
-                                        font.bold: true
-                                    }
-                                    Text {
-                                        text: SysState.net === "none" ? "Сеть не найдена" : "Подключено"
-                                        color: Colors.text
-                                        opacity: 0.6
-                                        font.family: Settings.uiFontFamily
-                                        font.pixelSize: 12
-                                    }
-                                }
-                            }
-
-                            Rectangle {
-                                Layout.fillWidth: true
-                                Layout.preferredHeight: 36
-                                radius: 999
-                                color: netMouse.containsMouse ? Colors.surfaceContainerHighest : Colors.surfaceContainerHigh
-
-                                Text {
-                                    anchors.centerIn: parent
-                                    text: "Настройки сети"
-                                    color: Colors.text
-                                    font.family: Settings.uiFontFamily
-                                    font.pixelSize: 13
-                                }
-                                MouseArea {
-                                    id: netMouse
-                                    anchors.fill: parent
-                                    hoverEnabled: true
-                                    cursorShape: Qt.PointingHandCursor
-                                    onClicked: {
-                                        root.shown = false
-                                        SysState.openNetwork()
-                                    }
-                                }
-                            }
-
-                            Item { Layout.fillHeight: true }
+                            onCloseRequested: root.shown = false
                         }
 
                         // Bluetooth: грузится только при открытой вкладке. Так, если в этой сборке
