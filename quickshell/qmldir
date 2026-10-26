@@ -1,36 +1,36 @@
 singleton Colors Colors.qml
-singleton Settings Settings.qml
-singleton SysState SysState.qml
-singleton NotificationState NotificationState.qml
-Panel Panel.qml
-DefaultsRow DefaultsRow.qml
-AppsTab AppsTab.qml
-FontTab FontTab.qml
-BarTab BarTab.qml
-ModulesTab ModulesTab.qml
-ClockSettingsTab ClockSettingsTab.qml
-NetworkTab NetworkTab.qml
-ShapeTab ShapeTab.qml
-ThemeModeRow ThemeModeRow.qml
-WorkspacesSettingsTab WorkspacesSettingsTab.qml
-Workspaces Workspaces.qml
-BarItems BarItems.qml
-BarSlot BarSlot.qml
-BarChip BarChip.qml
-WallpaperTab WallpaperTab.qml
-BarIndicators BarIndicators.qml
-QuickMenu QuickMenu.qml
-ClockMenu ClockMenu.qml
-VolumeSlider VolumeSlider.qml
-CalendarView CalendarView.qml
-AudioControl AudioControl.qml
-IndicatorButton IndicatorButton.qml
-BluetoothDeviceRow BluetoothDeviceRow.qml
-NotificationCard NotificationCard.qml
-NotificationPopups NotificationPopups.qml
-NotificationsTab NotificationsTab.qml
-MixerRow MixerRow.qml
-StreamRow StreamRow.qml
-SoundTab SoundTab.qml
-ClipboardMenu ClipboardMenu.qml
-singleton TrayState TrayState.qml
+singleton Settings state/Settings.qml
+singleton SysState state/SysState.qml
+singleton NotificationState state/NotificationState.qml
+Panel panel/Panel.qml
+DefaultsRow panel/DefaultsRow.qml
+AppsTab panel/AppsTab.qml
+FontTab panel/FontTab.qml
+BarTab panel/BarTab.qml
+ModulesTab panel/ModulesTab.qml
+ClockSettingsTab panel/ClockSettingsTab.qml
+NetworkTab tabs/NetworkTab.qml
+ShapeTab panel/ShapeTab.qml
+ThemeModeRow panel/ThemeModeRow.qml
+WorkspacesSettingsTab panel/WorkspacesSettingsTab.qml
+Workspaces bar/Workspaces.qml
+BarItems bar/BarItems.qml
+BarSlot bar/BarSlot.qml
+BarChip panel/BarChip.qml
+WallpaperTab panel/WallpaperTab.qml
+BarIndicators bar/BarIndicators.qml
+QuickMenu menus/QuickMenu.qml
+ClockMenu menus/ClockMenu.qml
+VolumeSlider menus/VolumeSlider.qml
+CalendarView menus/CalendarView.qml
+AudioControl tabs/AudioControl.qml
+IndicatorButton bar/IndicatorButton.qml
+BluetoothDeviceRow tabs/BluetoothDeviceRow.qml
+NotificationCard notifications/NotificationCard.qml
+NotificationPopups notifications/NotificationPopups.qml
+NotificationsTab notifications/NotificationsTab.qml
+MixerRow tabs/MixerRow.qml
+StreamRow tabs/StreamRow.qml
+SoundTab tabs/SoundTab.qml
+ClipboardMenu menus/ClipboardMenu.qml
+singleton TrayState state/TrayState.qml
