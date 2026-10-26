@@ -57,7 +57,7 @@ Rectangle {
                         return
                     }
                     area.stack = []
-                    area.anchorX = area.mapToItem(null, area.width / 2, 0).x + Settings.barEdge
+                    area.anchorX = area.mapToItem(null, area.width / 2, 0).x
                     TrayState.screenName = area.screenName
                     TrayState.openItem = area.modelData
                 }

@@ -30,13 +30,23 @@ ShellRoot {
             readonly property int activeWorkspaceId:
                 monitor?.activeWorkspace?.id ?? Hyprland.focusedWorkspace?.id ?? -1
 
+            // Окно всегда во всю ширину экрана без отступов, а отступы бара делает его прямоугольник внутри.
+            // Раньше отступы были полями самого окна и после перезапуска не всегда обновлялись под сохранённую форму:
+            // бар оставался «плавающим» даже в прямом режиме. Свойства прямоугольника обновляются всегда.
             anchors { top: true; left: true; right: true }
-            margins { top: Settings.barTop; left: Settings.barEdge; right: Settings.barEdge }
-            implicitHeight: Settings.barHeight
+            implicitHeight: Settings.barHeight + Settings.barTop
             color: "transparent"
+            // Клики принимает только сам бар, а не прозрачные поля вокруг него
+            mask: Region { item: barRect }
 
             Rectangle {
-                anchors.fill: parent
+                id: barRect
+                anchors {
+                    fill: parent
+                    topMargin: Settings.barTop
+                    leftMargin: Settings.barEdge
+                    rightMargin: Settings.barEdge
+                }
                 radius: Settings.barRounded ? 999 : 0
                 color: Colors[Settings.barColor] ?? Colors.primaryContainer
                 border.width: 1
