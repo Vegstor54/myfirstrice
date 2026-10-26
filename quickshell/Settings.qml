@@ -59,6 +59,9 @@ Singleton {
 
     FileView {
         path: Quickshell.env("HOME") + "/.config/quickshell/settings.json"
+        // Читаем файл сразу, до создания бара: иначе первые кадры идут со значениями по умолчанию
+        // (скруглённый бар с отступами), и только потом подтягиваются сохранённые
+        blockLoading: true
         watchChanges: true
         onFileChanged: reload()
         onAdapterUpdated: writeAdapter()
