@@ -77,8 +77,8 @@ ColumnLayout {
         Layout.preferredHeight: 40
         radius: Settings.r(999)
         color: Colors.surfaceContainerHigh
-        border.width: searchInput.activeFocus ? 1 : 0
-        border.color: Colors.primary
+        border.width: 1
+        border.color: searchInput.activeFocus ? Colors.primary : Colors.border
 
         TextInput {
             id: searchInput

@@ -149,6 +149,8 @@ Scope {
                                 color: selected ? Colors.primary
                                      : tabMouse.containsMouse ? Colors.surfaceContainerHighest
                                      : Colors.surfaceContainerHigh
+                                border.width: 1
+                                border.color: Colors.border
 
                                 Text {
                                     anchors.centerIn: parent

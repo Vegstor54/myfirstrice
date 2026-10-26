@@ -29,6 +29,8 @@ ColumnLayout {
             height: parent.height
             radius: Settings.r(6)
             color: Colors.surfaceContainerHighest
+            border.width: 1
+            border.color: Colors.border
 
             // Заливка растёт снизу вверх
             Rectangle {
@@ -36,7 +38,7 @@ ColumnLayout {
                 width: parent.width
                 height: SysState.volume * (track.height - track.knob) + track.knob / 2
                 radius: Settings.r(6)
-                color: SysState.muted ? Colors.surfaceVariant : Colors.primary
+                color: SysState.muted ? Colors.mutedFill : Colors.primary
             }
         }
 
@@ -46,7 +48,9 @@ ColumnLayout {
             width: track.knob
             height: track.knob
             radius: Settings.r(track.knob / 2)
-            color: SysState.muted ? Colors.surfaceVariant : Colors.primary
+            color: SysState.muted ? Colors.mutedFill : Colors.primary
+            border.width: 2
+            border.color: Colors.surfaceContainer
         }
 
         MouseArea {
@@ -72,6 +76,8 @@ ColumnLayout {
         color: SysState.muted ? Colors.primary
              : muteMouse.containsMouse ? Colors.surfaceContainerHighest
              : Colors.surfaceContainerHigh
+        border.width: 1
+        border.color: Colors.border
 
         // Значки звука — глифы Nerd Font: громко, тихо, выключено
         Text {

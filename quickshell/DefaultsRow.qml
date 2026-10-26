@@ -56,6 +56,8 @@ ColumnLayout {
                 color: modelData === row.current ? Colors.primary
                      : mouse.containsMouse ? Colors.surfaceContainerHighest
                      : Colors.surfaceContainerHigh
+                border.width: 1
+                border.color: Colors.border
 
                 Text {
                     anchors.centerIn: parent

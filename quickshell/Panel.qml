@@ -235,6 +235,8 @@ Scope {
                         visible: root.activeTab !== "menu"
                         radius: Settings.r(999)
                         color: backMouse.containsMouse ? Colors.surfaceContainerHighest : Colors.surfaceContainerHigh
+                        border.width: 1
+                        border.color: Colors.border
 
                         Text {
                             anchors.verticalCenter: parent.verticalCenter
@@ -295,6 +297,8 @@ Scope {
                             Layout.preferredHeight: 56
                             radius: Settings.r(16)
                             color: selected ? Colors.primaryContainer : Colors.surfaceContainerHigh
+                            border.width: 1
+                            border.color: Colors.border
 
                             ColumnLayout {
                                 anchors.verticalCenter: parent.verticalCenter

@@ -62,6 +62,8 @@ Flickable {
                     color: on ? Colors.primary
                          : tileMouse.containsMouse ? Colors.surfaceContainerHighest
                          : Colors.surfaceContainerHigh
+                    border.width: 1
+                    border.color: Colors.border
 
                     MouseArea {
                         id: tileMouse

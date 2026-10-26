@@ -182,6 +182,8 @@ Scope {
                         Rectangle {
                             width: 92; height: 28; radius: Settings.r(999)
                             color: clearMouse.containsMouse ? Colors.errorContainer : Colors.surfaceContainerHigh
+                            border.width: 1
+                            border.color: Colors.border
                             visible: root.items.length > 0
 
                             Text {
@@ -207,6 +209,8 @@ Scope {
                         Layout.preferredHeight: 40
                         radius: Settings.r(999)
                         color: Colors.surfaceContainerHigh
+                        border.width: 1
+                        border.color: Colors.border
 
                         TextField {
                             id: search
@@ -263,6 +267,8 @@ Scope {
                             color: index === root.current ? Colors.primaryContainer
                                  : rowMouse.containsMouse ? Colors.surfaceContainerHighest
                                  : Colors.surfaceContainerHigh
+                            border.width: 1
+                            border.color: Colors.border
 
                             Text {
                                 anchors.left: parent.left
