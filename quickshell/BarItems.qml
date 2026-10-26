@@ -365,7 +365,7 @@ Item {
                 hoverEnabled: true
                 cursorShape: Qt.PointingHandCursor
                 onClicked: root.clockMenu?.toggle(root.screenName,
-                    clockButton.mapToItem(null, clockButton.width / 2, 0).x + Settings.barEdge)
+                    clockButton.mapToItem(null, clockButton.width / 2, 0).x)
             }
         }
     }
