@@ -18,7 +18,7 @@ Rectangle {
 
     height: 44
     radius: Settings.r(14)
-    color: highlighted ? Colors.primaryContainer
+    color: highlighted ? Settings.fillActive
          : rowMouse.containsMouse ? Settings.fillHover
          : Settings.fill
     border.width: 0
