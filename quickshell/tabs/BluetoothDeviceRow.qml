@@ -19,10 +19,9 @@ Rectangle {
     height: 44
     radius: Settings.r(14)
     color: highlighted ? Colors.primaryContainer
-         : rowMouse.containsMouse ? Colors.surfaceContainerHighest
-         : Colors.surfaceContainerHigh
-    border.width: 1
-    border.color: Colors.border
+         : rowMouse.containsMouse ? Settings.fillHover
+         : Settings.fill
+    border.width: 0
 
     ColumnLayout {
         anchors.verticalCenter: parent.verticalCenter

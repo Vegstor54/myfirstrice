@@ -66,10 +66,9 @@ ColumnLayout {
             Layout.preferredHeight: 26
             radius: Settings.r(13)
             color: row.muted ? Colors.primary
-                 : muteMouse.containsMouse ? Colors.surfaceContainerHighest
-                 : Colors.surfaceContainerHigh
-            border.width: 1
-            border.color: Colors.border
+                 : muteMouse.containsMouse ? Settings.fillHover
+                 : Settings.fill
+            border.width: 0
 
             Text {
                 anchors.centerIn: parent
@@ -101,8 +100,7 @@ ColumnLayout {
             height: 6
             radius: Settings.r(3)
             color: Colors.surfaceContainerHighest
-            border.width: 1
-            border.color: Colors.border
+            border.width: 0
 
             Rectangle {
                 width: row.value * (slider.width - slider.knob) + slider.knob / 2

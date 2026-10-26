@@ -138,7 +138,7 @@ Rectangle {
                 Layout.preferredWidth: 24
                 Layout.preferredHeight: 24
                 radius: Settings.r(12)
-                color: closeMouse.containsMouse ? Colors.surfaceContainerHighest : "transparent"
+                color: closeMouse.containsMouse ? Settings.fillHover : "transparent"
 
                 Text {
                     anchors.centerIn: parent
@@ -177,9 +177,8 @@ Rectangle {
                     width: visible ? Math.max(72, actionText.implicitWidth + 24) : 0
                     height: visible ? 28 : 0
                     radius: Settings.r(999)
-                    color: actionMouse.containsMouse ? Colors.primary : Colors.surfaceContainerHighest
-                    border.width: 1
-                    border.color: Colors.border
+                    color: actionMouse.containsMouse ? Colors.primary : Settings.fillHover
+                    border.width: 0
 
                     Text {
                         id: actionText

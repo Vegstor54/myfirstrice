@@ -94,9 +94,8 @@ ColumnLayout {
             id: frame
             anchors.fill: parent
             radius: Settings.r(16)
-            color: Colors.surfaceContainerHigh
-            border.width: 1
-            border.color: Colors.border
+            color: Settings.fill
+            border.width: 0
         }
 
         Image {

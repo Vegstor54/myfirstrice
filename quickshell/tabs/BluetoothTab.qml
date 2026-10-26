@@ -173,10 +173,9 @@ ColumnLayout {
             Layout.preferredHeight: 32
             radius: Settings.r(999)
             color: tab.adapter && tab.adapter.enabled ? Colors.primary
-                 : powerMouse.containsMouse ? Colors.surfaceContainerHighest
-                 : Colors.surfaceContainerHigh
-            border.width: 1
-            border.color: Colors.border
+                 : powerMouse.containsMouse ? Settings.fillHover
+                 : Settings.fill
+            border.width: 0
 
             Text {
                 anchors.centerIn: parent
@@ -216,10 +215,9 @@ ColumnLayout {
                 Layout.preferredHeight: 32
                 radius: Settings.r(999)
                 color: selected ? Colors.primary
-                     : viewMouse.containsMouse ? Colors.surfaceContainerHighest
-                     : Colors.surfaceContainerHigh
-                border.width: 1
-                border.color: Colors.border
+                     : viewMouse.containsMouse ? Settings.fillHover
+                     : Settings.fill
+                border.width: 0
 
                 Text {
                     anchors.centerIn: parent

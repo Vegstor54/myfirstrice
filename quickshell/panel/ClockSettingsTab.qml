@@ -24,9 +24,8 @@ Flickable {
             Layout.fillWidth: true
             Layout.preferredHeight: 56
             radius: Settings.r(16)
-            color: Colors.surfaceContainerHigh
-            border.width: 1
-            border.color: Colors.border
+            color: Settings.fill
+            border.width: 0
 
             Text {
                 anchors.centerIn: parent
@@ -114,9 +113,9 @@ Flickable {
             Layout.fillWidth: true
             Layout.preferredHeight: 40
             radius: Settings.r(999)
-            color: Colors.surfaceContainerHigh
-            border.width: 1
-            border.color: customInput.activeFocus ? Colors.primary : Colors.border
+            color: Settings.fill
+            border.width: customInput.activeFocus ? 1 : 0
+            border.color: Colors.primary
 
             TextInput {
                 id: customInput
