@@ -11,6 +11,7 @@ ModulesTab ModulesTab.qml
 ClockSettingsTab ClockSettingsTab.qml
 NetworkTab NetworkTab.qml
 ShapeTab ShapeTab.qml
+ThemeModeRow ThemeModeRow.qml
 WorkspacesSettingsTab WorkspacesSettingsTab.qml
 Workspaces Workspaces.qml
 BarItems BarItems.qml

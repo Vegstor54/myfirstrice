@@ -42,7 +42,7 @@ Rectangle {
     height: Settings.barHeight - 8
     width: row.implicitWidth + 4
     radius: Settings.barRounded ? height / 2 : 0
-    color: Qt.rgba(1, 1, 1, 0.10)
+    color: Qt.alpha(Colors.text, 0.10)
 
     Row {
         id: row

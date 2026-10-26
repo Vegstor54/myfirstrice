@@ -23,7 +23,7 @@ Rectangle {
     height: Settings.barHeight - 8
     width: row.implicitWidth + 20
     radius: Settings.barRounded ? height / 2 : 0
-    color: mouse.containsMouse ? Qt.rgba(1, 1, 1, 0.18) : Qt.rgba(1, 1, 1, 0.10)
+    color: mouse.containsMouse ? Qt.alpha(Colors.text, 0.18) : Qt.alpha(Colors.text, 0.10)
 
     Row {
         id: row

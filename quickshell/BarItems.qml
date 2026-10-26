@@ -297,7 +297,7 @@ Item {
             width: Settings.barHeight - 8
             height: width
             radius: Settings.barRounded ? width / 2 : 0
-            color: buttonMouse.containsMouse ? Qt.rgba(1, 1, 1, 0.18) : "transparent"
+            color: buttonMouse.containsMouse ? Qt.alpha(Colors.text, 0.18) : "transparent"
 
             // Значок — глиф Nerd Font (U+F303), тот же, что в терминале.
             // Нужен установленный шрифт Symbols Nerd Font; без него Qt ищет глиф в других шрифтах
@@ -348,7 +348,7 @@ Item {
             radius: Settings.barRounded ? height / 2 : 0
             color: clockMouse.containsMouse
                    || (root.clockMenu !== null && root.clockMenu.shown && root.clockMenu.monitor === root.screenName)
-                   ? Qt.rgba(1, 1, 1, 0.18) : "transparent"
+                   ? Qt.alpha(Colors.text, 0.18) : "transparent"
 
             Text {
                 id: clockText

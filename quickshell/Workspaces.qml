@@ -55,7 +55,7 @@ Row {
             height: width
             radius: Settings.barRounded ? 6 : 0
             color: active ? Colors.primary
-                 : occupied ? Qt.rgba(1, 1, 1, 0.14)
+                 : occupied ? Qt.alpha(Colors.text, 0.14)
                  : Qt.rgba(0, 0, 0, 0.18)
 
             Behavior on color { ColorAnimation { duration: 120 } }
