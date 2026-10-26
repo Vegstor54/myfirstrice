@@ -296,7 +296,7 @@ Scope {
                             Layout.fillWidth: true
                             Layout.preferredHeight: 56
                             radius: Settings.r(16)
-                            color: selected ? Colors.primaryContainer : Settings.fill
+                            color: selected ? Settings.fillActive : Settings.fill
                             border.width: 0
 
                             ColumnLayout {

@@ -263,7 +263,7 @@ Scope {
                             width: list.width
                             height: 40
                             radius: Settings.r(12)
-                            color: index === root.current ? Colors.primaryContainer
+                            color: index === root.current ? Settings.fillActive
                                  : rowMouse.containsMouse ? Settings.fillHover
                                  : Settings.fill
                             border.width: 0

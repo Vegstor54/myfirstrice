@@ -46,6 +46,8 @@ Singleton {
     // Тёмный текст на светлом фоне даёт слабый контраст, поэтому в светлой теме заливка сильнее
     readonly property bool lightTheme: Colors.surface.hslLightness > 0.5
     readonly property color fill: Qt.tint(Colors.surfaceContainer, Qt.alpha(Colors.text, lightTheme ? 0.16 : 0.10))
+    // Выбранная строка или пункт под курсором: нейтральная, сильнее наведения, без акцентного цвета
+    readonly property color fillActive: Qt.tint(Colors.surfaceContainer, Qt.alpha(Colors.text, lightTheme ? 0.32 : 0.24))
     readonly property color fillHover: Qt.tint(Colors.surfaceContainer, Qt.alpha(Colors.text, lightTheme ? 0.25 : 0.17))
 
     // Форма интерфейса (панель, меню, уведомления, плитки, кнопки, ползунки) не зависит от формы бара.

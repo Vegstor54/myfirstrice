@@ -171,7 +171,7 @@ ColumnLayout {
             width: ListView.view.width - 10
             height: 44
             radius: Settings.r(12)
-            color: selected ? Colors.primaryContainer
+            color: selected ? Settings.fillActive
                  : mouse.containsMouse ? Settings.fillHover
                  : "transparent"
 
