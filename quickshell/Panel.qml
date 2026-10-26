@@ -404,6 +404,8 @@ Scope {
                 ColumnLayout {
                     spacing: 16
 
+                    ThemeModeRow { Layout.fillWidth: true }
+
                     Text { text: "Цвет бара"; color: Colors.text; font.family: Settings.uiFontFamily }
                     GridLayout {
                         columns: 6

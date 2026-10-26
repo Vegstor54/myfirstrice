@@ -7,6 +7,10 @@
 hl.env("XCURSOR_SIZE", "24")
 hl.env("HYPRCURSOR_SIZE", "24")
 
+-- Qt-приложения берут тему из qt6ct (цвета ему пишет matugen, см. matugen/apply-theme.sh).
+-- Нужен пакет qt6ct; переменная подхватывается после нового входа в сессию
+hl.env("QT_QPA_PLATFORMTHEME", "qt6ct")
+
 
 -----------------------
 ----- PERMISSIONS -----
