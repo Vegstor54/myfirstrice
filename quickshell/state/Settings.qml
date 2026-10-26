@@ -43,8 +43,10 @@ Singleton {
 
     // Заливка кнопок, плиток и строк вместо обводки: оттенок от цвета текста,
     // поэтому в тёмной теме светлее фона карточки, в светлой темнее
-    readonly property color fill: Qt.tint(Colors.surfaceContainer, Qt.alpha(Colors.text, 0.10))
-    readonly property color fillHover: Qt.tint(Colors.surfaceContainer, Qt.alpha(Colors.text, 0.17))
+    // Тёмный текст на светлом фоне даёт слабый контраст, поэтому в светлой теме заливка сильнее
+    readonly property bool lightTheme: Colors.surface.hslLightness > 0.5
+    readonly property color fill: Qt.tint(Colors.surfaceContainer, Qt.alpha(Colors.text, lightTheme ? 0.16 : 0.10))
+    readonly property color fillHover: Qt.tint(Colors.surfaceContainer, Qt.alpha(Colors.text, lightTheme ? 0.25 : 0.17))
 
     // Форма интерфейса (панель, меню, уведомления, плитки, кнопки, ползунки) не зависит от формы бара.
     // Радиус любого такого элемента — Settings.r(радиус), в прямом режиме он 0. Форму самого бара задаёт barRounded.
