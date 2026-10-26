@@ -1,4 +1,8 @@
-local c = require("colors")
+-- colors.lua генерирует matugen и в git его нет; пока он не создан (первая установка), берём запасные цвета
+local ok, c = pcall(require, "colors")
+if not ok then
+    c = { primary = "rgba(b4c5ffee)", tertiary = "rgba(e2bbdbee)", inactive = "rgba(45464faa)" }
+end
 
 -----------------------
 ---- LOOK AND FEEL ----

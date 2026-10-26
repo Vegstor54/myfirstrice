@@ -1,0 +1,4 @@
+# Генерирует matugen (см. matugen/config.toml и matugen/apply-theme.sh), в git их нет
+quickshell/Colors.qml
+hypr/colors.lua
+kitty/theme.conf
