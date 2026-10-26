@@ -10,5 +10,7 @@ my first hyprland and quickshell rice
 bash ~/.config/matugen/wallpaper-sync.sh /путь/к/обоям.png
 ```
 
+Настройки бара и панели лежат в `quickshell/settings.json`, его создаёт сама оболочка при первом изменении.
+
 Дальше тема меняется из панели (Style → Цветовая схема, Style → Обои).
 Для Qt-приложений нужен `qt6ct`, для браузеров `xdg-desktop-portal-gtk`.
