@@ -18,4 +18,8 @@ Singleton {
     readonly property color errorContainer: "#93000a"
     readonly property color text: "#e3e2e9"
     readonly property color textOnPrimary: "#1b2d60"
+    // Граница кнопок, плиток и дорожек ползунков: считается от цвета текста, поэтому видна и в тёмной, и в светлой теме
+    readonly property color border: Qt.alpha(text, 0.35)
+    // Заглушённая заливка ползунка: непрозрачная, чтобы не темнела под ручкой
+    readonly property color mutedFill: Qt.tint(surfaceContainerHighest, Qt.alpha(text, 0.5))
 }

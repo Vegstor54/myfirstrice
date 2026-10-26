@@ -48,12 +48,14 @@ ColumnLayout {
             height: 8
             radius: Settings.r(4)
             color: Colors.surfaceContainerHighest
+            border.width: 1
+            border.color: Colors.border
 
             Rectangle {
                 width: ctl.value * (slider.width - slider.knob) + slider.knob / 2
                 height: parent.height
                 radius: Settings.r(4)
-                color: ctl.muted ? Colors.surfaceVariant : Colors.primary
+                color: ctl.muted ? Colors.mutedFill : Colors.primary
             }
         }
 
@@ -63,7 +65,9 @@ ColumnLayout {
             width: slider.knob
             height: slider.knob
             radius: Settings.r(slider.knob / 2)
-            color: ctl.muted ? Colors.surfaceVariant : Colors.primary
+            color: ctl.muted ? Colors.mutedFill : Colors.primary
+            border.width: 2
+            border.color: Colors.surfaceContainer
         }
 
         MouseArea {
@@ -88,6 +92,8 @@ ColumnLayout {
         color: ctl.muted ? Colors.primary
              : muteMouse.containsMouse ? Colors.surfaceContainerHighest
              : Colors.surfaceContainerHigh
+        border.width: 1
+        border.color: Colors.border
 
         Text {
             anchors.centerIn: parent

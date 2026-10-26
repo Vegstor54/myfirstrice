@@ -177,6 +177,8 @@ Rectangle {
                     height: visible ? 28 : 0
                     radius: Settings.r(999)
                     color: actionMouse.containsMouse ? Colors.primary : Colors.surfaceContainerHighest
+                    border.width: 1
+                    border.color: Colors.border
 
                     Text {
                         id: actionText

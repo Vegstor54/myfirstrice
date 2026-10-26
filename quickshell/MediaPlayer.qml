@@ -45,6 +45,8 @@ ColumnLayout {
             anchors.fill: parent
             radius: Settings.r(16)
             color: Colors.surfaceContainerHigh
+            border.width: 1
+            border.color: Colors.border
         }
 
         Image {
@@ -124,6 +126,8 @@ ColumnLayout {
                 height: 6
                 radius: Settings.r(3)
                 color: Colors.surfaceContainerHighest
+                border.width: 1
+                border.color: Colors.border
 
                 Rectangle {
                     width: root.length > 0 ? parent.width * Math.min(1, root.position / root.length) : 0
@@ -189,6 +193,8 @@ ColumnLayout {
                 color: main ? Colors.primary
                      : btnMouse.containsMouse && usable ? Colors.surfaceContainerHighest
                      : Colors.surfaceContainerHigh
+                border.width: 1
+                border.color: Colors.border
 
                 Text {
                     anchors.centerIn: parent

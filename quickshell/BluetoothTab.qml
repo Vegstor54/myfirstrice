@@ -174,6 +174,8 @@ ColumnLayout {
             color: tab.adapter && tab.adapter.enabled ? Colors.primary
                  : powerMouse.containsMouse ? Colors.surfaceContainerHighest
                  : Colors.surfaceContainerHigh
+            border.width: 1
+            border.color: Colors.border
 
             Text {
                 anchors.centerIn: parent
@@ -215,6 +217,8 @@ ColumnLayout {
                 color: selected ? Colors.primary
                      : viewMouse.containsMouse ? Colors.surfaceContainerHighest
                      : Colors.surfaceContainerHigh
+                border.width: 1
+                border.color: Colors.border
 
                 Text {
                     anchors.centerIn: parent

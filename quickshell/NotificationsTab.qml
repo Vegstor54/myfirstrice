@@ -18,6 +18,8 @@ ColumnLayout {
             color: NotificationState.dnd ? Colors.primary
                  : dndMouse.containsMouse ? Colors.surfaceContainerHighest
                  : Colors.surfaceContainerHigh
+            border.width: 1
+            border.color: Colors.border
 
             Row {
                 anchors.centerIn: parent
@@ -55,6 +57,8 @@ ColumnLayout {
             opacity: NotificationState.count > 0 ? 1 : 0.4
             color: clearMouse.containsMouse && NotificationState.count > 0
                    ? Colors.surfaceContainerHighest : Colors.surfaceContainerHigh
+            border.width: 1
+            border.color: Colors.border
 
             Text {
                 anchors.centerIn: parent

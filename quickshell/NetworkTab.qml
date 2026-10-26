@@ -47,6 +47,8 @@ ColumnLayout {
         Layout.preferredHeight: 36
         radius: Settings.r(999)
         color: netMouse.containsMouse ? Colors.surfaceContainerHighest : Colors.surfaceContainerHigh
+        border.width: 1
+        border.color: Colors.border
 
         Text {
             anchors.centerIn: parent
