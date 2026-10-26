@@ -39,7 +39,7 @@ ColumnLayout {
             Layout.preferredWidth: 28
             Layout.preferredHeight: 28
             radius: Settings.r(14)
-            color: prevMouse.containsMouse ? Colors.surfaceContainerHighest : "transparent"
+            color: prevMouse.containsMouse ? Settings.fillHover : "transparent"
             Text {
                 anchors.centerIn: parent
                 text: "‹"
@@ -76,7 +76,7 @@ ColumnLayout {
             Layout.preferredWidth: 28
             Layout.preferredHeight: 28
             radius: Settings.r(14)
-            color: nextMouse.containsMouse ? Colors.surfaceContainerHighest : "transparent"
+            color: nextMouse.containsMouse ? Settings.fillHover : "transparent"
             Text {
                 anchors.centerIn: parent
                 text: "›"

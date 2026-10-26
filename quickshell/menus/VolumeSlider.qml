@@ -30,8 +30,7 @@ ColumnLayout {
             height: parent.height
             radius: Settings.r(6)
             color: Colors.surfaceContainerHighest
-            border.width: 1
-            border.color: Colors.border
+            border.width: 0
 
             // Заливка растёт снизу вверх
             Rectangle {
@@ -75,10 +74,9 @@ ColumnLayout {
         Layout.preferredHeight: 36
         radius: Settings.r(18)
         color: SysState.muted ? Colors.primary
-             : muteMouse.containsMouse ? Colors.surfaceContainerHighest
-             : Colors.surfaceContainerHigh
-        border.width: 1
-        border.color: Colors.border
+             : muteMouse.containsMouse ? Settings.fillHover
+             : Settings.fill
+        border.width: 0
 
         // Значки звука — глифы Nerd Font: громко, тихо, выключено
         Text {

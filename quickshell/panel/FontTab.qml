@@ -77,10 +77,9 @@ ColumnLayout {
                 Layout.preferredHeight: 36
                 radius: Settings.r(999)
                 color: selected ? Colors.primary
-                     : chipMouse.containsMouse ? Colors.surfaceContainerHighest
-                     : Colors.surfaceContainerHigh
-                border.width: 1
-                border.color: Colors.border
+                     : chipMouse.containsMouse ? Settings.fillHover
+                     : Settings.fill
+                border.width: 0
 
                 Text {
                     anchors.centerIn: parent
@@ -145,7 +144,7 @@ ColumnLayout {
             height: 40
             radius: Settings.r(12)
             color: selected ? Colors.primary
-                 : mouse.containsMouse ? Colors.surfaceContainerHighest
+                 : mouse.containsMouse ? Settings.fillHover
                  : "transparent"
 
             // Название набрано самим шрифтом, чтобы сразу видеть, как он выглядит

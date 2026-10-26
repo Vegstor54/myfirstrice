@@ -145,7 +145,7 @@ Rectangle {
                                 Layout.fillWidth: true
                                 implicitHeight: 28
                                 radius: Settings.r(8)
-                                color: backMouse.containsMouse ? Colors.surfaceContainerHighest : "transparent"
+                                color: backMouse.containsMouse ? Settings.fillHover : "transparent"
 
                                 RowLayout {
                                     anchors.fill: parent
@@ -188,7 +188,7 @@ Rectangle {
                                     implicitHeight: sep ? 9 : 28
                                     radius: Settings.r(8)
                                     color: !sep && modelData.enabled && entryMouse.containsMouse
-                                           ? Colors.surfaceContainerHighest : "transparent"
+                                           ? Settings.fillHover : "transparent"
 
                                     // Разделитель
                                     Rectangle {

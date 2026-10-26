@@ -52,10 +52,9 @@ ColumnLayout {
                 height: 24
                 radius: Settings.r(12)
                 color: selected ? Colors.primary
-                     : chipMouse.containsMouse ? Colors.surfaceContainerHighest
-                     : Colors.surfaceContainerHigh
-                border.width: 1
-                border.color: Colors.border
+                     : chipMouse.containsMouse ? Settings.fillHover
+                     : Settings.fill
+                border.width: 0
 
                 Text {
                     id: chipText

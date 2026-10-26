@@ -77,9 +77,9 @@ ColumnLayout {
         Layout.fillWidth: true
         Layout.preferredHeight: 40
         radius: Settings.r(999)
-        color: Colors.surfaceContainerHigh
-        border.width: 1
-        border.color: searchInput.activeFocus ? Colors.primary : Colors.border
+        color: Settings.fill
+        border.width: searchInput.activeFocus ? 1 : 0
+        border.color: Colors.primary
 
         TextInput {
             id: searchInput
@@ -172,7 +172,7 @@ ColumnLayout {
             height: 44
             radius: Settings.r(12)
             color: selected ? Colors.primaryContainer
-                 : mouse.containsMouse ? Colors.surfaceContainerHighest
+                 : mouse.containsMouse ? Settings.fillHover
                  : "transparent"
 
             RowLayout {

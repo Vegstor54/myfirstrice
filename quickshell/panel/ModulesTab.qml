@@ -61,10 +61,9 @@ Flickable {
                     Layout.preferredHeight: tab.cell
                     radius: Settings.r(18)
                     color: on ? Colors.primary
-                         : tileMouse.containsMouse ? Colors.surfaceContainerHighest
-                         : Colors.surfaceContainerHigh
-                    border.width: 1
-                    border.color: Colors.border
+                         : tileMouse.containsMouse ? Settings.fillHover
+                         : Settings.fill
+                    border.width: 0
 
                     MouseArea {
                         id: tileMouse

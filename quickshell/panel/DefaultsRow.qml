@@ -55,10 +55,9 @@ ColumnLayout {
                 required property string modelData
                 width: 110; height: 32; radius: Settings.r(999)
                 color: modelData === row.current ? Colors.primary
-                     : mouse.containsMouse ? Colors.surfaceContainerHighest
-                     : Colors.surfaceContainerHigh
-                border.width: 1
-                border.color: Colors.border
+                     : mouse.containsMouse ? Settings.fillHover
+                     : Settings.fill
+                border.width: 0
 
                 Text {
                     anchors.centerIn: parent

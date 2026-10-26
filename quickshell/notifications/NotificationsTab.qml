@@ -17,10 +17,9 @@ ColumnLayout {
             Layout.preferredHeight: 32
             radius: Settings.r(999)
             color: NotificationState.dnd ? Colors.primary
-                 : dndMouse.containsMouse ? Colors.surfaceContainerHighest
-                 : Colors.surfaceContainerHigh
-            border.width: 1
-            border.color: Colors.border
+                 : dndMouse.containsMouse ? Settings.fillHover
+                 : Settings.fill
+            border.width: 0
 
             Row {
                 anchors.centerIn: parent
@@ -57,9 +56,8 @@ ColumnLayout {
             radius: Settings.r(999)
             opacity: NotificationState.count > 0 ? 1 : 0.4
             color: clearMouse.containsMouse && NotificationState.count > 0
-                   ? Colors.surfaceContainerHighest : Colors.surfaceContainerHigh
-            border.width: 1
-            border.color: Colors.border
+                   ? Settings.fillHover : Settings.fill
+            border.width: 0
 
             Text {
                 anchors.centerIn: parent

@@ -11,10 +11,9 @@ Rectangle {
     implicitHeight: 36
     radius: Settings.r(999)
     color: selected ? Colors.primary
-         : area.containsMouse ? Colors.surfaceContainerHighest
-         : Colors.surfaceContainerHigh
-    border.width: 1
-    border.color: Colors.border
+         : area.containsMouse ? Settings.fillHover
+         : Settings.fill
+    border.width: 0
 
     Text {
         anchors.centerIn: parent

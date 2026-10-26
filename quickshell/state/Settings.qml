@@ -1,4 +1,5 @@
 pragma Singleton
+import QtQuick
 import Quickshell
 import Quickshell.Io
 import ".."
@@ -39,6 +40,11 @@ Singleton {
     // Положение самого бара: скруглённый «плавает» с отступами, прямой занимает всю верхнюю кромку экрана
     readonly property int barEdge: barRounded ? barSideMargin : 0
     readonly property int barTop: barRounded ? 8 : 0
+
+    // Заливка кнопок, плиток и строк вместо обводки: оттенок от цвета текста,
+    // поэтому в тёмной теме светлее фона карточки, в светлой темнее
+    readonly property color fill: Qt.tint(Colors.surfaceContainer, Qt.alpha(Colors.text, 0.10))
+    readonly property color fillHover: Qt.tint(Colors.surfaceContainer, Qt.alpha(Colors.text, 0.17))
 
     // Форма интерфейса (панель, меню, уведомления, плитки, кнопки, ползунки) не зависит от формы бара.
     // Радиус любого такого элемента — Settings.r(радиус), в прямом режиме он 0. Форму самого бара задаёт barRounded.
