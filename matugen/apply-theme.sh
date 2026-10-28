@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
-# Применяет тему: считает палитру matugen из текущих обоев в нужном режиме
-# и переключает тёмную/светлую тему у приложений.
-# Использование: apply-theme.sh [dark|light]
-#   Без аргумента берёт сохранённый режим (~/.cache/theme-mode, по умолчанию dark).
+# Применяет тему: считает палитру matugen и переключает тёмную/светлую тему у приложений.
+# Использование: apply-theme.sh [wallpaper|dark|light]
+#   wallpaper — палитра из текущих обоев (тёмная);
+#   dark, light — фиксированные тёмная и светлая палитры, от обоев не зависят.
+#   Без аргумента берёт сохранённый режим (~/.cache/theme-mode, по умолчанию wallpaper).
 #   Обои не меняет: их ставит wallpaper-sync.sh.
 #
 #   Quickshell, kitty, Hyprland — палитра matugen (см. config.toml).
@@ -13,23 +14,31 @@ MODE_FILE="$HOME/.cache/theme-mode"
 WALLPAPER_FILE="$HOME/.cache/current-wallpaper"
 CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
 
+# Исходный цвет для фиксированных тем dark и light (меняется здесь, палитра строится от него)
+FIXED_SOURCE="#4f6fa8"
+
 mode="${1:-$(cat "$MODE_FILE" 2>/dev/null)}"
 case $mode in
-    dark|light) ;;
-    *) mode=dark ;;
+    wallpaper|dark|light) ;;
+    *) mode=wallpaper ;;
 esac
-echo "$mode" > "$MODE_FILE"
-
-WALLPAPER="$(cat "$WALLPAPER_FILE" 2>/dev/null)"
-WALLPAPER="${WALLPAPER:-$HOME/Pictures/wall.png}"
-if [[ ! -f "$WALLPAPER" ]]; then
-    echo "Нет обоев для палитры: $WALLPAPER" >&2
-    exit 1
-fi
 
 # matugen пишет цветовую схему в эту папку, но сам её не создаёт
 mkdir -p "$CONFIG_HOME/qt6ct/colors"
-matugen image "$WALLPAPER" --mode "$mode" --prefer saturation || exit 1
+
+if [[ $mode == wallpaper ]]; then
+    WALLPAPER="$(cat "$WALLPAPER_FILE" 2>/dev/null)"
+    WALLPAPER="${WALLPAPER:-$HOME/Pictures/wall.png}"
+    if [[ ! -f "$WALLPAPER" ]]; then
+        echo "Нет обоев для палитры: $WALLPAPER" >&2
+        exit 1
+    fi
+    matugen image "$WALLPAPER" --mode dark --prefer saturation || exit 1
+else
+    matugen color hex "$FIXED_SOURCE" --mode "$mode" || exit 1
+fi
+# Режим запоминаем только после успешной генерации палитры
+echo "$mode" > "$MODE_FILE"
 
 # --- Qt: qt6ct должен брать цветовую схему matugen ---
 # Меняет только свои ключи в [Appearance], остальные настройки qt6ct (шрифты и т.д.) не трогает.
@@ -63,12 +72,12 @@ grep -q '^style=' "$QT6CT_CONF" || ini_set "$QT6CT_CONF" Appearance style Fusion
 
 # --- GTK и браузеры ---
 if command -v gsettings >/dev/null 2>&1; then
-    if [[ $mode == dark ]]; then
-        scheme=prefer-dark
-        theme=Adwaita-dark
-    else
+    if [[ $mode == light ]]; then
         scheme=prefer-light
         theme=Adwaita
+    else
+        scheme=prefer-dark
+        theme=Adwaita-dark
     fi
     timeout 3 gsettings set org.gnome.desktop.interface color-scheme "$scheme" 2>/dev/null
     # Adwaita-dark есть в gnome-themes-extra; если его нет, GTK3-приложения останутся светлыми
