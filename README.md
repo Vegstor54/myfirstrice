@@ -14,6 +14,7 @@ bash ~/.config/matugen/wallpaper-sync.sh /путь/к/обоям.png
 
 Дальше тема меняется из панели (Style → Цветовая схема, Style → Обои).
 Для Qt-приложений нужен `qt6ct`, для браузеров `xdg-desktop-portal-gtk`.
+Конфиг qt6ct лежит в `qt6ct/` (`~/.config/qt6ct` — симлинк на него), палитру `qt6ct/colors/matugen.conf` создаёт matugen.
 
 ## Структура quickshell/
 
