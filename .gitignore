@@ -5,3 +5,6 @@ kitty/theme.conf
 
 # Личные настройки панели и бара: Quickshell переписывает их сам, пока работает, поэтому в git им не место
 quickshell/settings.json
+
+# Qt-палитру тоже создаёт matugen
+qt6ct/colors/matugen.conf
