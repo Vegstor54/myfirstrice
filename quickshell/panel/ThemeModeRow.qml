@@ -4,15 +4,19 @@ import QtQuick
 import QtQuick.Layouts
 import ".."
 
-// Тёмная или светлая тема. Выбор запускает matugen/apply-theme.sh: он пересчитывает палитру из текущих обоев
-// и переключает Qt-приложения (через qt6ct), GTK-приложения и браузеры. Режим хранится в ~/.cache/theme-mode.
+// Режим темы: «Из обоев» (палитра по обоям), «Тёмная» и «Светлая» (фиксированные палитры). Выбор запускает
+// matugen/apply-theme.sh: он пересчитывает палитру и переключает Qt-приложения (через qt6ct), GTK-приложения
+// и браузеры. Режим хранится в ~/.cache/theme-mode.
 ColumnLayout {
     id: row
     spacing: 8
 
     readonly property string home: Quickshell.env("HOME")
-    // Пока файла нет, действует тёмная тема (так её считает и сам скрипт)
-    readonly property string mode: modeFile.text().trim() === "light" ? "light" : "dark"
+    // Пока файла нет, действует режим «Из обоев» (так его считает и сам скрипт)
+    readonly property string mode: {
+        const m = modeFile.text().trim()
+        return (m === "dark" || m === "light") ? m : "wallpaper"
+    }
 
     FileView {
         id: modeFile
@@ -30,6 +34,12 @@ ColumnLayout {
         onExited: code => { if (code === 0) Quickshell.reload(false) }
     }
 
+    function apply(target) {
+        if (applier.running || row.mode === target) return
+        applier.target = target
+        applier.running = true
+    }
+
     Text {
         text: "Тема"
         color: Colors.text
@@ -45,22 +55,29 @@ ColumnLayout {
         BarChip {
             Layout.fillWidth: true
             Layout.preferredWidth: 1
+            label: "Из обоев"
+            selected: row.mode === "wallpaper"
+            onClicked: row.apply("wallpaper")
+        }
+        BarChip {
+            Layout.fillWidth: true
+            Layout.preferredWidth: 1
             label: "Тёмная"
             selected: row.mode === "dark"
-            onClicked: if (!applier.running && row.mode !== "dark") { applier.target = "dark"; applier.running = true }
+            onClicked: row.apply("dark")
         }
         BarChip {
             Layout.fillWidth: true
             Layout.preferredWidth: 1
             label: "Светлая"
             selected: row.mode === "light"
-            onClicked: if (!applier.running && row.mode !== "light") { applier.target = "light"; applier.running = true }
+            onClicked: row.apply("light")
         }
     }
 
     Text {
         Layout.fillWidth: true
-        text: "Меняет палитру, Qt-приложения, GTK и браузеры. Открытые окна могут обновиться только после перезапуска."
+        text: "«Из обоев» берёт цвета с обоев, «Тёмная» и «Светлая» — фиксированные. Меняет палитру, Qt-приложения, GTK и браузеры. Открытые окна могут обновиться только после перезапуска."
         wrapMode: Text.WordWrap
         color: Colors.text
         opacity: 0.7
