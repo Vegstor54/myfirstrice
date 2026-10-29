@@ -2,7 +2,9 @@
 # Применяет тему: считает палитру matugen и переключает тёмную/светлую тему у приложений.
 # Использование: apply-theme.sh [wallpaper|dark|light]
 #   wallpaper — палитра из текущих обоев (тёмная);
-#   dark, light — фиксированные тёмная и светлая палитры, от обоев не зависят.
+#   dark  — чёрный фон, белый текст и акценты, без цвета (монохромная схема matugen);
+#   light — белый фон, чёрный текст и акценты, без цвета.
+#   dark и light от обоев не зависят.
 #   Без аргумента берёт сохранённый режим (~/.cache/theme-mode, по умолчанию wallpaper).
 #   Обои не меняет: их ставит wallpaper-sync.sh.
 #
@@ -14,8 +16,8 @@ MODE_FILE="$HOME/.cache/theme-mode"
 WALLPAPER_FILE="$HOME/.cache/current-wallpaper"
 CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
 
-# Исходный цвет для фиксированных тем dark и light (меняется здесь, палитра строится от него)
-FIXED_SOURCE="#4f6fa8"
+# Исходный цвет для фиксированных тем dark и light. Схема монохромная, поэтому цвет на результат не влияет
+FIXED_SOURCE="#808080"
 
 mode="${1:-$(cat "$MODE_FILE" 2>/dev/null)}"
 case $mode in
@@ -35,7 +37,7 @@ if [[ $mode == wallpaper ]]; then
     fi
     matugen image "$WALLPAPER" --mode dark --prefer saturation || exit 1
 else
-    matugen color hex "$FIXED_SOURCE" --mode "$mode" || exit 1
+    matugen color hex "$FIXED_SOURCE" --mode "$mode" --type scheme-monochrome || exit 1
 fi
 # Режим запоминаем только после успешной генерации палитры
 echo "$mode" > "$MODE_FILE"
