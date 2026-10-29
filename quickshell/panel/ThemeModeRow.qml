@@ -29,9 +29,8 @@ ColumnLayout {
         id: applier
         property string target: ""
         command: ["bash", row.home + "/.config/matugen/apply-theme.sh", target]
-        // apply-theme.sh уже переписал Colors.qml, но Quickshell сам его не перечитывает:
-        // перезагружаем оболочку, чтобы бар и панель взяли новую палитру
-        onExited: code => { if (code === 0) Quickshell.reload(false) }
+        // apply-theme.sh переписывает Colors.qml; Quickshell следит за файлами конфига и сам перезагружается.
+        // Явный Quickshell.reload(false) убран на пробу: если палитра не обновится, вернуть
     }
 
     function apply(target) {
