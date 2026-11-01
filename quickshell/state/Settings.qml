@@ -11,6 +11,7 @@ Singleton {
     property alias barSize: adapter.barSize
     property alias showLogo: adapter.showLogo
     property alias barRounded: adapter.barRounded
+    property alias barStyle: adapter.barStyle
     property alias uiRounded: adapter.uiRounded
     property alias wsMode: adapter.wsMode
     property alias barLeft: adapter.barLeft
@@ -37,9 +38,11 @@ Singleton {
 
     // Отступ бара от боковых краёв экрана (его используют shell.qml и QuickMenu)
     readonly property int barSideMargin: 16
-    // Положение самого бара: скруглённый «плавает» с отступами, прямой занимает всю верхнюю кромку экрана
-    readonly property int barEdge: barRounded ? barSideMargin : 0
-    readonly property int barTop: barRounded ? 8 : 0
+    // Стиль «острова»: у бара нет общей подложки, у каждой зоны (слева, по центру, справа) своя «таблетка»
+    readonly property bool islands: barStyle === "islands"
+    // Положение самого бара: скруглённый и «острова» «плавают» с отступами, прямой занимает всю верхнюю кромку экрана
+    readonly property int barEdge: barRounded || islands ? barSideMargin : 0
+    readonly property int barTop: barRounded || islands ? 8 : 0
 
     // Заливка кнопок, плиток и строк вместо обводки: оттенок от цвета текста,
     // поэтому в тёмной теме светлее фона карточки, в светлой темнее
@@ -86,11 +89,13 @@ Singleton {
             property bool showLogo: true
             // Форма бара: true — скруглённый «таблеткой» с отступами, false — прямой и во всю ширину экрана
             property bool barRounded: true
+            // Стиль бара: "solid" — одна общая подложка, "islands" — отдельная «таблетка» на каждую зону
+            property string barStyle: "solid"
             // Форма остального интерфейса: true — скруглённый, false — прямой (не зависит от формы бара)
             property bool uiRounded: true
             // Рабочие столы в баре: "used" — только используемые, "5" — 1–5, "10" — 1–10
             property string wsMode: "used"
-            // Раскладка бара: ключи элементов через запятую по зонам (logo, workspaces, clock, media, cava, tray, network, bluetooth, sound, notifications)
+            // Раскладка бара: ключи элементов через запятую по зонам (logo, workspaces, clock, media, cava, tray, network, bluetooth, sound, notifications, ram, cpu, power)
             property string barLeft: "logo,workspaces"
             property string barCenter: "clock"
             property string barRight: "network,bluetooth,sound,notifications"

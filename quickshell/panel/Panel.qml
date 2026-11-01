@@ -133,6 +133,18 @@ Scope {
             root.shown = !root.shown
         }
 
+        // Кнопка выхода в баре: сразу страница System (или закрыть, если она уже открыта)
+        function system(): void {
+            if (root.shown && root.activeTab === "system") {
+                root.shown = false
+                return
+            }
+            if (!root.shown) root.anchorMonitor = Hyprland.focusedMonitor?.name ?? ""
+            root.activeTab = "system"
+            root.menuIndex = 0
+            root.shown = true
+        }
+
         // SUPER+Space: сразу страница Apps (или закрыть, если она уже открыта)
         function launcher(): void {
             if (root.shown && root.activeTab === "apps") {
