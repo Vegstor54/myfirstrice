@@ -26,6 +26,8 @@ Item {
     property string status: ""
     property bool failed: false
     property bool readFailed: false
+    // Секунд до отката, пока применённые настройки не подтверждены (0 — ожидания нет)
+    property int confirmLeft: 0
 
     // Параметры превью (масштаб и смещение); пока монитор тянут, не пересчитываются
     property real viewK: 0.05
@@ -144,6 +146,68 @@ Item {
         applier.running = true
     }
 
+    // Ожидание подтверждения: set-monitors.sh пишет срок в ~/.cache/monitors.pending, а откат делает
+    // независимый наблюдатель revert-monitors.sh, так что он сработает, даже если панель пересоздастся
+    function loadPending(text) {
+        const p = text.trim().split("\n")
+        const left = p.length >= 2 ? parseInt(p[0]) - parseInt(p[1]) : 0
+        tab.confirmLeft = left > 0 ? left : 0
+    }
+
+    function keepSettings() {
+        tab.confirmLeft = 0
+        tab.status = "Настройки сохранены"
+        tab.failed = false
+        reverter.mode = "confirm"
+        reverter.running = true
+    }
+
+    function revertNow() {
+        tab.confirmLeft = 0
+        tab.status = "Возвращаю прежние настройки…"
+        tab.failed = false
+        reverter.mode = "now"
+        reverter.running = true
+        afterRevert.restart()
+    }
+
+    // Читается и при создании страницы: если панель пересоздалась посреди ожидания, плашка вернётся
+    Process {
+        id: pendingReader
+        command: ["sh", "-c", "cat \"$HOME/.cache/monitors.pending\" 2>/dev/null; date +%s"]
+        running: true
+        stdout: StdioCollector {
+            onStreamFinished: tab.loadPending(text)
+        }
+    }
+
+    Process {
+        id: reverter
+        property string mode: "confirm"
+        command: [tab.scripts + "/revert-monitors.sh", mode]
+    }
+
+    // Обратный отсчёт; на нуле наблюдатель сам вернул прежний конфиг, остаётся перечитать мониторы
+    Timer {
+        interval: 1000
+        repeat: true
+        running: tab.confirmLeft > 0
+        onTriggered: {
+            tab.confirmLeft -= 1
+            if (tab.confirmLeft <= 0) {
+                tab.status = "Не подтверждено: прежние настройки возвращены"
+                tab.failed = true
+                afterRevert.restart()
+            }
+        }
+    }
+
+    Timer {
+        id: afterRevert
+        interval: 1500
+        onTriggered: reader.running = true
+    }
+
     // Текущий основной монитор: primary = "DP-3" в строке return { ... } файла monitors.lua
     Process {
         command: ["sh", "-c", "sed -n 's/.*primary *= *\"\\([^\"]*\\)\".*/\\1/p' \"$HOME/.config/hypr/conf/monitors.lua\" | head -1"]
@@ -169,7 +233,10 @@ Item {
         onExited: code => {
             tab.status = code === 0 ? "Применено" : "Не удалось применить (код " + code + ")"
             tab.failed = code !== 0
-            if (code === 0) tab.dirty = false
+            if (code === 0) {
+                tab.dirty = false
+                pendingReader.running = true
+            }
             refreshTimer.restart()
         }
     }
@@ -556,6 +623,50 @@ Item {
                     color: Colors.error
                     font.family: Settings.uiFontFamily
                     font.pixelSize: 12
+                }
+            }
+        }
+
+        // Подтверждение после «Применить»: без ответа за 15 секунд прежние настройки вернутся сами
+        Rectangle {
+            visible: tab.confirmLeft > 0
+            Layout.fillWidth: true
+            Layout.preferredHeight: 52
+            radius: Settings.r(14)
+            color: Settings.fillActive
+            border.width: 0
+
+            RowLayout {
+                anchors.fill: parent
+                anchors.leftMargin: 14
+                anchors.rightMargin: 10
+                spacing: 8
+
+                Text {
+                    Layout.fillWidth: true
+                    text: "Оставить настройки? Откат через " + tab.confirmLeft + " с"
+                    wrapMode: Text.WordWrap
+                    maximumLineCount: 2
+                    elide: Text.ElideRight
+                    color: Colors.text
+                    font.family: Settings.uiFontFamily
+                    font.pixelSize: 13
+                    font.bold: true
+                }
+                BarChip {
+                    Layout.preferredWidth: 96
+                    Layout.preferredHeight: 34
+                    idleColor: Settings.fillHover
+                    hoverColor: Settings.fill
+                    label: "Откатить"
+                    onClicked: tab.revertNow()
+                }
+                BarChip {
+                    Layout.preferredWidth: 96
+                    Layout.preferredHeight: 34
+                    selected: true
+                    label: "Оставить"
+                    onClicked: tab.keepSettings()
                 }
             }
         }
