@@ -1,5 +1,5 @@
 #!/bin/bash
-# Управление питанием: power.sh suspend|hibernate|poweroff
+# Управление питанием: power.sh suspend|hibernate|reboot|poweroff
 # Код выхода 2: гибернация недоступна (нет swap или не настроен resume).
 
 notify() {
@@ -18,11 +18,14 @@ case $1 in
         fi
         systemctl hibernate
         ;;
+    reboot)
+        systemctl reboot
+        ;;
     poweroff)
         systemctl poweroff
         ;;
     *)
-        echo "Usage: $0 suspend|hibernate|poweroff" >&2
+        echo "Usage: $0 suspend|hibernate|reboot|poweroff" >&2
         exit 1
         ;;
 esac
