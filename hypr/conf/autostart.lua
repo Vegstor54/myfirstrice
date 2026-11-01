@@ -8,6 +8,9 @@
 -- Or execute your favorite apps at launch like this:
 --
 hl.on("hyprland.start", function ()
+     -- При старте курсор и фокус на основном (центральном) мониторе DP-3,
+     -- а не на первом по порядку HDMI-A-1
+     hl.exec_cmd("hyprctl dispatch 'hl.dsp.focus({ monitor = \"DP-3\" })'")
      hl.exec_cmd("awww-daemon")
      hl.exec_cmd("quickshell")
      -- История буфера обмена: cliphist сохраняет текст и картинки (меню: Super+V)
