@@ -212,8 +212,8 @@ Scope {
                 visible: win.isFocused
                 anchors.centerIn: parent
                 // Страница «Дисплеи» шире и выше остальных: на ней превью и список мониторов
-                width: root.activeTab === "displays" ? 520 : 384
-                height: root.activeTab === "displays" ? 620 : 544
+                width: root.activeTab === "displays" ? 560 : 384
+                height: root.activeTab === "displays" ? 680 : 544
                 radius: Settings.r(24)
                 color: Qt.rgba(Colors.surfaceContainer.r, Colors.surfaceContainer.g, Colors.surfaceContainer.b, 0.92)
                 border.width: 1
@@ -233,11 +233,11 @@ Scope {
                     anchors.margins: 16
                     spacing: 16
 
-                    // Шапка страницы: «назад» и название (на главном экране её нет)
+                    // Шапка страницы: «назад» и название (на главном экране её нет, «Дисплеи» рисуют свою шапку)
                     Rectangle {
                         Layout.fillWidth: true
                         Layout.preferredHeight: 36
-                        visible: root.activeTab !== "menu"
+                        visible: root.activeTab !== "menu" && root.activeTab !== "displays"
                         radius: Settings.r(999)
                         color: backMouse.containsMouse ? Settings.fillHover : Settings.fill
                         border.width: 0
@@ -345,6 +345,7 @@ Scope {
                 id: displaysTab
                 DisplaysTab {
                     onCloseRequested: root.shown = false
+                    onBackRequested: root.back()
                 }
             }
 
