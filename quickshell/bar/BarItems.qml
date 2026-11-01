@@ -23,7 +23,8 @@ Item {
     readonly property var defaultZone: ({
         logo: "left", workspaces: "left", clock: "center", media: "center", cava: "center",
         tray: "right",
-        network: "right", bluetooth: "right", sound: "right", notifications: "right"
+        network: "right", bluetooth: "right", sound: "right", notifications: "right",
+        ram: "right", cpu: "right", power: "right"
     })
     // Старый ключ «indicators» (все значки одним блоком) заменяется на четыре отдельных
     readonly property var legacyKeys: ({
@@ -33,7 +34,8 @@ Item {
     // Элементы по ключам: для расчёта позиций
     readonly property var slots: ({
         logo: logoSlot, workspaces: wsSlot, clock: clockSlot, media: mediaSlot, cava: cavaSlot, tray: traySlot,
-        network: netSlot, bluetooth: btSlot, sound: sndSlot, notifications: ntfSlot
+        network: netSlot, bluetooth: btSlot, sound: sndSlot, notifications: ntfSlot,
+        ram: ramSlot, cpu: cpuSlot, power: pwrSlot
     })
 
     // ---- Раскладка ----
@@ -104,7 +106,32 @@ Item {
     function isVisible(k) { return slots[k].visible }
     function widthOf(k) { return slots[k].width }
     // Крайним круглым элементам нужен небольшой отступ, квадратикам столов побольше
-    function edgeOf(k) { return k === "logo" || indOrder.indexOf(k) >= 0 ? 4 : 10 }
+    function edgeOf(k) { return k === "logo" || k === "power" || indOrder.indexOf(k) >= 0 ? 4 : 10 }
+
+    // ---- Острова ----
+    // В стиле «острова» у каждой непустой зоны своя «таблетка» (BarIsland): она охватывает видимые
+    // элементы зоны с теми же отступами, что и у краёв сплошного бара. Границы считаются по той же
+    // раскладке, что и позиции, поэтому острова двигаются вместе с элементами при перетаскивании.
+    readonly property bool islands: Settings.islands
+
+    function zoneSpan(zone) {
+        const items = layout[zone].filter(isVisible)
+        if (items.length === 0) return null
+        const first = items[0]
+        const last = items[items.length - 1]
+        // Центр по умолчанию — часы, у них уже есть свои поля, поэтому отступ острова меньше
+        const padL = zone === "center" ? 4 : edgeOf(first)
+        const padR = zone === "center" ? 4 : edgeOf(last)
+        const x0 = layoutX(first) - padL
+        const x1 = layoutX(last) + widthOf(last) + padR
+        return { x: x0, w: x1 - x0 }
+    }
+
+    BarIsland { id: leftIsland;   span: root.islands ? root.zoneSpan("left") : null }
+    BarIsland { id: centerIsland; span: root.islands ? root.zoneSpan("center") : null }
+    BarIsland { id: rightIsland;  span: root.islands ? root.zoneSpan("right") : null }
+    // Нужны shell.qml для маски кликов (между островами клики идут в окна под баром)
+    readonly property var islandItems: [leftIsland, centerIsland, rightIsland]
 
     function layoutX(key) {
         const L = layout
@@ -469,6 +496,64 @@ Item {
             menu: root.menu
             screenName: root.screenName
             modules: root.activeMembers("notifications")
+        }
+    }
+
+    // Память и загрузка процессора (BarStat.qml, данные: state/SysStats.qml)
+    BarSlot {
+        id: ramSlot
+        key: "ram"
+        host: root
+        visible: Settings.moduleOn("ram")
+
+        BarStat {
+            anchors.verticalCenter: parent.verticalCenter
+            kind: "ram"
+        }
+    }
+
+    BarSlot {
+        id: cpuSlot
+        key: "cpu"
+        host: root
+        visible: Settings.moduleOn("cpu")
+
+        BarStat {
+            anchors.verticalCenter: parent.verticalCenter
+            kind: "cpu"
+        }
+    }
+
+    // Кнопка выхода: открывает страницу System в панели (сон, перезагрузка, выключение)
+    BarSlot {
+        id: pwrSlot
+        key: "power"
+        host: root
+        visible: Settings.moduleOn("power")
+
+        Rectangle {
+            anchors.verticalCenter: parent.verticalCenter
+            width: Settings.barHeight - 8
+            height: width
+            radius: Settings.barRounded ? width / 2 : 0
+            color: powerMouse.containsMouse ? Qt.alpha(Colors.text, 0.18) : "transparent"
+
+            // Глиф Nerd Font «sign-out» (U+F08B)
+            Text {
+                anchors.centerIn: parent
+                text: "\uf08b"
+                color: Colors.text
+                font.family: "Symbols Nerd Font"
+                font.pixelSize: Math.round(Settings.barHeight * 0.5)
+            }
+
+            MouseArea {
+                id: powerMouse
+                anchors.fill: parent
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+                onClicked: Quickshell.execDetached(["quickshell", "ipc", "call", "panel", "system"])
+            }
         }
     }
 }

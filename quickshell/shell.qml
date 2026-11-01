@@ -36,8 +36,14 @@ ShellRoot {
             anchors { top: true; left: true; right: true }
             implicitHeight: Settings.barHeight + Settings.barTop
             color: "transparent"
-            // Клики принимает только сам бар, а не прозрачные поля вокруг него
-            mask: Region { item: barRect }
+            // Клики принимает только сам бар, а не прозрачные поля вокруг него. В стиле «острова»
+            // общей подложки нет, поэтому принимают только три острова: между ними клики идут в окна под баром
+            mask: Region {
+                item: Settings.islands ? null : barRect
+                Region { item: barItems.islandItems[0] }
+                Region { item: barItems.islandItems[1] }
+                Region { item: barItems.islandItems[2] }
+            }
 
             Rectangle {
                 id: barRect
@@ -48,12 +54,14 @@ ShellRoot {
                     rightMargin: Settings.barEdge
                 }
                 radius: Settings.barRounded ? 999 : 0
-                color: Colors[Settings.barColor] ?? Colors.primaryContainer
-                border.width: 1
-                border.color: Qt.lighter(color, 1.3)
+                // В стиле «острова» подложку рисуют сами острова (BarIsland в BarItems)
+                color: Settings.islands ? "transparent" : (Colors[Settings.barColor] ?? Colors.primaryContainer)
+                border.width: Settings.islands ? 0 : 1
+                border.color: Qt.lighter(Colors[Settings.barColor] ?? Colors.primaryContainer, 1.3)
 
                 // Элементы бара (логотип, столы, часы, значки) и их перетаскивание: см. BarItems.qml
                 BarItems {
+                    id: barItems
                     anchors.fill: parent
                     activeId: win.activeWorkspaceId
                     menu: quickMenu

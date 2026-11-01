@@ -2,7 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import ".."
 
-// Настройки бара: размер. Форма бара и интерфейса — на странице «Форма», кнопка с логотипом — в «Модули бара» (плитка «Лого»).
+// Настройки бара: стиль (сплошной или острова) и размер. Форма бара и интерфейса — на странице «Форма», кнопка с логотипом — в «Модули бара» (плитка «Лого»).
 // Рабочие столы настраиваются на странице модуля «Столы» (Модули бара, шестерёнка).
 // Всё сохраняется в Settings (settings.json), бар меняется сразу.
 Flickable {
@@ -16,6 +16,56 @@ Flickable {
         id: col
         width: tab.width
         spacing: 16
+
+        Text {
+            text: "Стиль бара"
+            color: Colors.text
+            font.family: Settings.uiFontFamily
+            font.pixelSize: 14
+            font.bold: true
+        }
+
+        // «Сплошной» — одна общая подложка; «Острова» — отдельная «таблетка» на левую, центральную и правую часть
+        RowLayout {
+            Layout.fillWidth: true
+            spacing: 8
+
+            Repeater {
+                model: [
+                    { id: "solid",   label: "Сплошной" },
+                    { id: "islands", label: "Острова" }
+                ]
+
+                Rectangle {
+                    id: styleChip
+                    required property var modelData
+                    readonly property bool selected: Settings.barStyle === modelData.id
+
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 36
+                    radius: Settings.r(999)
+                    color: selected ? Colors.primary
+                         : styleMouse.containsMouse ? Settings.fillHover
+                         : Settings.fill
+                    border.width: 0
+
+                    Text {
+                        anchors.centerIn: parent
+                        text: styleChip.modelData.label
+                        color: styleChip.selected ? Colors.textOnPrimary : Colors.text
+                        font.family: Settings.uiFontFamily
+                        font.pixelSize: 13
+                    }
+                    MouseArea {
+                        id: styleMouse
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: Settings.barStyle = styleChip.modelData.id
+                    }
+                }
+            }
+        }
 
         Text {
             text: "Размер бара"
