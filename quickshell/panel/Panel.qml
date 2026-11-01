@@ -21,6 +21,7 @@ Scope {
         { id: "control",  title: "Control Center", subtitle: "Сеть, Bluetooth, звук, уведомления" },
         { id: "defaults", title: "Defaults", subtitle: "Приложения по умолчанию" },
         { id: "style",    title: "Style",    subtitle: "Цвета, шрифт, бар и обои" },
+        { id: "displays", title: "Displays", subtitle: "Мониторы: расположение и режим" },
         { id: "system",   title: "System",   subtitle: "Сон, гибернация, выключение" }
     ]
 
@@ -210,8 +211,9 @@ Scope {
                 id: card
                 visible: win.isFocused
                 anchors.centerIn: parent
-                width: 384
-                height: 544
+                // Страница «Дисплеи» шире и выше остальных: на ней превью и список мониторов
+                width: root.activeTab === "displays" ? 520 : 384
+                height: root.activeTab === "displays" ? 620 : 544
                 radius: Settings.r(24)
                 color: Qt.rgba(Colors.surfaceContainer.r, Colors.surfaceContainer.g, Colors.surfaceContainer.b, 0.92)
                 border.width: 1
@@ -221,6 +223,8 @@ Scope {
 
                 Behavior on opacity { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
                 Behavior on scale   { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
+                Behavior on width   { NumberAnimation { duration: 150; easing.type: Easing.OutCubic } }
+                Behavior on height  { NumberAnimation { duration: 150; easing.type: Easing.OutCubic } }
 
                 MouseArea { anchors.fill: parent }
 
@@ -263,6 +267,7 @@ Scope {
                         sourceComponent: root.isMenu(root.activeTab) ? menuPage
                                        : root.activeTab === "defaults" ? defaultsTab
                                        : root.activeTab === "apps" ? appsTab
+                                       : root.activeTab === "displays" ? displaysTab
                                        : root.activeTab === "control/network" ? networkTab
                                        : root.activeTab === "control/bluetooth" ? bluetoothPage
                                        : root.activeTab === "control/sound" ? soundTab
@@ -333,6 +338,13 @@ Scope {
                     }
 
                     Item { Layout.fillHeight: true }
+                }
+            }
+
+            Component {
+                id: displaysTab
+                DisplaysTab {
+                    onCloseRequested: root.shown = false
                 }
             }
 

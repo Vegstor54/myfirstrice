@@ -34,3 +34,6 @@ StreamRow tabs/StreamRow.qml
 SoundTab tabs/SoundTab.qml
 ClipboardMenu menus/ClipboardMenu.qml
 singleton TrayState state/TrayState.qml
+DisplaysTab panel/DisplaysTab.qml
+DisplayRow panel/DisplayRow.qml
+OptionPicker panel/OptionPicker.qml

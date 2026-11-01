@@ -6,13 +6,17 @@ Rectangle {
     id: chip
     property string label: ""
     property bool selected: false
+    // Цвета невыбранного чипа и при наведении: по умолчанию как на карточке панели,
+    // на более светлой подложке (строки «Дисплеев») задаются свои
+    property color idleColor: Settings.fill
+    property color hoverColor: Settings.fillHover
     signal clicked()
 
     implicitHeight: 36
     radius: Settings.r(999)
     color: selected ? Colors.primary
-         : area.containsMouse ? Settings.fillHover
-         : Settings.fill
+         : area.containsMouse ? hoverColor
+         : idleColor
     border.width: 0
 
     Text {
