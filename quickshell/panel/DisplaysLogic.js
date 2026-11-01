@@ -16,6 +16,16 @@ function parseMode(s) {
     return m ? { w: parseInt(m[1]), h: parseInt(m[2]), hz: round2(parseFloat(m[3])) } : null
 }
 
+// Имя монитора, который m зеркалирует, или "". В hyprctl поле mirrorOf — id монитора или "none".
+function mirrorSource(m, list) {
+    const v = m.mirrorOf
+    if (v === undefined || v === null || v === "none" || v === "" || v === -1) return ""
+    for (let i = 0; i < list.length; i++) {
+        if (list[i].name !== m.name && (String(list[i].id) === String(v) || list[i].name === v)) return list[i].name
+    }
+    return ""
+}
+
 // Из JSON `hyprctl monitors all -j` в модель страницы
 function fromHyprctl(list) {
     const out = []
@@ -44,8 +54,16 @@ function fromHyprctl(list) {
             x: m.x || 0, y: m.y || 0,
             scale: m.scale || 1,
             transform: m.transform || 0,
+            mirror: m.disabled ? "" : mirrorSource(m, list),
             modes: modes
         })
+    }
+    // Зеркало стоит там же, где его источник; источник выключен или пропал — зеркала нет
+    for (let i = 0; i < out.length; i++) {
+        if (!out[i].mirror) continue
+        const src = out.find(o => o.name === out[i].mirror)
+        if (src && src.enabled && !src.mirror) { out[i].x = src.x; out[i].y = src.y }
+        else out[i].mirror = ""
     }
     return out
 }
@@ -59,6 +77,9 @@ function logicalSize(m) {
         h: Math.round((swap ? m.w : m.h) / s)
     }
 }
+
+// Монитор занимает место в раскладке: включён и не является зеркалом другого
+function active(m) { return m.enabled && !m.mirror }
 
 // Уникальные разрешения по убыванию площади
 function resolutions(modes) {
@@ -94,7 +115,7 @@ function bounds(mons) {
     let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity
     for (let i = 0; i < mons.length; i++) {
         const m = mons[i]
-        if (!m.enabled) continue
+        if (!active(m)) continue
         const s = logicalSize(m)
         x0 = Math.min(x0, m.x); y0 = Math.min(y0, m.y)
         x1 = Math.max(x1, m.x + s.w); y1 = Math.max(y1, m.y + s.h)
@@ -110,7 +131,7 @@ function viewParams(mons, width, height) {
     if (b.w <= 0 || width <= 0 || height <= 0) return { k: 0.05, ox: 0, oy: 0 }
     let maxW = 0, maxH = 0
     for (let i = 0; i < mons.length; i++) {
-        if (!mons[i].enabled) continue
+        if (!active(mons[i])) continue
         const s = logicalSize(mons[i])
         maxW = Math.max(maxW, s.w); maxH = Math.max(maxH, s.h)
     }
@@ -130,7 +151,7 @@ function overlapPairs(mons) {
     for (let i = 0; i < mons.length; i++) {
         for (let j = i + 1; j < mons.length; j++) {
             const a = mons[i], b = mons[j]
-            if (!a.enabled || !b.enabled) continue
+            if (!active(a) || !active(b)) continue
             const sa = logicalSize(a), sb = logicalSize(b)
             if (a.x < b.x + sb.w && b.x < a.x + sa.w && a.y < b.y + sb.h && b.y < a.y + sa.h)
                 res.push([a.name, b.name])
@@ -144,7 +165,7 @@ function snap(mons, i, x, y, thr) {
     const s = logicalSize(mons[i])
     let bx = x, by = y, dx = thr + 1, dy = thr + 1
     for (let j = 0; j < mons.length; j++) {
-        if (j === i || !mons[j].enabled) continue
+        if (j === i || !active(mons[j])) continue
         const o = mons[j]
         const os = logicalSize(o)
         const xs = [o.x + os.w, o.x - s.w, o.x, o.x + os.w - s.w]
@@ -161,10 +182,11 @@ function snap(mons, i, x, y, thr) {
 // Соседей справа и снизу сдвигаем, чтобы они не наползали и не появлялась щель.
 function resized(mons, i, old) {
     const m = mons[i]
+    if (!active(m)) return
     const s = logicalSize(m)
     const dw = s.w - old.w, dh = s.h - old.h
     for (let j = 0; j < mons.length; j++) {
-        if (j === i || !mons[j].enabled) continue
+        if (j === i || !active(mons[j])) continue
         const o = mons[j]
         const os = logicalSize(o)
         const vOverlap = o.y < m.y + old.h && m.y < o.y + os.h
@@ -178,7 +200,7 @@ function resized(mons, i, old) {
 function placeRight(mons, i) {
     let right = 0, top = Infinity
     for (let j = 0; j < mons.length; j++) {
-        if (j === i || !mons[j].enabled) continue
+        if (j === i || !active(mons[j])) continue
         right = Math.max(right, mons[j].x + logicalSize(mons[j]).w)
         top = Math.min(top, mons[j].y)
     }
@@ -189,11 +211,18 @@ function placeRight(mons, i) {
 // Копия, сдвинутая так, чтобы левый верхний угол всех включённых мониторов был в (0, 0)
 function normalized(mons) {
     const b = bounds(mons)
-    return mons.map(m => {
+    const out = mons.map(m => {
         const c = Object.assign({}, m)
-        if (m.enabled) { c.x = Math.round(m.x - b.x); c.y = Math.round(m.y - b.y) }
+        if (active(m)) { c.x = Math.round(m.x - b.x); c.y = Math.round(m.y - b.y) }
         return c
     })
+    // Зеркало записываем с теми же координатами, что у источника
+    for (let i = 0; i < out.length; i++) {
+        if (!out[i].enabled || !out[i].mirror) continue
+        const src = out.find(o => o.name === out[i].mirror)
+        if (src) { out[i].x = src.x; out[i].y = src.y }
+    }
+    return out
 }
 
 // Текст hypr/conf/monitors.lua. primary — монитор, на который при старте ставится фокус и курсор.
@@ -218,13 +247,14 @@ function toLua(mons, primary) {
             L.push("")
             continue
         }
-        if (m.name === primary) primaryOk = true
+        if (m.name === primary && !m.mirror) primaryOk = true
         L.push("hl.monitor({")
         L.push("    output   = " + name + ",")
         L.push("    mode     = \"" + m.w + "x" + m.h + "@" + fmtHz(m.hz) + "\",")
         L.push("    position = \"" + m.x + "x" + m.y + "\",")
         L.push("    scale    = " + fmtScale(m.scale) + ",")
         if (m.transform) L.push("    transform = " + m.transform + ",")
+        if (m.mirror) L.push("    mirror   = " + JSON.stringify(m.mirror) + ",")
         L.push("})")
         L.push("")
     }
@@ -238,4 +268,86 @@ function toLua(mons, primary) {
     L.push("")
     L.push(primaryOk ? "return { primary = " + JSON.stringify(primary) + " }" : "return {}")
     return L.join("\n")
+}
+
+// ---- Пресеты раскладки (ряд карточек «Только основной / Расширить / Зеркало / Кроме основного») ----
+
+function isBuiltin(name) { return /^(eDP|LVDS|DSI)/i.test(String(name)) }
+
+// Базовый монитор пресетов: встроенный экран ноутбука, иначе основной при старте, иначе первый включённый
+function baseIndex(mons, primary) {
+    let i = mons.findIndex(m => isBuiltin(m.name))
+    if (i < 0) i = mons.findIndex(m => m.name === primary)
+    if (i < 0) i = mons.findIndex(m => m.enabled)
+    return i < 0 ? 0 : i
+}
+
+// Четыре пресета. На ноутбуке они называются как в Windows-стиле («Только ноутбук», «Только внешний»),
+// на десктопе то же самое относительно основного монитора. Пока монитор один, пресеты недоступны.
+function presetList(mons) {
+    const laptop = mons.some(m => isBuiltin(m.name))
+    const many = mons.length >= 2
+    return [
+        { id: "single", label: laptop ? "Только ноутбук" : "Только основной", ok: many },
+        { id: "extend", label: "Расширить", ok: many },
+        { id: "mirror", label: "Зеркало", ok: many },
+        { id: "others", label: laptop ? "Только внешний" : "Кроме основного", ok: many }
+    ]
+}
+
+// Ставит мониторы из списка индексов в ряд слева направо, верхним краем в 0
+function arrangeRow(arr, idx) {
+    let x = 0
+    for (let k = 0; k < idx.length; k++) {
+        const m = arr[idx[k]]
+        m.enabled = true
+        m.mirror = ""
+        m.x = x
+        m.y = 0
+        x += logicalSize(m).w
+    }
+}
+
+// Применяет пресет к копии списка мониторов (base — индекс базового монитора, см. baseIndex)
+function applyPreset(mons, id, base) {
+    const arr = mons.map(m => Object.assign({}, m))
+    if (arr.length < 2 || base < 0 || base >= arr.length) return arr
+    // порядок слева направо по текущему положению (у выключенных осталось прежнее), при равенстве по списку
+    const order = arr.map((m, i) => i).sort((a, b) => arr[a].x !== arr[b].x ? arr[a].x - arr[b].x : a - b)
+    const b = arr[base]
+    if (id === "single") {
+        for (let i = 0; i < arr.length; i++) { arr[i].mirror = ""; arr[i].enabled = i === base }
+        b.x = 0; b.y = 0
+    } else if (id === "extend") {
+        arrangeRow(arr, order)
+    } else if (id === "mirror") {
+        arrangeRow(arr, [base])
+        for (let i = 0; i < arr.length; i++) {
+            if (i === base) continue
+            arr[i].enabled = true
+            arr[i].mirror = b.name
+            arr[i].x = b.x
+            arr[i].y = b.y
+        }
+    } else if (id === "others") {
+        b.enabled = false
+        b.mirror = ""
+        arrangeRow(arr, order.filter(i => i !== base))
+    }
+    return arr
+}
+
+// Какой пресет соответствует текущему состоянию мониторов ("" — свои настройки)
+function detectPreset(mons, base) {
+    const n = mons.length
+    if (n < 2 || base < 0 || base >= n) return ""
+    const on = mons.filter(m => m.enabled)
+    const b = mons[base]
+    if (on.length === 1 && b.enabled) return "single"
+    if (!b.enabled && on.length === n - 1 && on.every(m => !m.mirror)) return "others"
+    if (b.enabled && on.length === n) {
+        if (on.some(m => m.mirror)) return on.every(m => m.name === b.name || m.mirror === b.name) ? "mirror" : ""
+        return "extend"
+    }
+    return ""
 }

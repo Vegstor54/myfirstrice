@@ -92,8 +92,11 @@ Rectangle {
                         font.pixelSize: 11
                     }
                     Text {
+                        Layout.fillWidth: true
+                        wrapMode: Text.WordWrap
                         text: row.mon.enabled
-                            ? row.mon.w + " × " + row.mon.h + " · " + Logic.fmtHz(row.mon.hz) + " Гц · масштаб " + Logic.fmtScale(row.mon.scale)
+                            ? Logic.fmtHz(row.mon.hz) + " Гц · масштаб " + Logic.fmtScale(row.mon.scale)
+                                + ((row.mon.mirror ?? "") !== "" ? " · зеркало " + row.mon.mirror : "")
                             : "Выключен"
                         color: Colors.text
                         opacity: 0.8
@@ -102,8 +105,30 @@ Rectangle {
                     }
                 }
 
+                // Быстрый выбор разрешения прямо в шапке строки; список раскрывается под ним
+                OptionPicker {
+                    visible: row.mon.enabled === true
+                    Layout.preferredWidth: 150
+                    Layout.alignment: Qt.AlignTop
+                    options: row.resList.map(r => r.w + " × " + r.h)
+                    current: row.mon.w + " × " + row.mon.h
+                    onPicked: index => row.resolutionPicked(row.resList[index].w, row.resList[index].h)
+                }
+
+                Text {
+                    Layout.alignment: Qt.AlignTop
+                    Layout.topMargin: 8
+                    text: row.mon.enabled ? "Вкл" : "Выкл"
+                    color: Colors.text
+                    opacity: 0.8
+                    font.family: Settings.uiFontFamily
+                    font.pixelSize: 13
+                }
+
                 // Переключатель «включён / выключен»
                 Rectangle {
+                    Layout.alignment: Qt.AlignTop
+                    Layout.topMargin: 5
                     Layout.preferredWidth: 42
                     Layout.preferredHeight: 24
                     radius: Settings.r(999)
@@ -125,6 +150,17 @@ Rectangle {
                         onClicked: row.enabledToggled(!row.mon.enabled)
                     }
                 }
+
+                // Стрелка раскрытия настроек строки
+                Text {
+                    Layout.alignment: Qt.AlignTop
+                    Layout.topMargin: 8
+                    text: row.expanded ? "▴" : "▾"
+                    color: Colors.text
+                    opacity: 0.7
+                    font.family: Settings.uiFontFamily
+                    font.pixelSize: 13
+                }
             }
         }
 
@@ -132,20 +168,6 @@ Rectangle {
             visible: row.expanded && row.mon.enabled === true
             Layout.fillWidth: true
             spacing: 8
-
-            Text {
-                text: "Разрешение"
-                color: Colors.text
-                opacity: 0.7
-                font.family: Settings.uiFontFamily
-                font.pixelSize: 12
-            }
-            OptionPicker {
-                Layout.fillWidth: true
-                options: row.resList.map(r => r.w + " × " + r.h)
-                current: row.mon.w + " × " + row.mon.h
-                onPicked: index => row.resolutionPicked(row.resList[index].w, row.resList[index].h)
-            }
 
             Text {
                 text: "Частота обновления"
