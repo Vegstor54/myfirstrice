@@ -94,8 +94,10 @@ Rectangle {
                     Text {
                         Layout.fillWidth: true
                         wrapMode: Text.WordWrap
+                        // Как в макете: «1920×1200@59.95 · масштаб 0.75», у зеркала — его источник
                         text: row.mon.enabled
-                            ? Logic.fmtHz(row.mon.hz) + " Гц · масштаб " + Logic.fmtScale(row.mon.scale)
+                            ? row.mon.w + "×" + row.mon.h + "@" + Logic.fmtHz(row.mon.hz)
+                                + " · масштаб " + Logic.fmtScale(row.mon.scale)
                                 + ((row.mon.mirror ?? "") !== "" ? " · зеркало " + row.mon.mirror : "")
                             : "Выключен"
                         color: Colors.text

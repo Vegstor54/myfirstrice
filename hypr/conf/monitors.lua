@@ -4,6 +4,8 @@
 
 -- Файл переписывает панель quickshell (Displays), руками можно править,
 -- но панель при применении запишет его заново.
+-- Раскладку применяет kanshi: профиль в ~/.config/kanshi/config, панель пишет его тем же действием.
+-- Этот файл — fallback, если kanshi не установлен или не запущен.
 -- primary — монитор, на который при старте Hyprland ставятся фокус и курсор (см. autostart.lua).
 -- See https://wiki.hypr.land/Configuring/Basics/Monitors/
 

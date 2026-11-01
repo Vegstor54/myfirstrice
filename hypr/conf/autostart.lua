@@ -19,6 +19,9 @@ hl.on("hyprland.start", function ()
           hl.exec_cmd("hyprctl dispatch 'hl.dsp.focus({ monitor = \"" .. primary .. "\" })'")
      end
      hl.exec_cmd("awww-daemon")
+     -- Раскладка мониторов: kanshi применяет профиль из ~/.config/kanshi/config (его пишет панель:
+     -- Displays -> «Применить»). Если kanshi не установлен, раскладка берётся из conf/monitors.lua.
+     hl.exec_cmd("command -v kanshi >/dev/null 2>&1 && kanshi")
      hl.exec_cmd("quickshell")
      -- История буфера обмена: cliphist сохраняет текст и картинки (меню: Super+V)
      hl.exec_cmd("wl-paste --type text --watch cliphist store")

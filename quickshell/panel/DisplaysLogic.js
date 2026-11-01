@@ -235,6 +235,8 @@ function toLua(mons, primary) {
     L.push("")
     L.push("-- Файл переписывает панель quickshell (Displays), руками можно править,")
     L.push("-- но панель при применении запишет его заново.")
+    L.push("-- Раскладку применяет kanshi: профиль в ~/.config/kanshi/config, панель пишет его тем же действием.")
+    L.push("-- Этот файл — fallback, если kanshi не установлен или не запущен.")
     L.push("-- primary — монитор, на который при старте Hyprland ставятся фокус и курсор (см. autostart.lua).")
     L.push("-- See https://wiki.hypr.land/Configuring/Basics/Monitors/")
     L.push("")
@@ -268,6 +270,60 @@ function toLua(mons, primary) {
     L.push("")
     L.push(primaryOk ? "return { primary = " + JSON.stringify(primary) + " }" : "return {}")
     return L.join("\n")
+}
+
+// ---- Профиль kanshi (~/.config/kanshi/config) ----
+
+// Имя профиля, который пишет панель: оно же показывается в нижней строке страницы
+const KANSHI_PROFILE = "auto-custom"
+
+// Значение для kanshi transform: 0 — normal, 1/2/3 — повороты, 4–7 — с отражением
+function kanshiTransform(t) {
+    const names = ["normal", "90", "180", "270", "flipped", "flipped-90", "flipped-180", "flipped-270"]
+    return names[t & 7] ?? "normal"
+}
+
+// Имя выхода в кавычках, если в нём есть пробелы или служебные символы kanshi
+function kanshiName(name) {
+    return /^[\w.:+-]+$/.test(name) ? name : JSON.stringify(name)
+}
+
+// Текст ~/.config/kanshi/config для текущего набора мониторов.
+// kanshi выбирает профиль, только когда число выходов в профиле равно числу подключённых,
+// поэтому в профиль попадают все мониторы, а не только включённые.
+// Зеркало kanshi не умеет: такой монитор включается без геометрии, её задаёт Hyprland (monitors.lua).
+function toKanshi(mons, name) {
+    const n = normalized(mons)
+    const prof = name && name !== "" ? name : KANSHI_PROFILE
+    const L = []
+    L.push("# ~/.config/kanshi/config — файл создаёт панель quickshell (Displays -> «Применить»).")
+    L.push("# Руками править можно, но панель перезапишет файл при следующем применении.")
+    L.push("# Профиль описывает тот набор мониторов, который подключён сейчас:")
+    L.push("# kanshi берёт профиль, только когда число выходов в нём равно числу подключённых.")
+    L.push("# Раскладка продублирована в hypr/conf/monitors.lua — она остаётся fallback без kanshi.")
+    L.push("")
+    L.push("profile " + prof + " {")
+    for (let i = 0; i < n.length; i++) {
+        const m = n[i]
+        if (!m.enabled) {
+            L.push("\toutput " + kanshiName(m.name) + " disable")
+            continue
+        }
+        if (m.mirror) {
+            // Комментарий отдельной строкой: kanshi читает «#» только в начале токена
+            L.push("\t# зеркало kanshi не умеет: геометрию зеркала задаёт Hyprland (monitors.lua)")
+            L.push("\toutput " + kanshiName(m.name) + " enable")
+            continue
+        }
+        let line = "\toutput " + kanshiName(m.name) + " enable"
+            + " mode " + m.w + "x" + m.h + "@" + fmtHz(m.hz) + "Hz"
+            + " position " + m.x + "," + m.y
+            + " scale " + fmtScale(m.scale)
+        if (m.transform) line += " transform " + kanshiTransform(m.transform)
+        L.push(line)
+    }
+    L.push("}")
+    return L.join("\n") + "\n"
 }
 
 // ---- Пресеты раскладки (ряд карточек «Только основной / Расширить / Зеркало / Кроме основного») ----

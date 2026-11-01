@@ -7,12 +7,15 @@ import "DisplaysLogic.js" as Logic
 
 // Дисплеи: превью расположения мониторов (перетаскивание с притягиванием к краям),
 // по каждому монитору разрешение, частота, масштаб, поворот, включение и «основной при старте».
-// Список берётся из `hyprctl monitors all -j`. «Применить» переписывает hypr/conf/monitors.lua
-// (set-monitors.sh) и перезагружает конфиг Hyprland. Вся логика расчётов — в DisplaysLogic.js.
+// Список берётся из `hyprctl monitors all -j`. «Применить» (scripts/set-monitors.sh) пишет
+// профиль kanshi в ~/.config/kanshi/config и тот же раскладка — fallback в hypr/conf/monitors.lua.
+// Применяет kanshi, если он запущен, иначе правила Hyprland (hyprctl reload).
+// Вся логика расчётов и оба текста конфигов — в DisplaysLogic.js.
 Item {
     id: tab
 
     signal closeRequested()
+    signal backRequested()
 
     readonly property string scripts: Quickshell.env("HOME") + "/.config/quickshell/scripts"
 
@@ -26,6 +29,19 @@ Item {
     property string status: ""
     property bool failed: false
     property bool readFailed: false
+    // Секунд до отката, пока применённые настройки не подтверждены (0 — ожидания нет)
+    property int confirmLeft: 0
+
+    // kanshi: running / stopped / missing и имя профиля из его конфига (scripts/kanshi-state.sh)
+    property string kanshiState: "unknown"
+    property string kanshiProfile: "auto-custom"
+    readonly property bool kanshiActive: kanshiState === "running"
+    // Постоянная подпись в нижней строке, когда нет сообщения о последнем действии
+    readonly property string kanshiText:
+        kanshiActive ? "kanshi работает · профиль: " + kanshiProfile
+        : kanshiState === "missing" ? "kanshi не установлен · раскладка через Hyprland"
+        : kanshiState === "stopped" ? "kanshi не запущен · раскладка через Hyprland"
+        : "раскладка применяется через Hyprland"
 
     // Параметры превью (масштаб и смещение); пока монитор тянут, не пересчитываются
     property real viewK: 0.05
@@ -140,8 +156,74 @@ Item {
     function apply() {
         if (!tab.canApply) return
         applier.lua = Logic.toLua(tab.mons, tab.primary)
+        applier.kanshi = Logic.toKanshi(tab.mons, tab.kanshiProfile)
         tab.status = "Применяю…"
         applier.running = true
+    }
+
+    // Ожидание подтверждения: set-monitors.sh пишет срок в ~/.cache/monitors.pending, а откат делает
+    // независимый наблюдатель revert-monitors.sh, так что он сработает, даже если панель пересоздастся
+    function loadPending(text) {
+        const p = text.trim().split("\n")
+        const left = p.length >= 2 ? parseInt(p[0]) - parseInt(p[1]) : 0
+        tab.confirmLeft = left > 0 ? left : 0
+    }
+
+    function keepSettings() {
+        tab.confirmLeft = 0
+        tab.status = "Настройки сохранены"
+        tab.failed = false
+        reverter.mode = "confirm"
+        reverter.running = true
+    }
+
+    function revertNow() {
+        tab.confirmLeft = 0
+        tab.status = "Возвращаю прежние настройки…"
+        tab.failed = false
+        reverter.mode = "now"
+        reverter.running = true
+        afterRevert.restart()
+    }
+
+    // Читается и при создании страницы: если панель пересоздалась посреди ожидания, плашка вернётся
+    Process {
+        id: pendingReader
+        command: ["sh", "-c", "cat \"$HOME/.cache/monitors.pending\" 2>/dev/null; date +%s"]
+        running: true
+        stdout: StdioCollector {
+            onStreamFinished: tab.loadPending(text)
+        }
+    }
+
+    Process {
+        id: reverter
+        property string mode: "confirm"
+        command: [tab.scripts + "/revert-monitors.sh", mode]
+    }
+
+    // Обратный отсчёт; на нуле наблюдатель сам вернул прежний конфиг, остаётся перечитать мониторы
+    Timer {
+        interval: 1000
+        repeat: true
+        running: tab.confirmLeft > 0
+        onTriggered: {
+            tab.confirmLeft -= 1
+            if (tab.confirmLeft <= 0) {
+                tab.status = "Не подтверждено: прежние настройки возвращены"
+                tab.failed = true
+                afterRevert.restart()
+            }
+        }
+    }
+
+    Timer {
+        id: afterRevert
+        interval: 1500
+        onTriggered: {
+            reader.running = true
+            kanshiProbe.running = true
+        }
     }
 
     // Текущий основной монитор: primary = "DP-3" в строке return { ... } файла monitors.lua
@@ -165,47 +247,125 @@ Item {
     Process {
         id: applier
         property string lua: ""
-        command: [tab.scripts + "/set-monitors.sh", lua]
+        property string kanshi: ""
+        // $1 — текст monitors.lua, $2 — профиль kanshi.
+        // Коды: 0 — применил kanshi, 3 — kanshi не запущен и применил Hyprland, иначе ошибка
+        command: [tab.scripts + "/set-monitors.sh", lua, kanshi]
         onExited: code => {
-            tab.status = code === 0 ? "Применено" : "Не удалось применить (код " + code + ")"
-            tab.failed = code !== 0
-            if (code === 0) tab.dirty = false
+            const ok = code === 0 || code === 3
+            tab.status = code === 0 ? "Применено через kanshi"
+                       : code === 3 ? "Применено через Hyprland"
+                       : "Не удалось применить (код " + code + ")"
+            tab.failed = !ok
+            if (ok) {
+                tab.dirty = false
+                // set-monitors.sh записал срок: внизу появится «Оставить настройки? Откат через 15 с»
+                pendingReader.running = true
+            }
             refreshTimer.restart()
         }
     }
 
-    // Hyprland применяет новый конфиг не мгновенно: читаем список заново чуть позже
+    // Запущен ли kanshi и какой профиль лежит в его конфиге
+    Process {
+        id: kanshiProbe
+        command: [tab.scripts + "/kanshi-state.sh"]
+        running: true
+        stdout: StdioCollector {
+            onStreamFinished: {
+                const lines = text.split("\n")
+                tab.kanshiState = (lines[0] ?? "").trim() || "missing"
+                const name = (lines[1] ?? "").trim()
+                if (name !== "") tab.kanshiProfile = name
+            }
+        }
+    }
+
+    // Hyprland применяет новый конфиг не мгновенно: читаем список заново чуть позже,
+    // и заодно проверяем, что kanshi подхватил профиль
     Timer {
         id: refreshTimer
         interval: 800
-        onTriggered: reader.running = true
+        onTriggered: {
+            reader.running = true
+            kanshiProbe.running = true
+        }
     }
 
     ColumnLayout {
+        id: body
         anchors.fill: parent
         spacing: 12
 
-        // Шапка: пояснение и кнопки «Применить», «Обновить», «Закрыть» (название показывает верхняя полоса панели)
-        RowLayout {
+        // Шапка как в макете: название с подзаголовком по центру карточки, поверх по краям —
+        // возврат к пунктам меню, «Применить», обновление списка мониторов и закрытие панели.
+        // Верхнюю полосу панели на этой странице не показываем (см. Panel.qml)
+        Item {
             Layout.fillWidth: true
-            spacing: 8
+            Layout.preferredHeight: 40
 
-            Text {
-                Layout.fillWidth: true
-                text: "Расположение и сохранение раскладки"
-                wrapMode: Text.WordWrap
-                maximumLineCount: 2
-                elide: Text.ElideRight
-                color: Colors.text
-                opacity: 0.7
-                font.family: Settings.uiFontFamily
-                font.pixelSize: 12
+            Column {
+                anchors.centerIn: parent
+                width: parent.width - 2 * (34 + 8)
+                spacing: 1
+
+                Text {
+                    width: parent.width
+                    horizontalAlignment: Text.AlignHCenter
+                    text: "Дисплеи"
+                    elide: Text.ElideRight
+                    color: Colors.text
+                    font.family: Settings.uiFontFamily
+                    font.pixelSize: 16
+                    font.bold: true
+                }
+                Text {
+                    width: parent.width
+                    horizontalAlignment: Text.AlignHCenter
+                    text: "Расположите и сохраните"
+                    elide: Text.ElideRight
+                    color: Colors.text
+                    opacity: 0.7
+                    font.family: Settings.uiFontFamily
+                    font.pixelSize: 11
+                }
             }
 
             Rectangle {
-                Layout.preferredWidth: 104
-                Layout.preferredHeight: 34
+                id: backBtn
+                anchors.left: parent.left
+                anchors.verticalCenter: parent.verticalCenter
+                width: 34
+                height: 34
                 radius: Settings.r(999)
+                color: backMouse.containsMouse ? Settings.fillHover : Settings.fill
+                border.width: 0
+
+                Text {
+                    anchors.centerIn: parent
+                    text: "‹"
+                    color: Colors.text
+                    font.family: Settings.uiFontFamily
+                    font.pixelSize: 17
+                }
+                MouseArea {
+                    id: backMouse
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: tab.backRequested()
+                }
+            }
+
+            // «Применить»: акцентная заливка, пока есть неприменённые изменения
+            Rectangle {
+                id: applyBtn
+                anchors.right: refreshBtn.left
+                anchors.rightMargin: 8
+                anchors.verticalCenter: parent.verticalCenter
+                width: 96
+                height: 34
+                radius: Settings.r(10)
                 color: tab.canApply ? Colors.primary : Settings.fill
                 border.width: 0
 
@@ -225,35 +385,45 @@ Item {
                 }
             }
 
-            // Круглые кнопки: обновить список мониторов и закрыть панель
-            Repeater {
-                model: 2
+            // Обновить список мониторов и закрыть панель
+            Row {
+                id: refreshBtn
+                anchors.right: parent.right
+                anchors.verticalCenter: parent.verticalCenter
+                spacing: 8
 
-                Rectangle {
-                    id: iconBtn
-                    required property int index
+                Repeater {
+                    model: 2
 
-                    Layout.preferredWidth: 34
-                    Layout.preferredHeight: 34
-                    radius: Settings.r(999)
-                    color: iconMouse.containsMouse ? Settings.fillHover : Settings.fill
-                    border.width: 0
+                    Rectangle {
+                        id: iconBtn
+                        required property int index
+                        width: 34
+                        height: 34
+                        radius: Settings.r(999)
+                        color: iconMouse.containsMouse ? Settings.fillHover : Settings.fill
+                        border.width: 0
 
-                    Text {
-                        anchors.centerIn: parent
-                        text: iconBtn.index === 0 ? "↻" : "✕"
-                        color: Colors.text
-                        font.family: Settings.uiFontFamily
-                        font.pixelSize: 15
-                    }
-                    MouseArea {
-                        id: iconMouse
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: {
-                            if (iconBtn.index === 0) reader.running = true
-                            else tab.closeRequested()
+                        Text {
+                            anchors.centerIn: parent
+                            text: iconBtn.index === 0 ? "↻" : "✕"
+                            color: Colors.text
+                            font.family: Settings.uiFontFamily
+                            font.pixelSize: 15
+                        }
+                        MouseArea {
+                            id: iconMouse
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: {
+                                if (iconBtn.index === 0) {
+                                    reader.running = true
+                                    kanshiProbe.running = true
+                                } else {
+                                    tab.closeRequested()
+                                }
+                            }
                         }
                     }
                 }
@@ -272,7 +442,7 @@ Item {
             ColumnLayout {
                 id: col
                 width: flick.width
-                spacing: 10
+                spacing: 8
 
                 // 1. Раскладка: четыре пресета
                 Text {
@@ -384,7 +554,7 @@ Item {
                 Rectangle {
                     id: preview
                     Layout.fillWidth: true
-                    Layout.preferredHeight: 170
+                    Layout.preferredHeight: 150
                     radius: Settings.r(12)
                     color: Settings.fill
                     border.width: 0
@@ -499,7 +669,7 @@ Item {
 
                 Text {
                     Layout.fillWidth: true
-                    text: "Перетащите внешний монитор, чтобы переместить его. Края притягиваются."
+                    text: "Перетащите монитор в превью, чтобы переместить его: края притягиваются."
                     wrapMode: Text.WordWrap
                     color: Colors.text
                     opacity: 0.7
@@ -560,10 +730,13 @@ Item {
             }
         }
 
-        // 5. Строка состояния: результат последнего действия или текущий основной монитор
+        // 5. Нижняя строка как в макете: состояние kanshi и профиль, которым применяется раскладка.
+        // Сообщение о последнем действии («Применено», ошибка) показывается вместо этой подписи.
+        // Пока ждём подтверждения, вместо неё висит плашка отката
         Rectangle {
             Layout.fillWidth: true
             Layout.preferredHeight: 40
+            visible: tab.confirmLeft <= 0
             radius: Settings.r(12)
             color: Settings.fill
             border.width: 0
@@ -574,24 +747,29 @@ Item {
                 anchors.rightMargin: 14
                 spacing: 8
 
+                // Точка: красная при ошибке, жёлтая пока применяется, иначе цвет kanshi (или ошибки, если не запущен)
                 Rectangle {
                     Layout.preferredWidth: 8
                     Layout.preferredHeight: 8
                     radius: 4
-                    color: tab.failed ? Colors.error : applier.running ? Colors.tertiary : Colors.primary
+                    color: tab.failed ? Colors.error
+                         : applier?.running ? Colors.tertiary
+                         : tab.kanshiActive ? Colors.primary
+                         : Colors.tertiary
                 }
                 Text {
                     Layout.fillWidth: true
                     text: tab.status !== "" ? tab.status
                         : tab.dirty ? "Есть неприменённые изменения"
-                        : "Hyprland · основной при старте: " + (tab.primary !== "" ? tab.primary : "не выбран")
+                        : tab.kanshiText
                     elide: Text.ElideRight
                     color: Colors.text
                     font.family: Settings.uiFontFamily
                     font.pixelSize: 12
                 }
+                // Чем применяется раскладка: kanshi или правила Hyprland
                 Text {
-                    text: "запись в monitors.lua"
+                    text: tab.kanshiActive ? "Применение через kanshi" : "Применение через Hyprland"
                     color: Colors.text
                     opacity: 0.6
                     font.family: Settings.uiFontFamily
@@ -600,4 +778,52 @@ Item {
             }
         }
     }
+
+    // Подтверждение после «Применить»: без ответа за 15 секунд прежние файлы вернутся сами.
+    // Плашка всплывает поверх нижней строки, список мониторов при этом не сдвигается.
+    // Откат делает revert-monitors.sh, а не страница: он сработает и при закрытой панели
+    Rectangle {
+            visible: tab.confirmLeft > 0
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            height: 52
+            radius: Settings.r(12)
+            color: Settings.fillActive
+            border.width: 0
+
+            RowLayout {
+                anchors.fill: parent
+                anchors.leftMargin: 14
+                anchors.rightMargin: 10
+                spacing: 8
+
+                Text {
+                    Layout.fillWidth: true
+                    text: "Оставить настройки? Откат через " + tab.confirmLeft + " с"
+                    wrapMode: Text.WordWrap
+                    maximumLineCount: 2
+                    elide: Text.ElideRight
+                    color: Colors.text
+                    font.family: Settings.uiFontFamily
+                    font.pixelSize: 13
+                    font.bold: true
+                }
+                BarChip {
+                    Layout.preferredWidth: 96
+                    Layout.preferredHeight: 34
+                    idleColor: Settings.fillHover
+                    hoverColor: Settings.fill
+                    label: "Откатить"
+                    onClicked: tab.revertNow()
+                }
+                BarChip {
+                    Layout.preferredWidth: 96
+                    Layout.preferredHeight: 34
+                    selected: true
+                    label: "Оставить"
+                    onClicked: tab.keepSettings()
+                }
+            }
+        }
 }
