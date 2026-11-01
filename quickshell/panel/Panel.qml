@@ -22,7 +22,7 @@ Scope {
         { id: "defaults", title: "Defaults", subtitle: "Приложения по умолчанию" },
         { id: "style",    title: "Style",    subtitle: "Цвета, шрифт, бар и обои" },
         { id: "displays", title: "Displays", subtitle: "Мониторы: расположение и режим" },
-        { id: "system",   title: "System",   subtitle: "Сон, гибернация, выключение" }
+        { id: "system",   title: "System",   subtitle: "Сон, гибернация, перезагрузка, выключение" }
     ]
 
     // Пункт с полем action не открывает страницу, а запускает scripts/power.sh <action>.
@@ -59,6 +59,7 @@ Scope {
         "system": [
             { id: "system/suspend",   title: "Сон",         subtitle: "Спящий режим",                    action: "suspend" },
             { id: "system/hibernate", title: "Гибернация",  subtitle: "Сохранить сессию на диск и выключить", action: "hibernate" },
+            { id: "system/reboot",    title: "Перезагрузка", subtitle: "Перезагрузить компьютер",        action: "reboot", confirm: true },
             { id: "system/poweroff",  title: "Выключить",   subtitle: "Выключить компьютер",             action: "poweroff", confirm: true }
         ]
     })
