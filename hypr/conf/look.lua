@@ -12,7 +12,8 @@ end
 hl.config({
     general = {
         gaps_in  = 3,
-        gaps_out = 15,
+        -- Отступ окон от краёв экрана и от бара (бар резервирует своё место, поэтому от него тоже gaps_out)
+        gaps_out = 4,
 
         border_size = 2,
 
