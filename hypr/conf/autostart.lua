@@ -7,10 +7,17 @@
 -- Autostart necessary processes (like notifications daemons, status bars, etc.)
 -- Or execute your favorite apps at launch like this:
 --
+-- Основной монитор записывает панель в conf/monitors.lua (return { primary = "..." }).
+-- Если файл вернул не таблицу (старая версия), курсор просто не переносится.
+local monitors = require("conf.monitors")
+local primary = type(monitors) == "table" and monitors.primary or nil
+
 hl.on("hyprland.start", function ()
-     -- При старте курсор и фокус на основном (центральном) мониторе DP-3,
-     -- а не на первом по порядку HDMI-A-1
-     hl.exec_cmd("hyprctl dispatch 'hl.dsp.focus({ monitor = \"DP-3\" })'")
+     -- При старте фокус и курсор на основном мониторе (задаётся в панели: Displays -> «Основной при старте»),
+     -- иначе курсор появляется на первом по порядку мониторе
+     if primary then
+          hl.exec_cmd("hyprctl dispatch 'hl.dsp.focus({ monitor = \"" .. primary .. "\" })'")
+     end
      hl.exec_cmd("awww-daemon")
      hl.exec_cmd("quickshell")
      -- История буфера обмена: cliphist сохраняет текст и картинки (меню: Super+V)

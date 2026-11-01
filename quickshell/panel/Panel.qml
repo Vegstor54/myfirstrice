@@ -21,6 +21,7 @@ Scope {
         { id: "control",  title: "Control Center", subtitle: "Сеть, Bluetooth, звук, уведомления" },
         { id: "defaults", title: "Defaults", subtitle: "Приложения по умолчанию" },
         { id: "style",    title: "Style",    subtitle: "Цвета, шрифт, бар и обои" },
+        { id: "displays", title: "Displays", subtitle: "Мониторы: расположение и режим" },
         { id: "system",   title: "System",   subtitle: "Сон, гибернация, выключение" }
     ]
 
@@ -263,6 +264,7 @@ Scope {
                         sourceComponent: root.isMenu(root.activeTab) ? menuPage
                                        : root.activeTab === "defaults" ? defaultsTab
                                        : root.activeTab === "apps" ? appsTab
+                                       : root.activeTab === "displays" ? displaysTab
                                        : root.activeTab === "control/network" ? networkTab
                                        : root.activeTab === "control/bluetooth" ? bluetoothPage
                                        : root.activeTab === "control/sound" ? soundTab
@@ -334,6 +336,11 @@ Scope {
 
                     Item { Layout.fillHeight: true }
                 }
+            }
+
+            Component {
+                id: displaysTab
+                DisplaysTab {}
             }
 
             Component {
