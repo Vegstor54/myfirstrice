@@ -1,6 +1,20 @@
 # VGST54OS-RICE
 my first hyprland and quickshell rice
 
+## Установка (Arch Linux)
+
+```bash
+git clone https://github.com/Vegstor54/myfirstrice ~/myfirstrice
+bash ~/myfirstrice/install.sh --wallpaper ~/Pictures/wall.png
+```
+
+Скрипт ставит пакеты из `packages/required.txt` (официальные репозитории через `pacman`, остальное из AUR через `yay` или `paru`),
+делает ссылки `~/.config/{hypr,matugen,quickshell,kitty,qt6ct}` на репозиторий, включает `bluetooth.service` и по обоям создаёт первую палитру.
+Уже существующие папки в `~/.config` не удаляются, а переезжают в `<имя>.bak-<дата>`. Повторный запуск безопасен.
+
+Ключи: `--optional` (ещё `packages/optional.txt`), `--no-packages` (только ссылки), `--dry-run` (показать, что будет сделано), `--yes` (без вопросов).
+Нужна версия Hyprland с конфигом на Lua. После установки выйдите из сессии и зайдите снова.
+
 ## Первый запуск
 
 Цветовые файлы (`quickshell/Colors.qml`, `hypr/colors.lua`, `kitty/theme.conf`) создаёт matugen из обоев
