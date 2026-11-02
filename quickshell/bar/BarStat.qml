@@ -7,6 +7,9 @@ Item {
     id: stat
 
     property string kind: "cpu"
+    // Меню с подробностями (StatMenu.qml) и имя монитора бара: клик открывает его под показателем
+    property var menu: null
+    property string screenName: ""
 
     readonly property int fontSize: Math.round(Settings.barHeight * 0.45)
 
@@ -81,5 +84,11 @@ Item {
             font.family: Settings.uiFontFamily
             font.pixelSize: stat.fontSize
         }
+    }
+
+    MouseArea {
+        anchors.fill: parent
+        cursorShape: Qt.PointingHandCursor
+        onClicked: stat.menu?.toggle(stat.kind, stat.screenName, stat.mapToItem(null, stat.width / 2, 0).x)
     }
 }

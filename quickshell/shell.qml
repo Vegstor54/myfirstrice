@@ -14,6 +14,9 @@ ShellRoot {
     // Меню часов: громкость, плеер, время и календарь (открывается кликом на часы в баре)
     ClockMenu { id: clockMenuScope }
 
+    // Большая версия CPU и памяти (открывается кликом на кольцо или значение в баре)
+    StatMenu { id: statMenuScope }
+
     // История буфера обмена (Super+V, quickshell ipc call clipboard toggle): cliphist
     ClipboardMenu {}
 
@@ -66,6 +69,7 @@ ShellRoot {
                     activeId: win.activeWorkspaceId
                     menu: quickMenu
                     clockMenu: clockMenuScope
+                    statMenu: statMenuScope
                     screenName: win.modelData.name
                 }
             }
