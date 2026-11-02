@@ -1,0 +1,41 @@
+# Обязательные пакеты. Одно имя на строку, всё после # — комментарий.
+# install.sh сам смотрит, где пакет лежит: в официальных репозиториях (pacman) или в AUR (yay или paru).
+
+# Окружение и оболочка
+hyprland                    # нужна версия с конфигом на Lua (hyprland.lua)
+quickshell                  # бар, панель, меню, уведомления
+xdg-desktop-portal-hyprland # скриншоты и демонстрация экрана для приложений
+xdg-desktop-portal-gtk      # тема GTK и диалоги в браузерах
+kitty                       # терминал по умолчанию
+nautilus                    # файловый менеджер по умолчанию (меняется в панели: Defaults)
+firefox                     # браузер по умолчанию (меняется в панели: Defaults)
+
+# Тема и обои
+matugen                     # палитра из обоев
+awww                        # обои (бывший swww); в AUR есть и awww-git, не проверено, лежит ли стабильный awww в репозиториях
+qt6ct                       # тема Qt-приложений
+
+# Шрифты
+ttf-jetbrains-mono          # моноширинный шрифт по умолчанию
+ttf-nerd-fonts-symbols      # глифы значков в баре и панели
+
+# Звук
+pipewire
+pipewire-pulse
+wireplumber                 # wpctl для клавиш громкости и ползунков
+
+# Буфер обмена и скриншоты
+wl-clipboard                # wl-copy, wl-paste
+cliphist                    # история буфера (Super+V)
+grim                        # снимок экрана
+slurp                       # выбор области для скриншота
+libnotify                   # notify-send для скриншотов
+
+# Остальное, что использует оболочка
+bluez                       # Bluetooth: вкладка и значок
+bluez-utils                 # bluetoothctl
+playerctl                   # клавиши плеера
+cava                        # визуализатор в баре
+zenity                      # выбор файла обоев
+brightnessctl               # клавиши яркости
+fontconfig                  # fc-list для выбора шрифта

@@ -1,0 +1,7 @@
+# Необязательные пакеты: ставятся с ключом --optional.
+
+wayfreeze                   # (AUR) замораживает экран на время выбора области скриншота
+networkmanager              # нужен, только если сеть у вас на NetworkManager, а не на iwd
+network-manager-applet      # nm-connection-editor: кнопка «Настройки сети» во вкладке Интернет
+impala                      # TUI для Wi-Fi на iwd: запасной вариант той же кнопки
+kdialog                     # запасной выбор файла обоев, если нет zenity
