@@ -18,6 +18,8 @@ BarItems bar/BarItems.qml
 BarIsland bar/BarIsland.qml
 BarStat bar/BarStat.qml
 BarGauge bar/BarGauge.qml
+GaugeRing bar/GaugeRing.qml
+StatMenu menus/StatMenu.qml
 BarSlot bar/BarSlot.qml
 BarChip panel/BarChip.qml
 WallpaperTab panel/WallpaperTab.qml

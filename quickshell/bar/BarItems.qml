@@ -15,6 +15,7 @@ Item {
     property int activeId: -1
     property var menu: null
     property var clockMenu: null
+    property var statMenu: null
     property string screenName: ""
 
     readonly property int gap: 6
@@ -509,6 +510,8 @@ Item {
         BarStat {
             anchors.verticalCenter: parent.verticalCenter
             kind: "ram"
+            menu: root.statMenu
+            screenName: root.screenName
         }
     }
 
@@ -521,6 +524,8 @@ Item {
         BarStat {
             anchors.verticalCenter: parent.verticalCenter
             kind: "cpu"
+            menu: root.statMenu
+            screenName: root.screenName
         }
     }
 
