@@ -68,6 +68,56 @@ Flickable {
         }
 
         Text {
+            text: "CPU и память"
+            color: Colors.text
+            font.family: Settings.uiFontFamily
+            font.pixelSize: 14
+            font.bold: true
+        }
+
+        // «Текст» — значок и значение; «Кольцо» — дуга-спидометр без стрелки с числом в центре
+        RowLayout {
+            Layout.fillWidth: true
+            spacing: 8
+
+            Repeater {
+                model: [
+                    { id: "text",  label: "Текст" },
+                    { id: "gauge", label: "Кольцо" }
+                ]
+
+                Rectangle {
+                    id: statChip
+                    required property var modelData
+                    readonly property bool selected: Settings.statStyle === modelData.id
+
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 36
+                    radius: Settings.r(999)
+                    color: selected ? Colors.primary
+                         : statMouse.containsMouse ? Settings.fillHover
+                         : Settings.fill
+                    border.width: 0
+
+                    Text {
+                        anchors.centerIn: parent
+                        text: statChip.modelData.label
+                        color: statChip.selected ? Colors.textOnPrimary : Colors.text
+                        font.family: Settings.uiFontFamily
+                        font.pixelSize: 13
+                    }
+                    MouseArea {
+                        id: statMouse
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: Settings.statStyle = statChip.modelData.id
+                    }
+                }
+            }
+        }
+
+        Text {
             text: "Размер бара"
             color: Colors.text
             font.family: Settings.uiFontFamily

@@ -10,8 +10,20 @@ Item {
 
     readonly property int fontSize: Math.round(Settings.barHeight * 0.45)
 
-    width: row.implicitWidth + 12
+    readonly property bool ring: Settings.statStyle === "gauge"
+
+    width: ring ? gaugeView.width : row.implicitWidth + 12
     height: Settings.barHeight
+
+    // Вид «Кольцо»: дуга-спидометр с числом в центре
+    BarGauge {
+        id: gaugeView
+        visible: stat.ring
+        anchors.verticalCenter: parent.verticalCenter
+        label: stat.kind === "ram" ? "RAM" : "CPU"
+        percent: stat.kind === "ram" ? SysStats.ramPct : SysStats.cpu
+        detail: stat.kind === "ram" ? SysStats.ramText : ""
+    }
 
     // Ширина значения не прыгает от «7%» к «10%»: берётся по самому широкому значению
     TextMetrics {
@@ -23,6 +35,7 @@ Item {
 
     Row {
         id: row
+        visible: !stat.ring
         anchors.centerIn: parent
         spacing: 6
 

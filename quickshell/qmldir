@@ -17,6 +17,7 @@ Workspaces bar/Workspaces.qml
 BarItems bar/BarItems.qml
 BarIsland bar/BarIsland.qml
 BarStat bar/BarStat.qml
+BarGauge bar/BarGauge.qml
 BarSlot bar/BarSlot.qml
 BarChip panel/BarChip.qml
 WallpaperTab panel/WallpaperTab.qml
