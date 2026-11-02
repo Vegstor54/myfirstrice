@@ -12,6 +12,7 @@ Singleton {
     property alias showLogo: adapter.showLogo
     property alias barRounded: adapter.barRounded
     property alias barStyle: adapter.barStyle
+    property alias statStyle: adapter.statStyle
     property alias uiRounded: adapter.uiRounded
     property alias wsMode: adapter.wsMode
     property alias barLeft: adapter.barLeft
@@ -91,6 +92,8 @@ Singleton {
             property bool barRounded: true
             // Стиль бара: "solid" — одна общая подложка, "islands" — отдельная «таблетка» на каждую зону
             property string barStyle: "solid"
+            // Вид CPU и памяти в баре: "text" — значок и значение, "gauge" — кольцо-«спидометр» без стрелки
+            property string statStyle: "text"
             // Форма остального интерфейса: true — скруглённый, false — прямой (не зависит от формы бара)
             property bool uiRounded: true
             // Рабочие столы в баре: "used" — только используемые, "5" — 1–5, "10" — 1–10

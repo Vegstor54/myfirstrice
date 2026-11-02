@@ -11,6 +11,7 @@ Singleton {
 
     property int cpu: 0         // загрузка процессора, %
     property real ramGb: 0      // занято памяти без кэша, ГиБ
+    property int ramPct: 0      // занято памяти, % от всей
 
     readonly property string cpuText: cpu + "%"
     readonly property string ramText: ramGb.toFixed(1) + "G"
@@ -35,16 +36,17 @@ Singleton {
                 stats.lastIdle = idle
             } else if (p[0] === "mem") {
                 stats.ramGb = parseFloat(p[1]) / 1048576
+                if (parseFloat(p[2]) > 0) stats.ramPct = Math.round(parseFloat(p[1]) / parseFloat(p[2]) * 100)
             }
         }
     }
 
-    // cpu: сумма счётчиков и простой (idle + iowait); mem: занято = всего − доступно, в КиБ
+    // cpu: сумма счётчиков и простой (idle + iowait); mem: занято = всего − доступно и всего, в КиБ
     Process {
         id: reader
         command: ["sh", "-c",
             "awk '/^cpu /{print \"cpu\", $2+$3+$4+$5+$6+$7+$8, $5+$6}' /proc/stat; " +
-            "awk '/^MemTotal/{t=$2} /^MemAvailable/{a=$2} END{print \"mem\", t-a}' /proc/meminfo"]
+            "awk '/^MemTotal/{t=$2} /^MemAvailable/{a=$2} END{print \"mem\", t-a, t}' /proc/meminfo"]
         stdout: StdioCollector {
             onStreamFinished: stats.parse(text)
         }
