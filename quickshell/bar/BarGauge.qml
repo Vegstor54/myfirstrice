@@ -10,6 +10,7 @@ Item {
     property string label: "CPU"
     property real percent: 0          // 0–100
     property string detail: ""        // вторая строка справа, например «5.2G»; пусто — только подпись
+    property bool hot: false          // подробность красным (перегрев процессора)
 
     readonly property int ringSize: Settings.barHeight - 6
     width: ringSize + 6 + labels.implicitWidth + 12
@@ -40,7 +41,7 @@ Item {
             // Ширина по самому широкому значению, чтобы бар не дёргался
             width: Math.max(implicitWidth, detailMetrics.width)
             text: gauge.detail
-            color: Colors.text
+            color: gauge.hot ? Colors.error : Colors.text
             font.family: Settings.uiFontFamily
             font.pixelSize: Math.round(Settings.barHeight * 0.36)
             font.bold: true

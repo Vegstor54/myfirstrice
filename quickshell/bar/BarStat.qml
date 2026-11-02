@@ -15,6 +15,9 @@ Item {
 
     readonly property bool ring: Settings.statStyle === "gauge"
 
+    // Температура показывается рядом с загрузкой CPU, пока датчик найден
+    readonly property bool showTemp: kind === "cpu" && SysStats.hasTemp
+
     width: ring ? gaugeView.width : row.implicitWidth + 12
     height: Settings.barHeight
 
@@ -25,7 +28,8 @@ Item {
         anchors.verticalCenter: parent.verticalCenter
         label: stat.kind === "ram" ? "RAM" : "CPU"
         percent: stat.kind === "ram" ? SysStats.ramPct : SysStats.cpu
-        detail: stat.kind === "ram" ? SysStats.ramText : ""
+        detail: stat.kind === "ram" ? SysStats.ramText : (stat.showTemp ? SysStats.cpuTempText : "")
+        hot: stat.kind === "cpu" && SysStats.cpuTemp >= 85
     }
 
     // Ширина значения не прыгает от «7%» к «10%»: берётся по самому широкому значению
@@ -34,6 +38,13 @@ Item {
         font.family: Settings.uiFontFamily
         font.pixelSize: stat.fontSize
         text: stat.kind === "ram" ? "99.9G" : "100%"
+    }
+
+    TextMetrics {
+        id: tempMetrics
+        font.family: Settings.uiFontFamily
+        font.pixelSize: stat.fontSize
+        text: "100°C"
     }
 
     Row {
@@ -81,6 +92,18 @@ Item {
             width: metrics.width
             text: stat.kind === "ram" ? SysStats.ramText : SysStats.cpuText
             color: Colors.text
+            font.family: Settings.uiFontFamily
+            font.pixelSize: stat.fontSize
+        }
+
+        // Температура процессора: выше 85 °C красным
+        Text {
+            visible: stat.showTemp
+            anchors.verticalCenter: parent.verticalCenter
+            width: tempMetrics.width
+            text: SysStats.cpuTempText
+            color: SysStats.cpuTemp >= 85 ? Colors.error : Colors.text
+            opacity: SysStats.cpuTemp >= 85 ? 1 : 0.75
             font.family: Settings.uiFontFamily
             font.pixelSize: stat.fontSize
         }

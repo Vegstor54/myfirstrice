@@ -19,7 +19,10 @@ Singleton {
     property real swapTotalGb: 0
     property var cores: []      // загрузка каждого ядра, %
     property var load: [0, 0, 0] // load average за 1, 5, 15 минут
+    property int cpuTemp: -1    // температура процессора, °C; -1 — датчик не найден
 
+    readonly property bool hasTemp: cpuTemp >= 0
+    readonly property string cpuTempText: cpuTemp + "°C"
     readonly property string cpuText: cpu + "%"
     readonly property string ramText: ramGb.toFixed(1) + "G"
     readonly property bool needed: Settings.moduleOn("cpu") || Settings.moduleOn("ram")
@@ -66,19 +69,25 @@ Singleton {
                 stats.swapUsedGb = gb(p[5]) - gb(p[6])
             } else if (p[0] === "load") {
                 stats.load = [parseFloat(p[1]), parseFloat(p[2]), parseFloat(p[3])]
+            } else if (p[0] === "temp") {
+                // temp <милли-градусы> от scripts/cpu-temp.sh; -1 — датчика нет
+                const v = parseFloat(p[1])
+                stats.cpuTemp = v >= 0 ? Math.round(v / 1000) : -1
             }
         }
         if (coreNow.length > 0) stats.cores = coreNow
     }
 
-    // cpu и cpuN: сумма счётчиков и простой (idle + iowait); mem: занято, всего, доступно, кэш, своп (КиБ); load: loadavg
+    // cpu и cpuN: сумма счётчиков и простой (idle + iowait); mem: занято, всего, доступно, кэш, своп (КиБ); load: loadavg;
+    // temp: температура процессора в милли-градусах (cpu-temp.sh)
     Process {
         id: reader
         command: ["sh", "-c",
             "awk '/^cpu[0-9]* /{print $1, $2+$3+$4+$5+$6+$7+$8, $5+$6}' /proc/stat; " +
             "awk '/^MemTotal/{t=$2} /^MemAvailable/{a=$2} /^Cached/{c=$2} /^SwapTotal/{st=$2} /^SwapFree/{sf=$2} " +
             "END{print \"mem\", t-a, t, a, c, st, sf}' /proc/meminfo; " +
-            "awk '{print \"load\", $1, $2, $3}' /proc/loadavg"]
+            "awk '{print \"load\", $1, $2, $3}' /proc/loadavg; " +
+            "\"$HOME/.config/quickshell/scripts/cpu-temp.sh\""]
         stdout: StdioCollector {
             onStreamFinished: stats.parse(text)
         }

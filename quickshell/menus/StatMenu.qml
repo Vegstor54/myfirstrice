@@ -48,7 +48,8 @@ Scope {
            ["Доступно", gib(SysStats.ramFreeGb)],
            ["Кэш", gib(SysStats.ramCachedGb)],
            ["Своп", SysStats.swapTotalGb > 0 ? gib(SysStats.swapUsedGb) + " из " + gib(SysStats.swapTotalGb) : "нет"]]
-        : [["Нагрузка 1 / 5 / 15 мин", SysStats.load.map(x => x.toFixed(2)).join("  ·  ")],
+        : [["Температура", SysStats.hasTemp ? SysStats.cpuTempText : "датчик не найден"],
+           ["Нагрузка 1 / 5 / 15 мин", SysStats.load.map(x => x.toFixed(2)).join("  ·  ")],
            ["Ядер", String(SysStats.cores.length)]]
 
     // Курсор ушёл на другой монитор: закрываем меню
@@ -170,7 +171,9 @@ Scope {
                                     }
                                     Text {
                                         text: root.rows[infoRow.index][1]
-                                        color: Colors.text
+                                        // Перегрев (85 °C и выше) красным
+                                        color: (!root.isRam && infoRow.index === 0 && SysStats.cpuTemp >= 85)
+                                               ? Colors.error : Colors.text
                                         font.family: Settings.uiFontFamily
                                         font.pixelSize: 15
                                     }
