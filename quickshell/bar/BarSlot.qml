@@ -18,9 +18,13 @@ Item {
     height: host.height
     z: dragging ? 10 : 0
     opacity: dragging ? 0.85 : 1
+    // При переполнении BarItems уменьшает масштаб слотов. Масштабируем от
+    // левого края, иначе визуальная ширина смещалась бы относительно расчётной
+    // позиции и остров снова мог бы частично перекрыть соседний.
+    transformOrigin: Item.TopLeft
 
     // Над этим элементом завис другой значок: он «раскрывается» и готов принять его в группу
-    scale: host.mergeTarget === key ? 1.15 : dragging && host.mergeTarget !== "" ? 0.85 : 1
+    scale: host.layoutScale * (host.mergeTarget === key ? 1.15 : dragging && host.mergeTarget !== "" ? 0.85 : 1)
     Behavior on scale { NumberAnimation { duration: 120; easing.type: Easing.OutCubic } }
 
     // Какой значок группы стоит под x (в координатах элемента); для вытаскивания из группы
