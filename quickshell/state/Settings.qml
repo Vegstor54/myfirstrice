@@ -141,7 +141,7 @@ Singleton {
             property bool uiRounded: true
             // Рабочие столы в баре: "used" — только используемые, "5" — 1–5, "10" — 1–10
             property string wsMode: "used"
-            // Раскладка бара: ключи элементов через запятую по зонам (logo, workspaces, clock, media, cava, tray, network, bluetooth, sound, notifications, ram, cpu, power)
+            // Раскладка бара: ключи элементов через запятую по зонам (logo, workspaces, clock, media, cava, tray, network, bluetooth, sound, notifications, ram, cpu, layout, power)
             property string barLeft: "logo,workspaces"
             property string barCenter: "clock"
             property string barRight: "network,bluetooth,sound,notifications"
