@@ -56,7 +56,8 @@ ShellRoot {
                     leftMargin: Settings.barEdge
                     rightMargin: Settings.barEdge
                 }
-                radius: Settings.barRounded ? 999 : 0
+                // Прижатый к краям бар без скруглённых концов: «таблетка» у самой кромки экрана выглядела бы странно
+                radius: Settings.barRounded && !Settings.attached ? 999 : 0
                 // В стиле «острова» подложку рисуют сами острова (BarIsland в BarItems)
                 color: Settings.islands ? "transparent" : (Colors[Settings.barColor] ?? Colors.primaryContainer)
                 border.width: Settings.islands ? 0 : 1

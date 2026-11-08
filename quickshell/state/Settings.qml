@@ -12,6 +12,7 @@ Singleton {
     property alias showLogo: adapter.showLogo
     property alias barRounded: adapter.barRounded
     property alias barStyle: adapter.barStyle
+    property alias barAttached: adapter.barAttached
     property alias statStyle: adapter.statStyle
     property alias cpuStyle: adapter.cpuStyle
     property alias ramStyle: adapter.ramStyle
@@ -51,8 +52,11 @@ Singleton {
     // Стиль «острова»: у бара нет общей подложки, у каждой зоны (слева, по центру, справа) своя «таблетка»
     readonly property bool islands: barStyle === "islands"
     // Положение самого бара: скруглённый и «острова» «плавают» с отступами, прямой занимает всю верхнюю кромку экрана
-    readonly property int barEdge: barRounded || islands ? barSideMargin : 0
-    readonly property int barTop: barRounded || islands ? 8 : 0
+    // Отдельная кнопка «К краям экрана» (barAttached) прижимает сплошной бар к краям при любой форме;
+    // в стиле «острова» она не действует: у островов нет общей подложки, которую можно прижать
+    readonly property bool attached: barAttached && !islands
+    readonly property int barEdge: attached ? 0 : (barRounded || islands ? barSideMargin : 0)
+    readonly property int barTop: attached ? 0 : (barRounded || islands ? 8 : 0)
 
     // Заливка кнопок, плиток и строк вместо обводки: оттенок от цвета текста,
     // поэтому в тёмной теме светлее фона карточки, в светлой темнее

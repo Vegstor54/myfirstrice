@@ -38,6 +38,45 @@ ColumnLayout {
     }
 
     Text {
+        text: "Положение бара"
+        color: Colors.text
+        font.family: Settings.uiFontFamily
+        font.pixelSize: 14
+        font.bold: true
+    }
+
+    // Отдельно от формы: прижимает сплошной бар к краям экрана, элементы внутри остаются скруглёнными или прямыми по форме
+    RowLayout {
+        Layout.fillWidth: true
+        spacing: 8
+
+        BarChip {
+            Layout.fillWidth: true
+            Layout.preferredWidth: 1
+            label: "Плавающий"
+            selected: !Settings.barAttached
+            onClicked: Settings.barAttached = false
+        }
+        BarChip {
+            Layout.fillWidth: true
+            Layout.preferredWidth: 1
+            label: "К краям экрана"
+            selected: Settings.barAttached
+            onClicked: Settings.barAttached = true
+        }
+    }
+
+    Text {
+        Layout.fillWidth: true
+        text: "«К краям экрана» работает в стиле «Сплошной»: бар занимает всю верхнюю кромку без отступов. У «Островов» общей подложки нет, поэтому они всегда плавают."
+        wrapMode: Text.WordWrap
+        color: Colors.text
+        opacity: 0.7
+        font.family: Settings.uiFontFamily
+        font.pixelSize: 13
+    }
+
+    Text {
         text: "Интерфейс"
         color: Colors.text
         font.family: Settings.uiFontFamily
