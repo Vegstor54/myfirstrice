@@ -122,6 +122,8 @@ Singleton {
             property bool barRounded: true
             // Стиль бара: "solid" — одна общая подложка, "islands" — отдельная «таблетка» на каждую зону
             property string barStyle: "solid"
+            // Сплошной бар прижат к краям экрана (без отступов), независимо от скругления элементов
+            property bool barAttached: false
             // Вид CPU и памяти в баре по умолчанию: "text" — значок и значение, "gauge" — кольцо-«спидометр» без стрелки,
             // "bar" — сегментная полоска. Пока у модуля нет своего выбора (cpuStyle, ramStyle), берётся этот
             property string statStyle: "text"
