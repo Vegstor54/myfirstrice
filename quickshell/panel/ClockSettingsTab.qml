@@ -79,15 +79,18 @@ Flickable {
             font.bold: true
         }
 
-        RowLayout {
+        GridLayout {
             Layout.fillWidth: true
-            spacing: 8
+            columns: 2
+            rowSpacing: 8
+            columnSpacing: 8
 
             Repeater {
                 model: [
                     { id: "none",    label: "Нет" },
                     { id: "short",   label: "Коротко" },
-                    { id: "weekday", label: "С днём недели" }
+                    { id: "weekday", label: "С днём недели" },
+                    { id: "numeric", label: "Числом" }
                 ]
 
                 BarChip {

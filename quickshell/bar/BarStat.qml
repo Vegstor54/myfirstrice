@@ -13,10 +13,19 @@ Item {
 
     readonly property int fontSize: Math.round(Settings.barHeight * 0.45)
 
-    readonly property bool ring: Settings.statStyle === "gauge"
+    // Вид из настроек модуля (страница модуля в «Модули бара»): "text", "gauge" или "bar"
+    readonly property string mode: Settings.statMode(kind)
+    readonly property bool ring: mode === "gauge"
+    readonly property bool segments: mode === "bar"
+    // Что стоит перед значением: "icon", "text" (подпись cpu / ram) или "none"
+    readonly property string label: Settings.statLabel(kind)
+    readonly property real percent: kind === "ram" ? SysStats.ramPct : SysStats.cpu
+    readonly property bool ramPercent: kind === "ram" && Settings.ramValue === "pct"
+    readonly property string valueText: kind === "cpu" ? SysStats.cpuText
+                                      : ramPercent ? SysStats.ramPct + "%" : SysStats.ramText
 
-    // Температура показывается рядом с загрузкой CPU, пока датчик найден
-    readonly property bool showTemp: kind === "cpu" && SysStats.hasTemp
+    // Температура показывается рядом с загрузкой CPU, пока датчик найден и она не выключена в настройках
+    readonly property bool showTemp: kind === "cpu" && SysStats.hasTemp && Settings.cpuShowTemp
 
     width: ring ? gaugeView.width : row.implicitWidth + 12
     height: Settings.barHeight
@@ -37,7 +46,7 @@ Item {
         id: metrics
         font.family: Settings.uiFontFamily
         font.pixelSize: stat.fontSize
-        text: stat.kind === "ram" ? "99.9G" : "100%"
+        text: stat.kind === "ram" && !stat.ramPercent ? "99.9G" : "100%"
     }
 
     TextMetrics {
@@ -55,7 +64,7 @@ Item {
 
         // Значок памяти нарисован (планка с контактами), чтобы не зависеть от шрифта
         Item {
-            visible: stat.kind === "ram"
+            visible: stat.kind === "ram" && stat.label === "icon"
             width: 16
             height: 10
             anchors.verticalCenter: parent.verticalCenter
@@ -79,7 +88,7 @@ Item {
 
         // Значок процессора: глиф Nerd Font «microchip» (U+F2DB)
         Text {
-            visible: stat.kind === "cpu"
+            visible: stat.kind === "cpu" && stat.label === "icon"
             anchors.verticalCenter: parent.verticalCenter
             text: ""
             color: Colors.text
@@ -87,10 +96,28 @@ Item {
             font.pixelSize: stat.fontSize
         }
 
+        // Текстовая подпись вместо значка
+        Text {
+            visible: stat.label === "text"
+            anchors.verticalCenter: parent.verticalCenter
+            text: stat.kind
+            color: Colors.text
+            opacity: 0.7
+            font.family: Settings.uiFontFamily
+            font.pixelSize: stat.fontSize
+        }
+
+        // Вид «Полоса»: сегментная полоска загрузки
+        SegmentBar {
+            visible: stat.segments
+            anchors.verticalCenter: parent.verticalCenter
+            percent: stat.percent
+        }
+
         Text {
             anchors.verticalCenter: parent.verticalCenter
             width: metrics.width
-            text: stat.kind === "ram" ? SysStats.ramText : SysStats.cpuText
+            text: stat.valueText
             color: Colors.text
             font.family: Settings.uiFontFamily
             font.pixelSize: stat.fontSize

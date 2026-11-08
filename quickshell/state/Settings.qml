@@ -13,6 +13,12 @@ Singleton {
     property alias barRounded: adapter.barRounded
     property alias barStyle: adapter.barStyle
     property alias statStyle: adapter.statStyle
+    property alias cpuStyle: adapter.cpuStyle
+    property alias ramStyle: adapter.ramStyle
+    property alias cpuLabel: adapter.cpuLabel
+    property alias ramLabel: adapter.ramLabel
+    property alias cpuShowTemp: adapter.cpuShowTemp
+    property alias ramValue: adapter.ramValue
     property alias uiRounded: adapter.uiRounded
     property alias wsMode: adapter.wsMode
     property alias barLeft: adapter.barLeft
@@ -31,7 +37,10 @@ Singleton {
         if (clockCustom !== "") return clockCustom
         const time = clock24 ? (clockSeconds ? "HH:mm:ss" : "HH:mm")
                              : (clockSeconds ? "h:mm:ss AP" : "h:mm AP")
-        const date = clockDate === "short" ? "d MMM" : clockDate === "weekday" ? "ddd, d MMM" : ""
+        const date = clockDate === "short" ? "d MMM"
+                   : clockDate === "weekday" ? "ddd, d MMM"
+                   : clockDate === "numeric" ? "ddd dd.MM"
+                   : ""
         return date !== "" ? date + "  " + time : time
     }
     // Нужно ли часам тикать каждую секунду
@@ -66,6 +75,23 @@ Singleton {
         barOff = list.join(",")
     }
 
+    // Вид показателя CPU или памяти: "text", "gauge" (кольцо) или "bar" (сегментная полоска).
+    // Свой выбор модуля (cpuStyle, ramStyle), а пока он пуст — общий statStyle, как было до страниц настроек модулей
+    function statMode(kind) {
+        const own = kind === "ram" ? ramStyle : cpuStyle
+        return own !== "" ? own : statStyle
+    }
+    function setStatMode(kind, mode) {
+        if (kind === "ram") ramStyle = mode
+        else cpuStyle = mode
+    }
+    // Что стоит перед значением в видах «Текст» и «Полоса»: "icon" — значок, "text" — подпись (cpu, ram), "none" — ничего
+    function statLabel(kind) { return kind === "ram" ? ramLabel : cpuLabel }
+    function setStatLabel(kind, label) {
+        if (kind === "ram") ramLabel = label
+        else cpuLabel = label
+    }
+
     // Высота бара по выбранному размеру; остальные элементы бара считаются от неё
     readonly property int barHeight: barSize === "medium" ? 32 : barSize === "large" ? 40 : 26
 
@@ -92,8 +118,19 @@ Singleton {
             property bool barRounded: true
             // Стиль бара: "solid" — одна общая подложка, "islands" — отдельная «таблетка» на каждую зону
             property string barStyle: "solid"
-            // Вид CPU и памяти в баре: "text" — значок и значение, "gauge" — кольцо-«спидометр» без стрелки
+            // Вид CPU и памяти в баре по умолчанию: "text" — значок и значение, "gauge" — кольцо-«спидометр» без стрелки,
+            // "bar" — сегментная полоска. Пока у модуля нет своего выбора (cpuStyle, ramStyle), берётся этот
             property string statStyle: "text"
+            // Свой вид модуля: "" — как statStyle, иначе "text", "gauge" или "bar"
+            property string cpuStyle: ""
+            property string ramStyle: ""
+            // Подпись перед значением в видах «Текст» и «Полоса»: "icon", "text" или "none"
+            property string cpuLabel: "icon"
+            property string ramLabel: "icon"
+            // Температура рядом с загрузкой CPU (показывается, пока датчик найден)
+            property bool cpuShowTemp: true
+            // Значение памяти: "gb" — занято в ГиБ, "pct" — процент от всей
+            property string ramValue: "gb"
             // Форма остального интерфейса: true — скруглённый, false — прямой (не зависит от формы бара)
             property bool uiRounded: true
             // Рабочие столы в баре: "used" — только используемые, "5" — 1–5, "10" — 1–10
@@ -109,7 +146,7 @@ Singleton {
             property string indGroups: "network,bluetooth,sound,notifications"
             // Режим «не беспокоить»: всплывающие уведомления не показываются (срочные показываются)
             property bool dnd: false
-            // Часы в баре: секунды, 24-часовой формат, дата ("none", "short", "weekday"), свой формат (пусто — не используется)
+            // Часы в баре: секунды, 24-часовой формат, дата ("none", "short", "weekday", "numeric"), свой формат (пусто — не используется)
             property bool clockSeconds: false
             property bool clock24: true
             property string clockDate: "none"
