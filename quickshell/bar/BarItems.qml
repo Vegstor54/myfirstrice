@@ -25,7 +25,7 @@ Item {
         logo: "left", workspaces: "left", clock: "center", media: "center", cava: "center",
         tray: "right",
         network: "right", bluetooth: "right", sound: "right", notifications: "right",
-        ram: "right", cpu: "right", power: "right"
+        ram: "right", cpu: "right", layout: "right", power: "right"
     })
     // Старый ключ «indicators» (все значки одним блоком) заменяется на четыре отдельных
     readonly property var legacyKeys: ({
@@ -36,7 +36,7 @@ Item {
     readonly property var slots: ({
         logo: logoSlot, workspaces: wsSlot, clock: clockSlot, media: mediaSlot, cava: cavaSlot, tray: traySlot,
         network: netSlot, bluetooth: btSlot, sound: sndSlot, notifications: ntfSlot,
-        ram: ramSlot, cpu: cpuSlot, power: pwrSlot
+        ram: ramSlot, cpu: cpuSlot, layout: layoutSlot, power: pwrSlot
     })
 
     // ---- Раскладка ----
@@ -562,6 +562,40 @@ Item {
             kind: "cpu"
             menu: root.statMenu
             screenName: root.screenName
+        }
+    }
+
+    // Текущая раскладка клавиатуры (state/KeyboardState.qml): клик переключает на следующую
+    BarSlot {
+        id: layoutSlot
+        key: "layout"
+        host: root
+        visible: Settings.moduleOn("layout") && KeyboardState.code !== ""
+
+        Rectangle {
+            anchors.verticalCenter: parent.verticalCenter
+            width: layoutText.implicitWidth + 16
+            height: Settings.barHeight - 8
+            radius: Settings.barRounded ? height / 2 : 0
+            color: layoutMouse.containsMouse ? Qt.alpha(Colors.text, 0.18) : "transparent"
+
+            Text {
+                id: layoutText
+                anchors.centerIn: parent
+                text: KeyboardState.code
+                color: Colors.text
+                font.family: Settings.uiFontFamily
+                font.pixelSize: Math.round(Settings.barHeight * 0.45)
+                font.bold: true
+            }
+
+            MouseArea {
+                id: layoutMouse
+                anchors.fill: parent
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+                onClicked: Quickshell.execDetached(["hyprctl", "switchxkblayout", "all", "next"])
+            }
         }
     }
 

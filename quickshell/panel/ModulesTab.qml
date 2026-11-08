@@ -51,6 +51,7 @@ Flickable {
                     { id: "notifications", label: "Уведомления", icon: "", settings: false },
                     { id: "ram",           label: "Память",      icon: "", settings: true },
                     { id: "cpu",           label: "CPU",         icon: "", settings: true },
+                    { id: "layout",        label: "Раскладка",   icon: "", settings: false },
                     { id: "power",         label: "Выход",       icon: "", settings: false }
                 ]
 
