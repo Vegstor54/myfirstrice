@@ -68,7 +68,9 @@ Scope {
     // Родитель по правилу id — style/modules. Новый модуль: запись здесь + Component и ветка в Loader.
     readonly property var modulePages: ({
         "style/modules/workspaces": "Столы",
-        "style/modules/clock": "Часы"
+        "style/modules/clock": "Часы",
+        "style/modules/ram": "Память",
+        "style/modules/cpu": "CPU"
     })
 
     function itemById(id) {
@@ -291,6 +293,8 @@ Scope {
                                        : root.activeTab === "style/modules" ? modulesTab
                                        : root.activeTab === "style/modules/workspaces" ? workspacesSettingsTab
                                        : root.activeTab === "style/modules/clock" ? clockSettingsTab
+                                       : root.activeTab === "style/modules/ram" ? ramSettingsTab
+                                       : root.activeTab === "style/modules/cpu" ? cpuSettingsTab
                                        : root.activeTab === "style/wallpaper" ? wallpaperTab
                                        : colorsTab
                     }
@@ -418,6 +422,16 @@ Scope {
             Component {
                 id: clockSettingsTab
                 ClockSettingsTab {}
+            }
+
+            Component {
+                id: ramSettingsTab
+                StatSettingsTab { kind: "ram" }
+            }
+
+            Component {
+                id: cpuSettingsTab
+                StatSettingsTab { kind: "cpu" }
             }
 
             Component {

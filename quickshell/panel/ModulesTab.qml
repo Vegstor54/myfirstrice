@@ -49,8 +49,8 @@ Flickable {
                     { id: "bluetooth",     label: "Bluetooth",   icon: "", settings: false },
                     { id: "sound",         label: "Звук",        icon: "", settings: false },
                     { id: "notifications", label: "Уведомления", icon: "", settings: false },
-                    { id: "ram",           label: "Память",      icon: "", settings: false },
-                    { id: "cpu",           label: "CPU",         icon: "", settings: false },
+                    { id: "ram",           label: "Память",      icon: "", settings: true },
+                    { id: "cpu",           label: "CPU",         icon: "", settings: true },
                     { id: "power",         label: "Выход",       icon: "", settings: false }
                 ]
 
