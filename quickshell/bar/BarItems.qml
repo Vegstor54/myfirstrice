@@ -107,26 +107,37 @@ Item {
     function isVisible(k) { return slots[k].visible }
     function naturalWidthOf(k) { return slots[k].width }
 
-    // Все три зоны раньше раскладывались независимо. Если их суммарная ширина
-    // становилась больше ширины бара, зоны начинали пересекаться (особенно это
-    // было заметно в режиме островов). Уменьшаем все элементы одинаково, чтобы
-    // даже перегруженная раскладка оставалась неперекрывающейся.
+    // Когда суммарная ширина элементов больше ширины бара, зоны наезжали бы друг на друга.
+    // Поэтому элементы, промежутки и отступы уменьшаются в одно и то же число раз (layoutScale).
+    // Промежутки обязаны уменьшаться вместе с элементами: иначе уменьшенные элементы плюс прежние
+    // промежутки всё равно дают больше ширины бара, и зоны перекрываются на несколько пикселей.
+    // Отступ зоны от края бара есть всегда; отступ у соседней зоны — только в стиле «острова», где у каждой
+    // зоны своя «таблетка», выступающая за её элементы (те же числа, что в zoneSpan).
+    function padStart(zone) {
+        const items = layout[zone].filter(isVisible)
+        if (items.length === 0) return 0
+        if (zone === "left") return edgeOf(items[0])
+        return islands ? (zone === "center" ? 4 : edgeOf(items[0])) : 0
+    }
+    function padEnd(zone) {
+        const items = layout[zone].filter(isVisible)
+        if (items.length === 0) return 0
+        if (zone === "right") return edgeOf(items[items.length - 1])
+        return islands ? (zone === "center" ? 4 : edgeOf(items[items.length - 1])) : 0
+    }
+    // Промежуток между двумя соседними занятыми зонами до масштабирования
+    function zoneGap(a, b) { return gap + padEnd(a) + padStart(b) }
+
     readonly property real layoutScale: {
-        let required = 0
-        for (const z of zones) {
-            const visible = layout[z].filter(isVisible)
-            for (const k of visible) required += naturalWidthOf(k)
-            if (visible.length > 1) required += gap * (visible.length - 1)
-        }
-        // Оставляем небольшой зазор и между соседними зонами. Эти зазоры
-        // используются ниже при ограничении центральной зоны.
         const occupied = zones.filter(z => layout[z].some(isVisible))
-        if (occupied.length > 1) required += gap * (occupied.length - 1)
-        if (layout.left.some(isVisible)) required += edgeOf(layout.left.find(isVisible))
-        if (layout.right.some(isVisible)) {
-            const right = layout.right.filter(isVisible)
-            required += edgeOf(right[right.length - 1])
+        let required = 0
+        for (const z of occupied) {
+            const items = layout[z].filter(isVisible)
+            for (const k of items) required += naturalWidthOf(k)
+            required += gap * (items.length - 1)
         }
+        for (let i = 1; i < occupied.length; i++) required += zoneGap(occupied[i - 1], occupied[i])
+        if (occupied.length > 0) required += padStart(occupied[0]) + padEnd(occupied[occupied.length - 1])
         return required > 0 && width > 0 ? Math.min(1, width / required) : 1
     }
 
@@ -164,41 +175,43 @@ Item {
         const left = L.left.filter(isVisible)
         const center = L.center.filter(isVisible)
         const right = L.right.filter(isVisible)
+        // Промежутки и отступы масштабируются вместе с элементами (см. layoutScale)
+        const s = layoutScale
+        const g = gap * s
 
         let i = left.indexOf(key)
         if (i >= 0) {
-            let x = edgeOf(left[0]) * layoutScale
-            for (let j = 0; j < i; j++) x += widthOf(left[j]) + gap
+            let x = padStart("left") * s
+            for (let j = 0; j < i; j++) x += widthOf(left[j]) + g
             return x
         }
 
         i = right.indexOf(key)
         if (i >= 0) {
-            let x = width - edgeOf(right[right.length - 1]) * layoutScale
+            let x = width - padEnd("right") * s
             for (let j = right.length - 1; j >= i; j--) {
                 x -= widthOf(right[j])
-                if (j > i) x -= gap
+                if (j > i) x -= g
             }
             return x
         }
 
         i = center.indexOf(key)
         if (i < 0) return 0
-        let total = gap * (center.length - 1)
+        let total = g * (center.length - 1)
         for (const k of center) total += widthOf(k)
         // Центрируем среднюю зону, но не даём ей пересечь левую или правую,
         // если одна из боковых зон заметно шире другой.
         const leftEnd = left.length > 0
-            ? edgeOf(left[0]) * layoutScale + left.reduce((n, k) => n + widthOf(k), 0)
-                + gap * Math.max(0, left.length - 1) + gap
-            : 0
+            ? padStart("left") * s + left.reduce((n, k) => n + widthOf(k), 0) + g * (left.length - 1)
+                + zoneGap("left", "center") * s
+            : padStart("center") * s
         const rightStart = right.length > 0
-            ? width - edgeOf(right[right.length - 1]) * layoutScale
-                - right.reduce((n, k) => n + widthOf(k), 0)
-                - gap * Math.max(0, right.length - 1) - gap
-            : width
+            ? width - padEnd("right") * s - right.reduce((n, k) => n + widthOf(k), 0) - g * (right.length - 1)
+                - zoneGap("center", "right") * s
+            : width - padEnd("center") * s
         let x = Math.max(leftEnd, Math.min((width - total) / 2, rightStart - total))
-        for (let j = 0; j < i; j++) x += widthOf(center[j]) + gap
+        for (let j = 0; j < i; j++) x += widthOf(center[j]) + g
         return x
     }
 
