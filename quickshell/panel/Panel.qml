@@ -69,6 +69,7 @@ Scope {
     readonly property var modulePages: ({
         "style/modules/workspaces": "Столы",
         "style/modules/clock": "Часы",
+        "style/modules/network": "Сеть",
         "style/modules/ram": "Память",
         "style/modules/cpu": "CPU"
     })
@@ -293,6 +294,7 @@ Scope {
                                        : root.activeTab === "style/modules" ? modulesTab
                                        : root.activeTab === "style/modules/workspaces" ? workspacesSettingsTab
                                        : root.activeTab === "style/modules/clock" ? clockSettingsTab
+                                       : root.activeTab === "style/modules/network" ? netSettingsTab
                                        : root.activeTab === "style/modules/ram" ? ramSettingsTab
                                        : root.activeTab === "style/modules/cpu" ? cpuSettingsTab
                                        : root.activeTab === "style/wallpaper" ? wallpaperTab
@@ -422,6 +424,11 @@ Scope {
             Component {
                 id: clockSettingsTab
                 ClockSettingsTab {}
+            }
+
+            Component {
+                id: netSettingsTab
+                NetSettingsTab {}
             }
 
             Component {

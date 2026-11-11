@@ -14,6 +14,7 @@ Singleton {
     property alias barStyle: adapter.barStyle
     property alias barAttached: adapter.barAttached
     property alias statStyle: adapter.statStyle
+    property alias netStyle: adapter.netStyle
     property alias cpuStyle: adapter.cpuStyle
     property alias ramStyle: adapter.ramStyle
     property alias cpuLabel: adapter.cpuLabel
@@ -127,6 +128,8 @@ Singleton {
             // Вид CPU и памяти в баре по умолчанию: "text" — значок и значение, "gauge" — кольцо-«спидометр» без стрелки,
             // "bar" — сегментная полоска. Пока у модуля нет своего выбора (cpuStyle, ramStyle), берётся этот
             property string statStyle: "text"
+            // Вид модуля «Сеть» в баре: "icon" — значок, "speed" — скорость ↓ ↑, "both" — значок и скорость
+            property string netStyle: "icon"
             // Свой вид модуля: "" — как statStyle, иначе "text", "gauge" или "bar"
             property string cpuStyle: ""
             property string ramStyle: ""

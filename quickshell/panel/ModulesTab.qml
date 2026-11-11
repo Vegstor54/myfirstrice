@@ -45,7 +45,7 @@ Flickable {
                     { id: "media",         label: "Трек",        icon: "", settings: false },
                     { id: "cava",          label: "Cava",        icon: "", settings: false },
                     { id: "tray",          label: "Трей",        icon: "", settings: false },
-                    { id: "network",       label: "Сеть",        icon: "", settings: false },
+                    { id: "network",       label: "Сеть",        icon: "", settings: true },
                     { id: "bluetooth",     label: "Bluetooth",   icon: "", settings: false },
                     { id: "sound",         label: "Звук",        icon: "", settings: false },
                     { id: "notifications", label: "Уведомления", icon: "", settings: false },
