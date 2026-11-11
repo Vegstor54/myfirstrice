@@ -45,4 +45,5 @@ DisplayRow panel/DisplayRow.qml
 OptionPicker panel/OptionPicker.qml
 SegmentBar bar/SegmentBar.qml
 StatSettingsTab panel/StatSettingsTab.qml
+NetSettingsTab panel/NetSettingsTab.qml
 singleton KeyboardState state/KeyboardState.qml

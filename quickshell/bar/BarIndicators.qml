@@ -54,7 +54,9 @@ Rectangle {
         IndicatorButton {
             id: netBtn
             visible: group.has("network")
-            glyph: SysState.net === "ethernet" ? "" : ""
+            glyph: Settings.netStyle === "speed" ? "" : (SysState.net === "ethernet" ? "" : "")
+            label: Settings.netStyle !== "icon" ? SysState.netSpeedText : ""
+            labelSample: Settings.netStyle !== "icon" ? "↓ 888 kB/s  ↑ 888 kB/s" : ""
             dim: SysState.net === "none" ? 0.35 : 1
             active: group.isActive("network")
             onClicked: group.openMenu("network", netBtn)

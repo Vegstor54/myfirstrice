@@ -6,6 +6,8 @@ Rectangle {
     id: btn
     property string glyph: ""
     property string label: ""
+    // Самая широкая подпись: ширина подписи не меньше неё, чтобы меняющееся значение (скорость сети) не двигало соседей
+    property string labelSample: ""
     property real dim: 1
     property bool active: false
     signal clicked()
@@ -25,8 +27,16 @@ Rectangle {
         spacing: 4
         opacity: btn.dim
 
+        TextMetrics {
+            id: sample
+            text: btn.labelSample
+            font.family: Settings.uiFontFamily
+            font.pixelSize: Math.round(Settings.barHeight * 0.4)
+        }
+
         Text {
             anchors.verticalCenter: parent.verticalCenter
+            visible: btn.glyph !== ""
             text: btn.glyph
             color: Colors.text
             font.family: "Symbols Nerd Font"
@@ -35,6 +45,7 @@ Rectangle {
         Text {
             anchors.verticalCenter: parent.verticalCenter
             visible: btn.label !== ""
+            width: Math.max(implicitWidth, sample.width)
             text: btn.label
             color: Colors.text
             font.family: Settings.uiFontFamily

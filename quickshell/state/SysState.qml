@@ -112,6 +112,75 @@ Singleton {
         }
     }
 
+    // ---- Скорость сети ----
+    // Загрузка (netDown) и отдача (netUp) в байтах в секунду по физическим сетевым картам.
+    // Считается по разнице счётчиков (scripts/net-speed.sh) между двумя опросами раз в 2 секунды,
+    // только пока модуль «Сеть» включён и показывает скорость (Settings.netStyle).
+    property real netDown: 0
+    property real netUp: 0
+    property real lastRx: -1
+    property real lastTx: -1
+    property real lastNetTime: 0
+    readonly property bool netSpeedNeeded: Settings.netStyle !== "icon" && Settings.moduleOn("network")
+
+    // 1234 -> "1 kB/s", 1500000 -> "1.5 MB/s"
+    function formatSpeed(bytesPerSec) {
+        const kb = bytesPerSec / 1000
+        if (Math.round(kb) < 1000) return Math.round(kb) + " kB/s"
+        const mb = kb / 1000
+        if (mb < 10) return mb.toFixed(1) + " MB/s"
+        if (mb < 1000) return Math.round(mb) + " MB/s"
+        return (mb / 1000).toFixed(1) + " GB/s"
+    }
+
+    readonly property string netSpeedText: "↓ " + formatSpeed(netDown) + "  ↑ " + formatSpeed(netUp)
+
+    function parseNetSpeed(text) {
+        const p = text.trim().split(/\s+/)
+        if (p.length < 2) return
+        const rx = parseFloat(p[0])
+        const tx = parseFloat(p[1])
+        if (isNaN(rx) || isNaN(tx)) return
+        const now = Date.now()
+        if (lastRx >= 0 && now > lastNetTime) {
+            // Счётчики упали, если сменился набор сетевых карт: один такт показываем нули
+            if (rx >= lastRx && tx >= lastTx) {
+                const dt = (now - lastNetTime) / 1000
+                netDown = (rx - lastRx) / dt
+                netUp = (tx - lastTx) / dt
+            } else {
+                netDown = 0
+                netUp = 0
+            }
+        }
+        lastRx = rx
+        lastTx = tx
+        lastNetTime = now
+    }
+
+    Process {
+        id: netSpeedReader
+        command: [root.scripts + "/net-speed.sh"]
+        stdout: StdioCollector {
+            onStreamFinished: root.parseNetSpeed(text)
+        }
+    }
+
+    Timer {
+        interval: 2000
+        repeat: true
+        running: root.netSpeedNeeded
+        triggeredOnStart: true
+        onTriggered: if (!netSpeedReader.running) netSpeedReader.running = true
+        // После паузы старые счётчики не годятся: скорость за долгий перерыв была бы средней
+        onRunningChanged: if (!running) {
+            root.lastRx = -1
+            root.lastTx = -1
+            root.netDown = 0
+            root.netUp = 0
+        }
+    }
+
     // ---- Bluetooth: можно ли пользоваться ----
     // Значок и вкладка Bluetooth скрыты, пока не установлен пакет bluez (демон bluetoothd)
     // или нет адаптера. Проверяет scripts/bt-present.sh
