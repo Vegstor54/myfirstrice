@@ -18,6 +18,7 @@ Scope {
     // Пункты главного меню
     readonly property var pages: [
         { id: "apps",     title: "Apps",     subtitle: "Запуск приложений" },
+        { id: "hyprland", title: "Hyprland", subtitle: "Конфигурация оконного менеджера" },
         { id: "control",  title: "Control Center", subtitle: "Сеть, Bluetooth, звук, уведомления" },
         { id: "defaults", title: "Defaults", subtitle: "Приложения по умолчанию" },
         { id: "style",    title: "Style",    subtitle: "Цвета, шрифт, бар и обои" },
@@ -283,6 +284,7 @@ Scope {
                         sourceComponent: root.isMenu(root.activeTab) ? menuPage
                                        : root.activeTab === "defaults" ? defaultsTab
                                        : root.activeTab === "apps" ? appsTab
+                                       : root.activeTab === "hyprland" ? hyprlandTab
                                        : root.activeTab === "displays" ? displaysTab
                                        : root.activeTab === "control/network" ? networkTab
                                        : root.activeTab === "control/bluetooth" ? bluetoothPage
@@ -357,6 +359,13 @@ Scope {
                     }
 
                     Item { Layout.fillHeight: true }
+                }
+            }
+
+            Component {
+                id: hyprlandTab
+                HyprlandTab {
+                    onCloseRequested: root.shown = false
                 }
             }
 

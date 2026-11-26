@@ -5,6 +5,7 @@ singleton NotificationState state/NotificationState.qml
 Panel panel/Panel.qml
 DefaultsRow panel/DefaultsRow.qml
 AppsTab panel/AppsTab.qml
+HyprlandTab panel/HyprlandTab.qml
 FontTab panel/FontTab.qml
 BarTab panel/BarTab.qml
 ModulesTab panel/ModulesTab.qml
