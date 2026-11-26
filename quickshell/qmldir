@@ -3,6 +3,7 @@ singleton Settings state/Settings.qml
 singleton SysState state/SysState.qml
 singleton NotificationState state/NotificationState.qml
 Panel panel/Panel.qml
+KeyboardMouseArea KeyboardMouseArea.qml
 DefaultsRow panel/DefaultsRow.qml
 AppsTab panel/AppsTab.qml
 HyprlandTab panel/HyprlandTab.qml

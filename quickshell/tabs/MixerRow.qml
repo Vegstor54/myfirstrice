@@ -36,7 +36,7 @@ ColumnLayout {
             font.pixelSize: 13
             font.bold: row.highlighted
 
-            MouseArea {
+            KeyboardMouseArea {
                 anchors.fill: parent
                 enabled: row.titleClickable
                 cursorShape: row.titleClickable ? Qt.PointingHandCursor : Qt.ArrowCursor
@@ -77,7 +77,7 @@ ColumnLayout {
                 font.family: "Symbols Nerd Font"
                 font.pixelSize: 12
             }
-            MouseArea {
+            KeyboardMouseArea {
                 id: muteMouse
                 anchors.fill: parent
                 hoverEnabled: true
@@ -91,6 +91,23 @@ ColumnLayout {
         id: slider
         Layout.fillWidth: true
         Layout.preferredHeight: 22
+        activeFocusOnTab: true
+
+        Keys.onPressed: event => {
+            if (event.key === Qt.Key_Right || event.key === Qt.Key_Up) {
+                row.step(0.05)
+                event.accepted = true
+            } else if (event.key === Qt.Key_Left || event.key === Qt.Key_Down) {
+                row.step(-0.05)
+                event.accepted = true
+            } else if (event.key === Qt.Key_Home) {
+                row.setValue(0)
+                event.accepted = true
+            } else if (event.key === Qt.Key_End) {
+                row.setValue(1)
+                event.accepted = true
+            }
+        }
 
         readonly property real knob: 16
 
@@ -100,7 +117,8 @@ ColumnLayout {
             height: 6
             radius: Settings.r(3)
             color: Colors.surfaceContainerHighest
-            border.width: 0
+            border.width: slider.activeFocus ? 2 : 0
+            border.color: Colors.primary
 
             Rectangle {
                 width: row.value * (slider.width - slider.knob) + slider.knob / 2
@@ -121,8 +139,9 @@ ColumnLayout {
             border.color: Colors.surfaceContainer
         }
 
-        MouseArea {
+        KeyboardMouseArea {
             anchors.fill: parent
+            keyboardEnabled: false
             preventStealing: true
             cursorShape: Qt.PointingHandCursor
 

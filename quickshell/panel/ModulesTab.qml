@@ -69,7 +69,7 @@ Flickable {
                          : Settings.fill
                     border.width: 0
 
-                    MouseArea {
+                    KeyboardMouseArea {
                         id: tileMouse
                         anchors.fill: parent
                         hoverEnabled: true
@@ -122,7 +122,7 @@ Flickable {
                             font.family: "Symbols Nerd Font"
                             font.pixelSize: 13
                         }
-                        MouseArea {
+                        KeyboardMouseArea {
                             id: gearMouse
                             anchors.fill: parent
                             hoverEnabled: true

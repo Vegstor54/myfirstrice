@@ -165,7 +165,7 @@ ColumnLayout {
             border.color: Colors.primary
         }
 
-        MouseArea {
+        KeyboardMouseArea {
             id: previewMouse
             anchors.fill: parent
             hoverEnabled: true

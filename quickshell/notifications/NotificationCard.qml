@@ -34,7 +34,7 @@ Rectangle {
     border.color: critical ? Colors.error : Qt.rgba(Colors.primary.r, Colors.primary.g, Colors.primary.b, 0.35)
 
     // Нажатие на тело карточки (кнопки внутри перехватывают свои клики сами)
-    MouseArea {
+    KeyboardMouseArea {
         anchors.fill: parent
         hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
@@ -148,7 +148,7 @@ Rectangle {
                     font.family: "Symbols Nerd Font"
                     font.pixelSize: 12
                 }
-                MouseArea {
+                KeyboardMouseArea {
                     id: closeMouse
                     anchors.fill: parent
                     hoverEnabled: true
@@ -188,7 +188,7 @@ Rectangle {
                         font.family: Settings.uiFontFamily
                         font.pixelSize: 12
                     }
-                    MouseArea {
+                    KeyboardMouseArea {
                         id: actionMouse
                         anchors.fill: parent
                         hoverEnabled: true

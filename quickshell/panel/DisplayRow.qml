@@ -40,7 +40,7 @@ Rectangle {
             Layout.fillWidth: true
             implicitHeight: headRow.implicitHeight
 
-            MouseArea {
+            KeyboardMouseArea {
                 anchors.fill: parent
                 cursorShape: Qt.PointingHandCursor
                 onClicked: row.headerClicked()
@@ -144,7 +144,7 @@ Rectangle {
                         color: row.mon.enabled ? Colors.textOnPrimary : Colors.text
                         Behavior on x { NumberAnimation { duration: 120; easing.type: Easing.OutCubic } }
                     }
-                    MouseArea {
+                    KeyboardMouseArea {
                         anchors.fill: parent
                         cursorShape: Qt.PointingHandCursor
                         onClicked: row.enabledToggled(!row.mon.enabled)

@@ -40,7 +40,7 @@ ColumnLayout {
             font.family: Settings.uiFontFamily
             font.pixelSize: 12
         }
-        MouseArea {
+        KeyboardMouseArea {
             id: headMouse
             anchors.fill: parent
             hoverEnabled: true
@@ -86,7 +86,7 @@ ColumnLayout {
                     font.family: Settings.uiFontFamily
                     font.pixelSize: 13
                 }
-                MouseArea {
+                KeyboardMouseArea {
                     id: optMouse
                     anchors.fill: parent
                     hoverEnabled: true

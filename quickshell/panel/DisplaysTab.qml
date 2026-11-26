@@ -285,7 +285,7 @@ Item {
                     font.pixelSize: 13
                     font.bold: true
                 }
-                MouseArea {
+                KeyboardMouseArea {
                     anchors.fill: parent
                     cursorShape: tab.canApply ? Qt.PointingHandCursor : Qt.ArrowCursor
                     onClicked: tab.apply()
@@ -313,7 +313,7 @@ Item {
                         font.family: Settings.uiFontFamily
                         font.pixelSize: 15
                     }
-                    MouseArea {
+                    KeyboardMouseArea {
                         id: iconMouse
                         anchors.fill: parent
                         hoverEnabled: true
@@ -427,7 +427,7 @@ Item {
                                 font.bold: pcard.current
                             }
 
-                            MouseArea {
+                            KeyboardMouseArea {
                                 id: pMouse
                                 anchors.fill: parent
                                 enabled: pcard.preset.ok
@@ -525,7 +525,7 @@ Item {
                                 }
                             }
 
-                            MouseArea {
+                            KeyboardMouseArea {
                                 id: dragArea
                                 anchors.fill: parent
                                 cursorShape: mrect.isMirror ? Qt.PointingHandCursor : Qt.SizeAllCursor

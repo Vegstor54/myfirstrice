@@ -91,7 +91,7 @@ Flickable {
                         }
                     }
 
-                    MouseArea {
+                    KeyboardMouseArea {
                         id: mouse
                         anchors.fill: parent
                         hoverEnabled: true

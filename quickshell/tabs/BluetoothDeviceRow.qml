@@ -51,7 +51,7 @@ Rectangle {
         }
     }
 
-    MouseArea {
+    KeyboardMouseArea {
         id: rowMouse
         anchors.fill: parent
         hoverEnabled: true
@@ -78,7 +78,7 @@ Rectangle {
             font.family: Settings.uiFontFamily
             font.pixelSize: 12
         }
-        MouseArea {
+        KeyboardMouseArea {
             id: actionMouse
             anchors.fill: parent
             hoverEnabled: true

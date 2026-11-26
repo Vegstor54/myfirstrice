@@ -26,7 +26,7 @@ Rectangle {
         font.family: Settings.uiFontFamily
         font.pixelSize: 13
     }
-    MouseArea {
+    KeyboardMouseArea {
         id: area
         anchors.fill: parent
         hoverEnabled: true

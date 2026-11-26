@@ -189,6 +189,11 @@ Scope {
                 }
             }
 
+            function focusNext(forward) {
+                const next = dim.nextItemInFocusChain(forward)
+                if (next && next !== dim) next.forceActiveFocus()
+            }
+
             Rectangle {
                 id: dim
                 anchors.fill: parent
@@ -213,6 +218,12 @@ Scope {
                             root.openPage(items[root.menuIndex].id)
                             event.accepted = true
                         }
+                    } else if (event.key === Qt.Key_Tab || event.key === Qt.Key_Right || event.key === Qt.Key_Down) {
+                        win.focusNext(true)
+                        event.accepted = true
+                    } else if (event.key === Qt.Key_Backtab || event.key === Qt.Key_Left || event.key === Qt.Key_Up) {
+                        win.focusNext(false)
+                        event.accepted = true
                     }
                 }
 

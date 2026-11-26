@@ -57,7 +57,7 @@ ColumnLayout {
             font.family: Settings.uiFontFamily
             font.pixelSize: 13
         }
-        MouseArea {
+        KeyboardMouseArea {
             id: netMouse
             anchors.fill: parent
             hoverEnabled: true

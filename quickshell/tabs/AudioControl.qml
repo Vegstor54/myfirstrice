@@ -40,6 +40,23 @@ ColumnLayout {
         id: slider
         Layout.fillWidth: true
         Layout.preferredHeight: 28
+        activeFocusOnTab: true
+
+        Keys.onPressed: event => {
+            if (event.key === Qt.Key_Right || event.key === Qt.Key_Up) {
+                ctl.step(0.05)
+                event.accepted = true
+            } else if (event.key === Qt.Key_Left || event.key === Qt.Key_Down) {
+                ctl.step(-0.05)
+                event.accepted = true
+            } else if (event.key === Qt.Key_Home) {
+                ctl.setValue(0)
+                event.accepted = true
+            } else if (event.key === Qt.Key_End) {
+                ctl.setValue(1)
+                event.accepted = true
+            }
+        }
 
         readonly property real knob: 20
 
@@ -49,7 +66,8 @@ ColumnLayout {
             height: 8
             radius: Settings.r(4)
             color: Colors.surfaceContainerHighest
-            border.width: 0
+            border.width: slider.activeFocus ? 2 : 0
+            border.color: Colors.primary
 
             Rectangle {
                 width: ctl.value * (slider.width - slider.knob) + slider.knob / 2
@@ -70,8 +88,9 @@ ColumnLayout {
             border.color: Colors.surfaceContainer
         }
 
-        MouseArea {
+        KeyboardMouseArea {
             anchors.fill: parent
+            keyboardEnabled: false
             preventStealing: true
             cursorShape: Qt.PointingHandCursor
 
@@ -101,7 +120,7 @@ ColumnLayout {
             font.family: Settings.uiFontFamily
             font.pixelSize: 13
         }
-        MouseArea {
+        KeyboardMouseArea {
             id: muteMouse
             anchors.fill: parent
             hoverEnabled: true

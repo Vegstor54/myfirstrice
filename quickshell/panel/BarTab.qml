@@ -56,7 +56,7 @@ Flickable {
                         font.family: Settings.uiFontFamily
                         font.pixelSize: 13
                     }
-                    MouseArea {
+                    KeyboardMouseArea {
                         id: styleMouse
                         anchors.fill: parent
                         hoverEnabled: true
@@ -106,7 +106,7 @@ Flickable {
                         font.family: Settings.uiFontFamily
                         font.pixelSize: 13
                     }
-                    MouseArea {
+                    KeyboardMouseArea {
                         id: sizeMouse
                         anchors.fill: parent
                         hoverEnabled: true
@@ -149,7 +149,7 @@ Flickable {
                 font.family: Settings.uiFontFamily
                 font.pixelSize: 13
             }
-            MouseArea {
+            KeyboardMouseArea {
                 id: resetMouse
                 anchors.fill: parent
                 hoverEnabled: true

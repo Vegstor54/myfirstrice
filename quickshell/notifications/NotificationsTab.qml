@@ -41,7 +41,7 @@ ColumnLayout {
                     font.pixelSize: 12
                 }
             }
-            MouseArea {
+            KeyboardMouseArea {
                 id: dndMouse
                 anchors.fill: parent
                 hoverEnabled: true
@@ -66,7 +66,7 @@ ColumnLayout {
                 font.family: Settings.uiFontFamily
                 font.pixelSize: 12
             }
-            MouseArea {
+            KeyboardMouseArea {
                 id: clearMouse
                 anchors.fill: parent
                 hoverEnabled: true
