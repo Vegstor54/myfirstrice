@@ -178,7 +178,8 @@ Scope {
             WlrLayershell.layer: WlrLayer.Overlay
             WlrLayershell.keyboardFocus: (root.shown && isFocused) ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
 
-            // Вне страницы Apps (там фокус у строки поиска) клавиши ловит затемнённый фон
+            // Вне страницы Apps (там фокус у строки поиска) фокус получает затемнённый фон.
+            // Карточка ловит Backspace и Escape после перехода фокуса к кнопкам.
             Connections {
                 target: root
                 function onShownChanged() {
@@ -248,6 +249,22 @@ Scope {
                 border.color: Qt.rgba(Colors.primary.r, Colors.primary.g, Colors.primary.b, 0.35)
                 opacity: root.shown ? 1 : 0
                 scale: root.shown ? 1 : 0.95
+
+                Keys.onEscapePressed: root.shown = false
+                Keys.onPressed: event => {
+                    if (event.key === Qt.Key_Backspace) {
+                        if (root.activeTab !== "menu" && !event.isAutoRepeat) root.back()
+                        event.accepted = true
+                    } else if (!root.isMenu(root.activeTab)
+                               && (event.key === Qt.Key_Tab || event.key === Qt.Key_Right || event.key === Qt.Key_Down)) {
+                        win.focusNext(true)
+                        event.accepted = true
+                    } else if (!root.isMenu(root.activeTab)
+                               && (event.key === Qt.Key_Backtab || event.key === Qt.Key_Left || event.key === Qt.Key_Up)) {
+                        win.focusNext(false)
+                        event.accepted = true
+                    }
+                }
 
                 Behavior on opacity { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
                 Behavior on scale   { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
